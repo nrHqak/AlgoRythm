@@ -1,3 +1,5 @@
+import { useLocale } from "../hooks/useLocale.jsx";
+
 const EVENT_COLORS = {
   compare: "#EF9F27",
   swap: "#1D9E75",
@@ -6,6 +8,7 @@ const EVENT_COLORS = {
 };
 
 export function VisualCanvas({ step, totalSteps }) {
+  const { t } = useLocale();
   const values = Array.isArray(step?.array) ? step.array : [];
 
   if (!values.length) {
@@ -13,12 +16,12 @@ export function VisualCanvas({ step, totalSteps }) {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h2>Visualizer</h2>
-            <p>The current array state will appear here as animated bars.</p>
+            <h2>{t("playground.visualizer")}</h2>
+            <p>{t("playground.visualizerSubtitle")}</p>
           </div>
         </div>
-        <div className="empty-state">Array is empty</div>
-        <div className="step-label">Step 0 / {totalSteps || 0}</div>
+        <div className="empty-state">{t("playground.arrayEmpty")}</div>
+        <div className="step-label">{t("playground.stepOf")} 0 / {totalSteps || 0}</div>
       </section>
     );
   }
@@ -40,8 +43,8 @@ export function VisualCanvas({ step, totalSteps }) {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <h2>Visualizer</h2>
-          <p>Event colors reflect comparisons, swaps, and failures in the trace.</p>
+          <h2>{t("playground.visualizer")}</h2>
+          <p>{t("playground.visualizerSubtitle")}</p>
         </div>
       </div>
 
@@ -68,7 +71,7 @@ export function VisualCanvas({ step, totalSteps }) {
       </div>
 
       <div className="step-label">
-        Step {totalSteps > 0 ? (step?.step ?? 0) + 1 : 0} / {totalSteps}
+        {t("playground.stepOf")} {totalSteps > 0 ? (step?.step ?? 0) + 1 : 0} / {totalSteps}
       </div>
     </section>
   );

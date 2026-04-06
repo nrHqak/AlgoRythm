@@ -7,6 +7,7 @@ import { StepPlayer } from "../components/StepPlayer";
 import { VisualCanvas } from "../components/VisualCanvas";
 import { useAudio } from "../hooks/useAudio";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useLocale } from "../hooks/useLocale.jsx";
 import { usePlayer } from "../hooks/usePlayer";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { useTracer } from "../hooks/useTracer";
@@ -78,6 +79,7 @@ export function PlaygroundPage({ achievementUi }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLocale();
   const { refreshProfile } = useProfile();
   const { traceData, isLoading, requestError, analyzeCode, resetTrace } = useTracer();
   const { currentStep, isPlaying, play, pause, next, prev, progress } = usePlayer(traceData.total_steps);
@@ -386,7 +388,7 @@ export function PlaygroundPage({ achievementUi }) {
       await saveTaskProgress({ solved, steps, xpEarned, context: taskContext });
       const savePayload = await saveSession(result, xpEarned, taskContext);
       setSessionId(savePayload.session_id);
-      setSaveFeedback(solved ? "Session saved and progress updated." : "Session saved with error context.");
+      setSaveFeedback(solved ? t("playground.sessionSaved") : t("playground.errorSaved"));
       setXpNotice(`+${xpEarned} XP earned!`);
       achievementUi.pushAchievements(savePayload.achievements_earned || []);
       await refreshProfile();
@@ -406,33 +408,31 @@ export function PlaygroundPage({ achievementUi }) {
   }
 
   if (loadingTask) {
-    return <div className="page-loading">Loading task...</div>;
+    return <div className="page-loading">{t("playground.loadingTask")}</div>;
   }
 
   return (
     <>
       <section className="hero-banner">
         <div>
-          <div className="eyebrow">Playground</div>
-          <h1>Write, trace, and review algorithm thinking with live feedback.</h1>
-          <p className="meta-text">
-            Run custom code or route in from the curriculum. Every run becomes a saved learning session.
-          </p>
+          <div className="eyebrow">{t("playground.eyebrow")}</div>
+          <h1>{t("playground.title")}</h1>
+          <p className="meta-text">{t("playground.subtitle")}</p>
         </div>
         <div className="button-row">
           <button className="secondary-button" type="button" onClick={toggleMute}>
-            {muted ? "Unmute Audio" : "Mute Audio"}
+            {muted ? t("playground.unmute") : t("playground.mute")}
           </button>
           {task ? (
             <button className="ghost-button" type="button" onClick={() => navigate("/learn")}>
-              Back to Curriculum
+              {t("playground.backToCurriculum")}
             </button>
           ) : null}
         </div>
       </section>
 
       {requestError ? <div className="status-banner is-error">{requestError}</div> : null}
-      {traceData.truncated ? <div className="status-banner">Trace stopped after 300 steps.</div> : null}
+      {traceData.truncated ? <div className="status-banner">{t("playground.traceStopped")}</div> : null}
       {saveFeedback ? <div className="status-banner is-success">{saveFeedback}</div> : null}
       {saveError ? <div className="status-banner is-error">{saveError}</div> : null}
       {traceData.error?.type === "timeout" ? (
@@ -476,7 +476,7 @@ export function PlaygroundPage({ achievementUi }) {
             onInputChange={setMentorInput}
             onSend={() => sendMentorMessage({ question: mentorInput, mode: "free_chat" })}
             disabled={false}
-            note="Reactive hints appear on errors. You can also ask free-form questions at any time."
+            note={t("playground.mentorNote")}
           />
         </div>
       </div>

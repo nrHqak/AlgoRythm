@@ -1,4 +1,7 @@
+import { useLocale } from "../hooks/useLocale.jsx";
+
 export function StreakBadge({ streak = 0 }) {
+  const { t } = useLocale();
   const className = `streak-badge${streak === 0 ? " is-zero" : ""}${streak >= 3 ? " is-pulse" : ""}`;
 
   return (
@@ -9,7 +12,7 @@ export function StreakBadge({ streak = 0 }) {
           fill="currentColor"
         />
       </svg>
-      <span>{streak} day streak</span>
+      <span>{streak} {t("streak.days")}</span>
     </div>
   );
 }

@@ -1,4 +1,7 @@
+import { useLocale } from "../hooks/useLocale.jsx";
+
 export function TaskCard({ task, status, userProgress, onOpen }) {
+  const { t } = useLocale();
   const isLocked = status === "locked";
   const isCompleted = status === "completed";
 
@@ -15,20 +18,26 @@ export function TaskCard({ task, status, userProgress, onOpen }) {
       </div>
 
       <div className="task-meta">
-        <div>Max XP: {task.max_xp}</div>
-        {isCompleted ? <div>Best: {userProgress?.best_steps || "—"} steps</div> : null}
-        {isCompleted ? <div>XP earned: {userProgress?.xp_earned || 0}</div> : null}
-        {isLocked ? <div>Complete previous task to unlock</div> : null}
+        <div>
+          {t("taskCard.maxXp")}: {task.max_xp}
+        </div>
+        {isCompleted ? (
+          <div>
+            {t("taskCard.best")}: {userProgress?.best_steps || "—"} {t("taskCard.steps")}
+          </div>
+        ) : null}
+        {isCompleted ? <div>{t("taskCard.xpEarned")}: {userProgress?.xp_earned || 0}</div> : null}
+        {isLocked ? <div>{t("taskCard.unlockHint")}</div> : null}
       </div>
 
       <div>
         {isLocked ? (
           <button className="secondary-button" type="button" disabled>
-            Locked
+            {t("common.locked")}
           </button>
         ) : (
           <button className="primary-button" type="button" onClick={onOpen}>
-            {isCompleted ? "Redo" : "Start"}
+            {isCompleted ? t("common.redo") : t("common.start")}
           </button>
         )}
       </div>

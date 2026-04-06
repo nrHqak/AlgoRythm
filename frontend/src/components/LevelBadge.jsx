@@ -1,3 +1,7 @@
+import { useLocale } from "../hooks/useLocale.jsx";
+
 export function LevelBadge({ level, title }) {
-  return <div className="level-badge">Level {level} · {title}</div>;
+  const { t } = useLocale();
+  const localizedTitle = t(`levels.${level}`) || title;
+  return <div className="level-badge">{t("xp.level")} {level} · {localizedTitle}</div>;
 }

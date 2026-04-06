@@ -5,6 +5,7 @@ import { TaskCard } from "../components/TaskCard";
 import { StreakBadge } from "../components/StreakBadge";
 import { XPBar } from "../components/XPBar";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useLocale } from "../hooks/useLocale.jsx";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { supabase } from "../lib/supabase";
 
@@ -39,6 +40,7 @@ function buildStatusMap(tasks, progressRows) {
 
 export function LearnPage() {
   const { user } = useAuth();
+  const { t } = useLocale();
   const { profile } = useProfile();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
@@ -69,7 +71,7 @@ export function LearnPage() {
         setTasks(Array.isArray(taskPayload.tasks) ? taskPayload.tasks : []);
         setProgressRows(progressResponse.data || []);
       } catch (loadError) {
-        setError(loadError.message || "Unable to load curriculum.");
+        setError(loadError.message || t("learn.loading"));
       } finally {
         setLoading(false);
       }
@@ -94,13 +96,11 @@ export function LearnPage() {
     <>
       <section className="hero-banner">
         <div>
-          <div className="eyebrow">Learning Path</div>
-          <h1>Move from first trace to disciplined algorithm thinking.</h1>
-          <p className="meta-text">
-            Progress unlocks in order. Finish tasks, earn XP, and build a steady streak through daily runs.
-          </p>
+          <div className="eyebrow">{t("learn.eyebrow")}</div>
+          <h1>{t("learn.title")}</h1>
+          <p className="meta-text">{t("learn.subtitle")}</p>
           <div className="meta-text">
-            {completedCount} / {tasks.length || 5} tasks completed
+            {completedCount} / {tasks.length || 5} {t("learn.completed")}
           </div>
         </div>
         <div className="panel-stack">
@@ -112,14 +112,14 @@ export function LearnPage() {
       {error ? <div className="status-banner is-error">{error}</div> : null}
 
       {loading ? (
-        <div className="page-loading">Loading curriculum...</div>
+        <div className="page-loading">{t("learn.loading")}</div>
       ) : (
         <section className="learn-columns">
           {["beginner", "intermediate", "advanced"].map((difficulty) => (
             <div key={difficulty} className="learn-column">
               <div className="difficulty-header">
-                <h2 className="section-title">{difficulty[0].toUpperCase() + difficulty.slice(1)}</h2>
-                <span className={`difficulty-badge ${difficulty}`}>{groupedTasks[difficulty].length} tasks</span>
+                <h2 className="section-title">{t(`learn.${difficulty}`)}</h2>
+                <span className={`difficulty-badge ${difficulty}`}>{groupedTasks[difficulty].length} {t("learn.tasks")}</span>
               </div>
 
               {groupedTasks[difficulty].map((task) => (

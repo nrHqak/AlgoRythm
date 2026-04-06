@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useLocale } from "../hooks/useLocale.jsx";
+
 const LINE_HEIGHT = 24;
 
 export function CodeEditor({
@@ -15,6 +17,7 @@ export function CodeEditor({
   onExampleChange,
   task,
 }) {
+  const { t } = useLocale();
   const [scrollTop, setScrollTop] = useState(0);
   const lineNumbers = Array.from({ length: Math.max(code.split("\n").length, 1) }, (_, index) => index + 1);
 
@@ -22,11 +25,11 @@ export function CodeEditor({
     <section className="panel">
       <div className="panel-header">
         <div>
-          <h2>Code Workspace</h2>
-          <p>Run student code, inspect every step, and experiment with alternate algorithms.</p>
+          <h2>{t("playground.codeWorkspace")}</h2>
+          <p>{t("playground.codeSubtitle")}</p>
         </div>
         <button className="primary-button" type="button" onClick={onRun} disabled={isLoading}>
-          {isLoading ? "Running..." : "Run"}
+          {isLoading ? t("common.running") : t("common.run")}
         </button>
       </div>
 
@@ -42,7 +45,7 @@ export function CodeEditor({
 
       <div className="toolbar-row">
         <div className="field" style={{ flex: 1 }}>
-          <label htmlFor="array-var">Array variable name</label>
+          <label htmlFor="array-var">{t("playground.arrayVar")}</label>
           <input
             id="array-var"
             type="text"
@@ -52,7 +55,7 @@ export function CodeEditor({
           />
         </div>
         <div className="field" style={{ flex: 1 }}>
-          <label htmlFor="example-select">Load example</label>
+          <label htmlFor="example-select">{t("playground.loadExample")}</label>
           <select id="example-select" value={selectedExample} onChange={(event) => onExampleChange(event.target.value)}>
             {examples.map((example) => (
               <option key={example.key} value={example.key}>

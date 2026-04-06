@@ -5,8 +5,10 @@ import { AchievementToast } from "./components/AchievementToast";
 import { Layout } from "./components/Layout";
 import { useAchievements } from "./hooks/useAchievements";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
+import { LocaleProvider } from "./hooks/useLocale.jsx";
 import { ProfileProvider } from "./hooks/useProfile.jsx";
 import { AuthPage } from "./pages/AuthPage";
+import { LandingPage } from "./pages/LandingPage";
 import { LearnPage } from "./pages/LearnPage";
 import { MentorPage } from "./pages/MentorPage";
 import { PlaygroundPage } from "./pages/PlaygroundPage";
@@ -35,7 +37,7 @@ function AppRoutes() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Navigate to="/learn" replace />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route
           path="/learn"
@@ -107,9 +109,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <ProfileProvider>
-        <AppRoutes />
-      </ProfileProvider>
+      <LocaleProvider>
+        <ProfileProvider>
+          <AppRoutes />
+        </ProfileProvider>
+      </LocaleProvider>
     </AuthProvider>
   );
 }

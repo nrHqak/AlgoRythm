@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useLocale } from "../hooks/useLocale.jsx";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { LevelBadge } from "./LevelBadge";
 import { StreakBadge } from "./StreakBadge";
@@ -17,6 +18,7 @@ function getInitials(name) {
 
 export function Layout({ children }) {
   const { user, signOut } = useAuth();
+  const { locale, setLocale, t } = useLocale();
   const { profile, levelMeta } = useProfile();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,24 +33,42 @@ export function Layout({ children }) {
   return (
     <div className="app-shell">
       <nav className="layout-nav">
-        <NavLink to="/learn" className="brand">
-          <span className="brand-mark">A</span>
-          <span>AlgoRythm</span>
+        <NavLink to="/" className="brand">
+          <span className="wordmark">
+            <strong>AlgoRythm</strong>
+            <small>{t("nav.tagline")}</small>
+          </span>
         </NavLink>
 
         <div className="nav-links">
           <NavLink to="/learn" className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}>
-            Learn
+            {t("common.learn")}
           </NavLink>
           <NavLink to="/playground" className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}>
-            Playground
+            {t("common.playground")}
           </NavLink>
           <NavLink to="/mentor" className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}>
-            Mentor
+            {t("common.mentor")}
           </NavLink>
         </div>
 
         <div className="nav-right">
+          <div className="locale-switch">
+            <button
+              className={`locale-button${locale === "en" ? " is-active" : ""}`}
+              type="button"
+              onClick={() => setLocale("en")}
+            >
+              EN
+            </button>
+            <button
+              className={`locale-button${locale === "ru" ? " is-active" : ""}`}
+              type="button"
+              onClick={() => setLocale("ru")}
+            >
+              RU
+            </button>
+          </div>
           {user ? (
             <>
               <div className="nav-desktop-only">
@@ -61,19 +81,19 @@ export function Layout({ children }) {
                 {initials}
               </button>
               <button className="secondary-button nav-desktop-only" type="button" onClick={handleSignOut}>
-                Sign Out
+                {t("common.signOut")}
               </button>
               <button
                 className="secondary-button mobile-menu-button"
                 type="button"
                 onClick={() => setMenuOpen((previous) => !previous)}
               >
-                Menu
+                {t("common.menu")}
               </button>
             </>
           ) : (
             <button className="primary-button" type="button" onClick={() => navigate("/auth")}>
-              Sign In
+              {t("common.signIn")}
             </button>
           )}
         </div>
@@ -87,27 +107,27 @@ export function Layout({ children }) {
               className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}
               onClick={() => setMenuOpen(false)}
             >
-              Learn
+              {t("common.learn")}
             </NavLink>
             <NavLink
               to="/playground"
               className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}
               onClick={() => setMenuOpen(false)}
             >
-              Playground
+              {t("common.playground")}
             </NavLink>
             <NavLink
               to="/mentor"
               className={({ isActive }) => `nav-link${isActive ? " is-active" : ""}`}
               onClick={() => setMenuOpen(false)}
             >
-              Mentor
+              {t("common.mentor")}
             </NavLink>
             <button className="nav-link secondary-button" type="button" onClick={() => navigate("/profile")}>
-              Profile
+              {t("common.profile")}
             </button>
             <button className="nav-link secondary-button" type="button" onClick={handleSignOut}>
-              Sign Out
+              {t("common.signOut")}
             </button>
           </div>
         </div>

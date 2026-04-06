@@ -1,3 +1,5 @@
+import { useLocale } from "../hooks/useLocale.jsx";
+
 export function MentorChat({
   title = "AI Mentor",
   subtitle = "Ask conceptual questions or get hints about the current trace.",
@@ -10,6 +12,7 @@ export function MentorChat({
   multiline = true,
   note,
 }) {
+  const { t } = useLocale();
   return (
     <section className="panel mentor-chat">
       <div className="panel-header">
@@ -23,7 +26,7 @@ export function MentorChat({
 
       <div className="chat-list">
         {messages.length === 0 ? (
-          <div className="empty-state">Your mentor conversation will appear here.</div>
+          <div className="empty-state">{t("playground.mentorSubtitle")}</div>
         ) : (
           messages.map((message, index) => (
             <div
@@ -49,7 +52,7 @@ export function MentorChat({
             <textarea
               value={inputValue}
               onChange={(event) => onInputChange(event.target.value)}
-              placeholder="Ask about the current step, algorithm ideas, or debugging patterns"
+              placeholder={t("playground.askPlaceholder")}
               disabled={disabled || loading}
             />
           ) : (
@@ -57,13 +60,13 @@ export function MentorChat({
               type="text"
               value={inputValue}
               onChange={(event) => onInputChange(event.target.value)}
-              placeholder="Ask the mentor"
+              placeholder={t("playground.askPlaceholder")}
               disabled={disabled || loading}
             />
           )}
         </div>
         <button className="primary-button" type="submit" disabled={disabled || loading || !inputValue.trim()}>
-          Send
+          {t("common.send")}
         </button>
       </form>
     </section>

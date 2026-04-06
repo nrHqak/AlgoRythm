@@ -1,3 +1,5 @@
+import { useLocale } from "../hooks/useLocale.jsx";
+
 export function StepPlayer({
   currentStep,
   totalSteps,
@@ -8,6 +10,7 @@ export function StepPlayer({
   onPause,
   onNext,
 }) {
+  const { t } = useLocale();
   const atStart = currentStep <= 0;
   const atEnd = totalSteps === 0 || currentStep >= totalSteps - 1;
 
@@ -15,26 +18,26 @@ export function StepPlayer({
     <section className="panel">
       <div className="panel-header">
         <div>
-          <h2>Player</h2>
-          <p>Step through the trace manually or let the animation run.</p>
+          <h2>{t("playground.player")}</h2>
+          <p>{t("playground.playerSubtitle")}</p>
         </div>
       </div>
 
       <div className="player-controls">
         <button className="secondary-button" type="button" onClick={onPrev} disabled={atStart}>
-          ⏮ Prev
+          ⏮ {t("playground.prev")}
         </button>
         {isPlaying ? (
           <button className="primary-button" type="button" onClick={onPause}>
-            ⏸ Pause
+            ⏸ {t("playground.pause")}
           </button>
         ) : (
           <button className="primary-button" type="button" onClick={onPlay} disabled={atEnd}>
-            ▶ Play
+            ▶ {t("playground.play")}
           </button>
         )}
         <button className="secondary-button" type="button" onClick={onNext} disabled={atEnd}>
-          ⏭ Next
+          ⏭ {t("playground.next")}
         </button>
       </div>
 
@@ -43,7 +46,7 @@ export function StepPlayer({
       </div>
 
       <div className="progress-copy">
-        Step {totalSteps > 0 ? currentStep + 1 : 0} of {totalSteps}
+        {t("playground.stepOf")} {totalSteps > 0 ? currentStep + 1 : 0} {t("playground.of")} {totalSteps}
       </div>
     </section>
   );

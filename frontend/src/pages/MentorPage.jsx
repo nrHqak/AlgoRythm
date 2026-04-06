@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { MentorChat } from "../components/MentorChat";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useLocale } from "../hooks/useLocale.jsx";
 import { supabase } from "../lib/supabase";
 
 function getApiUrl(path) {
@@ -22,6 +23,7 @@ function buildUserHistory(sessions) {
 
 export function MentorPage() {
   const { user } = useAuth();
+  const { t } = useLocale();
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -62,6 +64,14 @@ export function MentorPage() {
     }
     return messages.filter((message) => !message.session_id || message.session_id === selectedSession.id);
   }, [messages, selectedSession]);
+
+  const summarizedTrace = (selectedSession?.trace || []).slice(-3).map((step) => ({
+    step: step.step,
+    line: step.line,
+    event: step.event,
+    highlights: step.highlights,
+    array: Array.isArray(step.array) ? step.array.slice(0, 8) : [],
+  }));
 
   async function persistMessage(role, message, triggerType) {
     await supabase.from("mentor_messages").insert({
@@ -122,14 +132,12 @@ export function MentorPage() {
       <section className="hero-banner">
         <div>
           <div className="eyebrow">Mentor Studio</div>
-          <h1>Ask deeper questions about strategies, complexity, and debugging habits.</h1>
-          <p className="meta-text">
-            The mentor can use your recent sessions as context, not just the latest error.
-          </p>
+          <h1>{t("mentorPage.title")}</h1>
+          <p className="meta-text">{t("mentorPage.subtitle")}</p>
         </div>
         <div className="mentor-mode-tabs">
           <button className="mentor-mode-tab is-active" type="button">
-            Free Chat
+            {t("mentorPage.freeChat")}
           </button>
         </div>
       </section>
@@ -139,7 +147,7 @@ export function MentorPage() {
       <div className="mentor-layout">
         <aside className="sidebar-panel">
           <div className="mentor-sidebar-header">
-            <h2 className="section-title">Recent Sessions</h2>
+            <h2 className="section-title">{t("mentorPage.recentSessions")}</h2>
           </div>
           <div className="mentor-session-list">
             {sessions.map((session) => (
@@ -158,8 +166,8 @@ export function MentorPage() {
 
         <div className="panel-stack">
           <MentorChat
-            title="Deep Mentor Chat"
-            subtitle="Discuss differences between algorithms, interview prep, or patterns in your recent mistakes."
+            title={t("mentorPage.chatTitle")}
+            subtitle={t("mentorPage.chatSubtitle")}
             messages={currentMessages}
             loading={loading}
             inputValue={input}
@@ -167,25 +175,50 @@ export function MentorPage() {
             onSend={handleSend}
             disabled={false}
             multiline
-            note="Conceptual questions get concise explanations. Debugging questions stay Socratic."
+            note={t("mentorPage.note")}
           />
 
           <section className="panel">
             <div className="panel-header">
               <div>
-                <h2>Session Context</h2>
-                <p>Toggle the selected session's code and trace summary.</p>
+                <h2>{t("mentorPage.sessionContext")}</h2>
+                <p>{t("mentorPage.sessionContextSubtitle")}</p>
               </div>
               <button className="secondary-button" type="button" onClick={() => setContextOpen((previous) => !previous)}>
-                {contextOpen ? "Hide Context" : "Show Context"}
+                {contextOpen ? t("mentorPage.hideContext") : t("mentorPage.showContext")}
               </button>
             </div>
 
             {contextOpen && selectedSession ? (
-              <div className="stack">
-                <div className="session-code">{selectedSession.code}</div>
-                <div className="session-code">{JSON.stringify((selectedSession.trace || []).slice(-5), null, 2)}</div>
+              <div className="context-grid">
+                <div className="context-card">
+                  <div className="context-label">{t("mentorPage.code")}</div>
+                  <div className="session-code">{selectedSession.code}</div>
+                </div>
+                <div className="context-card">
+                  <div className="context-headline">
+                    <div className="context-label">{t("mentorPage.traceSummary")}</div>
+                    <span className={`result-pill ${selectedSession.solved ? "is-pass" : "is-fail"}`}>
+                      {selectedSession.solved ? t("mentorPage.solved") : t("mentorPage.failed")}
+                    </span>
+                  </div>
+                  <div className="trace-summary-list">
+                    {summarizedTrace.map((step) => (
+                      <article key={`${step.step}-${step.line}`} className="trace-summary-card">
+                        <div className="trace-summary-top">
+                          <strong>Step {step.step}</strong>
+                          <span className="pill">{t("mentorPage.event")}: {step.event}</span>
+                        </div>
+                        <div className="trace-summary-meta">{t("mentorPage.line")}: {step.line}</div>
+                        <div className="trace-summary-meta">{t("mentorPage.highlights")}: {step.highlights?.join(", ") || "—"}</div>
+                        <div className="trace-summary-array">[{step.array.join(", ")}]</div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
               </div>
+            ) : contextOpen ? (
+              <div className="empty-state">{t("mentorPage.noContext")}</div>
             ) : null}
           </section>
         </div>

@@ -4,6 +4,7 @@ import { LevelBadge } from "../components/LevelBadge";
 import { StreakBadge } from "../components/StreakBadge";
 import { XPBar } from "../components/XPBar";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useLocale } from "../hooks/useLocale.jsx";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { supabase } from "../lib/supabase";
 
@@ -16,22 +17,48 @@ function getInitials(value) {
   return source.slice(0, 2).toUpperCase();
 }
 
-function getDaysAgo(dateValue) {
+function getDaysAgo(dateValue, t) {
   if (!dateValue) {
-    return "No recent activity";
+    return t("profile.noRecentActivity");
   }
 
   const today = new Date();
   const previous = new Date(dateValue);
   const diff = Math.floor((today.setHours(0, 0, 0, 0) - previous.setHours(0, 0, 0, 0)) / 86400000);
 
-  if (diff <= 0) return "today";
-  if (diff === 1) return "1 day ago";
-  return `${diff} days ago`;
+  if (diff <= 0) return t("common.today");
+  if (diff === 1) return t("profile.oneDayAgo");
+  return `${diff} ${t("profile.daysAgo")}`;
+}
+
+function buildHeatmap(sessions) {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - 83);
+  const counts = new Map();
+
+  sessions.forEach((session) => {
+    const key = new Date(session.created_at).toISOString().slice(0, 10);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+
+  const days = [];
+  for (let index = 0; index < 84; index += 1) {
+    const day = new Date(start);
+    day.setDate(start.getDate() + index);
+    const key = day.toISOString().slice(0, 10);
+    days.push({
+      key,
+      count: counts.get(key) || 0,
+      label: day.toLocaleDateString(),
+    });
+  }
+  return days;
 }
 
 export function ProfilePage() {
   const { user } = useAuth();
+  const { t } = useLocale();
   const { profile, levelMeta } = useProfile();
   const [allAchievements, setAllAchievements] = useState([]);
   const [earnedAchievements, setEarnedAchievements] = useState([]);
@@ -94,6 +121,40 @@ export function ProfilePage() {
     return top ? top[0] : "custom";
   }, [sessions]);
 
+  const heatmapDays = useMemo(() => buildHeatmap(sessions), [sessions]);
+  const activeDays = heatmapDays.filter((day) => day.count > 0).length;
+  const successRate = totalSessions > 0 ? Math.round((sessions.filter((session) => session.solved).length / totalSessions) * 100) : 0;
+  const runsThisWeek = sessions.filter((session) => {
+    const diff = Date.now() - new Date(session.created_at).getTime();
+    return diff <= 7 * 24 * 60 * 60 * 1000;
+  }).length;
+  const averageXp = totalSessions > 0 ? Math.round((sessions.reduce((sum, session) => sum + (session.xp_earned || 0), 0) / totalSessions) * 10) / 10 : 0;
+  const algorithmMix = useMemo(() => {
+    const counts = {};
+    sessions.forEach((session) => {
+      const key = session.algorithm_type || "custom";
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  }, [sessions]);
+  const longestRun = useMemo(() => {
+    let best = 0;
+    let current = 0;
+    let previous = null;
+    heatmapDays.forEach((day) => {
+      if (day.count > 0) {
+        if (previous && new Date(day.key) - new Date(previous) === 86400000) {
+          current += 1;
+        } else {
+          current = 1;
+        }
+        best = Math.max(best, current);
+        previous = day.key;
+      }
+    });
+    return best;
+  }, [heatmapDays]);
+
   return (
     <>
       <section className="hero-banner profile-top">
@@ -101,7 +162,7 @@ export function ProfilePage() {
           <div className="profile-user">
             <div className="avatar-large">{getInitials(profile?.username || user?.email || "AR")}</div>
             <div>
-              <h1 style={{ margin: 0 }}>{profile?.username || "Learner"}</h1>
+              <h1 style={{ margin: 0 }}>{profile?.username || t("profile.titleFallback")}</h1>
               <div className="meta-text">{user?.email}</div>
               <div className="button-row" style={{ marginTop: "12px" }}>
                 <LevelBadge level={levelMeta.level} title={levelMeta.title} />
@@ -112,39 +173,142 @@ export function ProfilePage() {
           <XPBar xp={profile?.xp || 0} />
         </div>
 
-        <div className="meta-text">Last active: {getDaysAgo(profile?.last_active_date)}</div>
+        <div className="meta-text">{t("profile.lastActive")}: {getDaysAgo(profile?.last_active_date, t)}</div>
       </section>
 
       {error ? <div className="status-banner is-error">{error}</div> : null}
 
       <section className="stats-grid">
         <article className="stat-card">
-          <h3>Total sessions</h3>
+          <h3>{t("profile.totalSessions")}</h3>
           <div className="stat-value">{totalSessions}</div>
         </article>
         <article className="stat-card">
-          <h3>Tasks completed</h3>
+          <h3>{t("profile.tasksCompleted")}</h3>
           <div className="stat-value">{completedTasks.length}</div>
         </article>
         <article className="stat-card">
-          <h3>Common error</h3>
+          <h3>{t("profile.commonError")}</h3>
           <div className="stat-value">{mostCommonErrorType}</div>
         </article>
         <article className="stat-card">
-          <h3>Total XP</h3>
+          <h3>{t("profile.totalXp")}</h3>
           <div className="stat-value">{profile?.xp || 0}</div>
         </article>
         <article className="stat-card">
-          <h3>Favorite algorithm</h3>
+          <h3>{t("profile.favoriteAlgorithm")}</h3>
           <div className="stat-value">{favoriteAlgorithm}</div>
+        </article>
+      </section>
+
+      <section className="dashboard-grid">
+        <article className="panel dashboard-panel">
+          <div className="panel-header">
+            <div>
+              <h2>{t("profile.consistency")}</h2>
+              <p>{t("profile.consistencySubtitle")}</p>
+            </div>
+          </div>
+          <div className="dashboard-stats">
+            <div className="dashboard-kpi">
+              <span>{t("profile.activeDays")}</span>
+              <strong>{activeDays}</strong>
+            </div>
+            <div className="dashboard-kpi">
+              <span>{t("profile.successRate")}</span>
+              <strong>{successRate}%</strong>
+            </div>
+            <div className="dashboard-kpi">
+              <span>{t("profile.runsThisWeek")}</span>
+              <strong>{runsThisWeek}</strong>
+            </div>
+            <div className="dashboard-kpi">
+              <span>{t("profile.averageXp")}</span>
+              <strong>{averageXp}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article className="panel heatmap-panel">
+          <div className="panel-header">
+            <div>
+              <h2>{t("profile.heatmapTitle")}</h2>
+              <p>{t("profile.heatmapSubtitle")}</p>
+            </div>
+          </div>
+          {sessions.length === 0 ? (
+            <div className="empty-state">{t("profile.noSessions")}</div>
+          ) : (
+            <div className="heatmap-grid">
+              {heatmapDays.map((day) => (
+                <div
+                  key={day.key}
+                  className={`heatmap-cell intensity-${Math.min(day.count, 4)}`}
+                  title={`${day.label}: ${day.count}`}
+                />
+              ))}
+            </div>
+          )}
+        </article>
+      </section>
+
+      <section className="dashboard-grid">
+        <article className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>{t("profile.algorithmMix")}</h2>
+            </div>
+          </div>
+          <div className="mix-list">
+            {algorithmMix.length === 0 ? (
+              <div className="empty-state">{t("profile.noSessions")}</div>
+            ) : (
+              algorithmMix.map(([name, count]) => {
+                const width = Math.max((count / Math.max(...algorithmMix.map((item) => item[1]))) * 100, 12);
+                return (
+                  <div key={name} className="mix-row">
+                    <div className="mix-copy">
+                      <strong>{name}</strong>
+                      <span>{count}</span>
+                    </div>
+                    <div className="mix-bar">
+                      <div className="mix-fill" style={{ width: `${width}%` }} />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </article>
+
+        <article className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>{t("profile.streakInsights")}</h2>
+            </div>
+          </div>
+          <div className="insight-list">
+            <div className="insight-card">
+              <span>{t("profile.longestRun")}</span>
+              <strong>{longestRun}</strong>
+            </div>
+            <div className="insight-card">
+              <span>{t("profile.currentRhythm")}</span>
+              <strong>{profile?.streak || 0}</strong>
+            </div>
+            <div className="insight-card">
+              <span>{t("profile.weeklyOutput")}</span>
+              <strong>{runsThisWeek}</strong>
+            </div>
+          </div>
         </article>
       </section>
 
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h2>Achievements</h2>
-            <p>Earned badges light up as you build consistency and solve tasks.</p>
+            <h2>{t("profile.achievements")}</h2>
+            <p>{t("profile.achievementsSubtitle")}</p>
           </div>
         </div>
         <div className="achievements-grid">
@@ -172,8 +336,8 @@ export function ProfilePage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h2>Recent Sessions</h2>
-            <p>Review the last 10 runs, including code, XP, and whether the trace completed cleanly.</p>
+            <h2>{t("profile.recentSessions")}</h2>
+            <p>{t("profile.recentSessionsSubtitle")}</p>
           </div>
         </div>
         <div className="history-list">
@@ -189,7 +353,7 @@ export function ProfilePage() {
                     </div>
                     <div className="button-row">
                       <span className={`result-pill ${session.solved ? "is-pass" : "is-fail"}`}>
-                        {session.solved ? "Pass" : "Fail"}
+                        {session.solved ? t("profile.pass") : t("profile.fail")}
                       </span>
                       <span className="pill">+{session.xp_earned || 0} XP</span>
                     </div>

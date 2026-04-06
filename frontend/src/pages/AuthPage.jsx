@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useLocale } from "../hooks/useLocale.jsx";
 
 export function AuthPage() {
   const { user, loading, signIn, signUp, signInWithGoogle, configError } = useAuth();
+  const { t } = useLocale();
   const navigate = useNavigate();
   const location = useLocation();
   const [mode, setMode] = useState("signin");
@@ -61,16 +63,14 @@ export function AuthPage() {
         <section className="auth-hero">
           <div>
             <div className="eyebrow">AlgoRythm Platform</div>
-            <h1>Learn algorithms with traces, XP, and a mentor that nudges instead of spoiling.</h1>
-            <p className="meta-text">
-              Build confidence through structured tasks, persistent history, gamification, and context-aware guidance.
-            </p>
+            <h1>{t("auth.title")}</h1>
+            <p className="meta-text">{t("auth.subtitle")}</p>
           </div>
 
           <div className="auth-points">
-            <div className="auth-point">Trace Python code into visual execution steps.</div>
-            <div className="auth-point">Follow a five-task learning path with progression and achievements.</div>
-            <div className="auth-point">Use mentor chat for debugging and conceptual understanding.</div>
+            <div className="auth-point">{t("auth.points1")}</div>
+            <div className="auth-point">{t("auth.points2")}</div>
+            <div className="auth-point">{t("auth.points3")}</div>
           </div>
         </section>
 
@@ -81,21 +81,21 @@ export function AuthPage() {
               type="button"
               onClick={() => setMode("signin")}
             >
-              Sign In
+              {t("auth.signInTab")}
             </button>
             <button
               className={`auth-tab${mode === "signup" ? " is-active" : ""}`}
               type="button"
               onClick={() => setMode("signup")}
             >
-              Create Account
+              {t("auth.signUpTab")}
             </button>
           </div>
 
           <form className="stack" onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
             {mode === "signup" ? (
               <div className="field">
-                <label htmlFor="username">Username</label>
+                <label htmlFor="username">{t("auth.username")}</label>
                 <input
                   id="username"
                   type="text"
@@ -107,7 +107,7 @@ export function AuthPage() {
             ) : null}
 
             <div className="field">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t("auth.email")}</label>
               <input
                 id="email"
                 type="email"
@@ -118,7 +118,7 @@ export function AuthPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t("auth.password")}</label>
               <input
                 id="password"
                 type="password"
@@ -133,10 +133,10 @@ export function AuthPage() {
 
             <div className="button-row">
               <button className="primary-button" type="submit" disabled={submitting}>
-                {submitting ? "Working..." : mode === "signin" ? "Sign In" : "Create Account"}
+                {submitting ? t("auth.working") : mode === "signin" ? t("auth.signInButton") : t("auth.signUpButton")}
               </button>
               <button className="ghost-button" type="button" disabled={submitting} onClick={handleGoogle}>
-                Continue with Google
+                {t("auth.googleButton")}
               </button>
             </div>
           </form>
