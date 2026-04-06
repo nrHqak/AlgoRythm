@@ -27,34 +27,24 @@ export function usePlayer(totalSteps) {
     return () => window.clearInterval(timer);
   }, [isPlaying, totalSteps]);
 
-  const play = () => {
+  function play() {
     if (totalSteps <= 0 || currentStep >= totalSteps - 1) {
       return;
     }
     setIsPlaying(true);
-  };
+  }
 
-  const pause = () => {
+  function pause() {
     setIsPlaying(false);
-  };
+  }
 
-  const next = () => {
-    setCurrentStep((previous) => {
-      if (previous >= totalSteps - 1) {
-        return previous;
-      }
-      return previous + 1;
-    });
-  };
+  function next() {
+    setCurrentStep((previous) => (previous >= totalSteps - 1 ? previous : previous + 1));
+  }
 
-  const prev = () => {
-    setCurrentStep((previous) => {
-      if (previous <= 0) {
-        return previous;
-      }
-      return previous - 1;
-    });
-  };
+  function prev() {
+    setCurrentStep((previous) => (previous <= 0 ? previous : previous - 1));
+  }
 
   const progress = totalSteps > 1 ? (currentStep / (totalSteps - 1)) * 100 : 0;
 

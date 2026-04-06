@@ -10,7 +10,7 @@ export function useAudio() {
   const contextRef = useRef(null);
   const [muted, setMuted] = useState(false);
 
-  const unlockAudio = async () => {
+  async function unlockAudio() {
     if (typeof window === "undefined") {
       return null;
     }
@@ -28,9 +28,9 @@ export function useAudio() {
     }
 
     return contextRef.current;
-  };
+  }
 
-  const playSound = async (eventName) => {
+  async function playSound(eventName) {
     if (muted || !SOUND_MAP[eventName]) {
       return;
     }
@@ -48,18 +48,17 @@ export function useAudio() {
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, now);
     gainNode.gain.setValueAtTime(0.0001, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.16, now + 0.01);
     gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration / 1000);
-
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     oscillator.start(now);
     oscillator.stop(now + duration / 1000);
-  };
+  }
 
-  const toggleMute = () => {
+  function toggleMute() {
     setMuted((previous) => !previous);
-  };
+  }
 
   return {
     muted,

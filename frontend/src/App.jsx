@@ -1,94 +1,115 @@
-import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import "./App.css";
-import { CodeEditor } from "./components/CodeEditor";
-import { MentorChat } from "./components/MentorChat";
-import { StepPlayer } from "./components/StepPlayer";
-import { VisualCanvas } from "./components/VisualCanvas";
-import { useAudio } from "./hooks/useAudio";
-import { usePlayer } from "./hooks/usePlayer";
-import { useTracer } from "./hooks/useTracer";
+import { AchievementToast } from "./components/AchievementToast";
+import { Layout } from "./components/Layout";
+import { useAchievements } from "./hooks/useAchievements";
+import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
+import { ProfileProvider } from "./hooks/useProfile.jsx";
+import { AuthPage } from "./pages/AuthPage";
+import { LearnPage } from "./pages/LearnPage";
+import { MentorPage } from "./pages/MentorPage";
+import { PlaygroundPage } from "./pages/PlaygroundPage";
+import { ProfilePage } from "./pages/ProfilePage";
 
-const INITIAL_CODE = `arr = [5, 3, 1, 4, 2]
-for i in range(len(arr)):
-    for j in range(0, len(arr) - i - 1):
-        if arr[j] > arr[j + 1]:
-            arr[j], arr[j + 1] = arr[j + 1], arr[j]`;
 
-export default function App() {
-  const [code, setCode] = useState(INITIAL_CODE);
-  const [arrayVar, setArrayVar] = useState("arr");
-  const { traceData, isLoading, requestError, analyzeCode } = useTracer();
-  const { currentStep, isPlaying, play, pause, next, prev, progress } = usePlayer(traceData.total_steps);
-  const { muted, toggleMute, unlockAudio, playSound } = useAudio();
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
-  const currentTraceStep =
-    traceData.steps.length > 0 ? traceData.steps[Math.min(currentStep, traceData.steps.length - 1)] : null;
+  if (loading) {
+    return <div className="page-loading">Loading your workspace...</div>;
+  }
 
-  useEffect(() => {
-    if (!currentTraceStep) {
-      return;
-    }
-    playSound(currentTraceStep.event);
-  }, [currentStep, currentTraceStep, playSound]);
+  if (!user) {
+    return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+  }
 
-  const handleRun = async () => {
-    await unlockAudio();
-    await analyzeCode(code, arrayVar);
-  };
+  return children;
+}
+
+
+function AppRoutes() {
+  const achievementUi = useAchievements();
 
   return (
-    <div className="app-shell">
-      <header className="hero">
-        <div>
-          <div className="eyebrow">AlgoRythm MVP</div>
-          <h1>Trace Python algorithms as motion, sound, and guided questions.</h1>
-          <p>
-            Paste student code, generate an execution trace, animate each array mutation, and ask the mentor for
-            Socratic hints when something breaks.
-          </p>
-        </div>
-        <button className="secondary-button" type="button" onClick={toggleMute}>
-          {muted ? "Unmute audio" : "Mute audio"}
-        </button>
-      </header>
+    <>
+      <Routes>
+        <Route path="/" element={<Navigate to="/learn" replace />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route
+          path="/learn"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <LearnPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/learn/:taskId"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PlaygroundPage achievementUi={achievementUi} />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/playground"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PlaygroundPage achievementUi={achievementUi} />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ProfilePage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mentor"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <MentorPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/learn" replace />} />
+      </Routes>
 
-      {requestError ? <div className="status-banner is-error">{requestError}</div> : null}
-      {traceData.error?.type === "timeout" ? (
-        <div className="status-banner is-error">{traceData.error.message}</div>
-      ) : null}
-      {traceData.truncated ? (
-        <div className="status-banner">Trace stopped after 300 recorded steps.</div>
-      ) : null}
-
-      <main className="layout-grid">
-        <div className="layout-column">
-          <CodeEditor
-            code={code}
-            arrayVar={arrayVar}
-            errorLine={traceData.error?.line || null}
-            isLoading={isLoading}
-            onCodeChange={setCode}
-            onArrayVarChange={setArrayVar}
-            onRun={handleRun}
+      <div className="toast-stack">
+        {achievementUi.toasts.map((toast) => (
+          <AchievementToast
+            key={toast.toastId}
+            toast={toast}
+            onDone={() => achievementUi.removeToast(toast.toastId)}
           />
-          <StepPlayer
-            currentStep={currentStep}
-            totalSteps={traceData.total_steps}
-            isPlaying={isPlaying}
-            progress={progress}
-            onPrev={prev}
-            onPlay={play}
-            onPause={pause}
-            onNext={next}
-          />
-        </div>
+        ))}
+      </div>
+    </>
+  );
+}
 
-        <div className="layout-column">
-          <VisualCanvas step={currentTraceStep} totalSteps={traceData.total_steps} />
-          <MentorChat code={code} traceError={traceData.error} steps={traceData.steps} />
-        </div>
-      </main>
-    </div>
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <ProfileProvider>
+        <AppRoutes />
+      </ProfileProvider>
+    </AuthProvider>
   );
 }

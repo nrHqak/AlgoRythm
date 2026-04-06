@@ -1,130 +1,68 @@
-import { useEffect, useRef, useState } from "react";
-
-const getBaseUrl = () => (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
-
-function trimMessages(messages) {
-  return messages.slice(-10);
-}
-
-export function MentorChat({ code, traceError, steps }) {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const lastAutoHintKey = useRef("");
-
-  const sendMessage = async (userQuestion, isAutomatic = false) => {
-    if (!traceError) {
-      return;
-    }
-
-    if (!isAutomatic && !userQuestion.trim()) {
-      return;
-    }
-
-    if (!isAutomatic) {
-      setMessages((previous) => trimMessages([...previous, { role: "user", text: userQuestion.trim() }]));
-      setInput("");
-    }
-
-    setLoading(true);
-
-    try {
-      const traceContext = JSON.stringify(steps.slice(-3), null, 2);
-      const response = await fetch(`${getBaseUrl()}/mentor`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          code,
-          error: `${traceError.type}: ${traceError.message}`,
-          error_line: traceError.line,
-          trace_context: traceContext,
-          user_question: userQuestion,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Mentor request failed with status ${response.status}.`);
-      }
-
-      const data = await response.json();
-      setMessages((previous) =>
-        trimMessages([
-          ...previous,
-          { role: "mentor", text: data.message || "What clue do you notice near the failing line?" },
-        ])
-      );
-    } catch (error) {
-      setMessages((previous) =>
-        trimMessages([
-          ...previous,
-          {
-            role: "mentor",
-            text: `Look at line ${traceError.line}. What is the value of the index at this point?`,
-          },
-        ])
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!traceError) {
-      return;
-    }
-
-    const key = `${traceError.type}:${traceError.line}:${traceError.message}`;
-    if (lastAutoHintKey.current === key) {
-      return;
-    }
-
-    lastAutoHintKey.current = key;
-    sendMessage("", true);
-  }, [traceError, steps, code]);
-
+export function MentorChat({
+  title = "AI Mentor",
+  subtitle = "Ask conceptual questions or get hints about the current trace.",
+  messages,
+  loading,
+  inputValue,
+  onInputChange,
+  onSend,
+  disabled,
+  multiline = true,
+  note,
+}) {
   return (
-    <section className="panel mentor-panel">
-      <div className="panel__header">
+    <section className="panel mentor-chat">
+      <div className="panel-header">
         <div>
-          <h2>AI Mentor</h2>
-          <p>Hints stay Socratic and focused on the failing step.</p>
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
         </div>
       </div>
 
+      {note ? <div className="chat-note">{note}</div> : null}
+
       <div className="chat-list">
         {messages.length === 0 ? (
-          <div className="empty-chat">An error will trigger a mentor hint here.</div>
+          <div className="empty-state">Your mentor conversation will appear here.</div>
         ) : (
           messages.map((message, index) => (
             <div
-              key={`${message.role}-${index}-${message.text}`}
+              key={`${message.role}-${index}-${message.message || message.text}`}
               className={`chat-bubble ${message.role === "mentor" ? "is-mentor" : "is-user"}`}
             >
-              {message.text}
+              {message.message || message.text}
             </div>
           ))
         )}
-        {loading ? <div className="chat-loading">Mentor is thinking...</div> : null}
+        {loading ? <div className="chat-note">Mentor is thinking...</div> : null}
       </div>
 
       <form
         className="chat-form"
         onSubmit={(event) => {
           event.preventDefault();
-          sendMessage(input, false);
+          onSend();
         }}
       >
-        <input
-          className="text-input"
-          type="text"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask a follow-up question"
-          disabled={!traceError || loading}
-        />
-        <button className="primary-button" type="submit" disabled={!traceError || loading || !input.trim()}>
+        <div className="field">
+          {multiline ? (
+            <textarea
+              value={inputValue}
+              onChange={(event) => onInputChange(event.target.value)}
+              placeholder="Ask about the current step, algorithm ideas, or debugging patterns"
+              disabled={disabled || loading}
+            />
+          ) : (
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(event) => onInputChange(event.target.value)}
+              placeholder="Ask the mentor"
+              disabled={disabled || loading}
+            />
+          )}
+        </div>
+        <button className="primary-button" type="submit" disabled={disabled || loading || !inputValue.trim()}>
           Send
         </button>
       </form>

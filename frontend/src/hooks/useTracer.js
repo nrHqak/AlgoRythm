@@ -1,6 +1,9 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
-const getBaseUrl = () => (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+function getApiUrl(path) {
+  const base = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+  return `${base}${path}`;
+}
 
 export function useTracer() {
   const [traceData, setTraceData] = useState({
@@ -12,16 +15,14 @@ export function useTracer() {
   const [isLoading, setIsLoading] = useState(false);
   const [requestError, setRequestError] = useState("");
 
-  const analyzeCode = useCallback(async (code, arrayVar) => {
+  async function analyzeCode(code, arrayVar) {
     setIsLoading(true);
     setRequestError("");
 
     try {
-      const response = await fetch(`${getBaseUrl()}/analyze`, {
+      const response = await fetch(getApiUrl("/analyze"), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, array_var: arrayVar }),
       });
 
@@ -33,30 +34,30 @@ export function useTracer() {
       setTraceData({
         steps: Array.isArray(data.steps) ? data.steps : [],
         error: data.error || null,
-        total_steps: typeof data.total_steps === "number" ? data.total_steps : 0,
+        total_steps: data.total_steps || 0,
         truncated: Boolean(data.truncated),
       });
       return data;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to analyze code.";
-      setTraceData({
-        steps: [],
-        error: null,
-        total_steps: 0,
-        truncated: false,
-      });
+      setTraceData({ steps: [], error: null, total_steps: 0, truncated: false });
       setRequestError(message);
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }
+
+  function resetTrace() {
+    setTraceData({ steps: [], error: null, total_steps: 0, truncated: false });
+    setRequestError("");
+  }
 
   return {
     traceData,
     isLoading,
     requestError,
     analyzeCode,
-    setTraceData,
+    resetTrace,
   };
 }

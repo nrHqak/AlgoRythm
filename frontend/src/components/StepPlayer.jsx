@@ -8,20 +8,20 @@ export function StepPlayer({
   onPause,
   onNext,
 }) {
-  const isAtStart = currentStep <= 0;
-  const isAtEnd = totalSteps === 0 || currentStep >= totalSteps - 1;
+  const atStart = currentStep <= 0;
+  const atEnd = totalSteps === 0 || currentStep >= totalSteps - 1;
 
   return (
     <section className="panel">
-      <div className="panel__header">
+      <div className="panel-header">
         <div>
           <h2>Player</h2>
-          <p>Move through the trace manually or let it animate.</p>
+          <p>Step through the trace manually or let the animation run.</p>
         </div>
       </div>
 
       <div className="player-controls">
-        <button className="secondary-button" type="button" onClick={onPrev} disabled={isAtStart}>
+        <button className="secondary-button" type="button" onClick={onPrev} disabled={atStart}>
           ⏮ Prev
         </button>
         {isPlaying ? (
@@ -29,20 +29,20 @@ export function StepPlayer({
             ⏸ Pause
           </button>
         ) : (
-          <button className="primary-button" type="button" onClick={onPlay} disabled={isAtEnd}>
+          <button className="primary-button" type="button" onClick={onPlay} disabled={atEnd}>
             ▶ Play
           </button>
         )}
-        <button className="secondary-button" type="button" onClick={onNext} disabled={isAtEnd}>
+        <button className="secondary-button" type="button" onClick={onNext} disabled={atEnd}>
           ⏭ Next
         </button>
       </div>
 
-      <div className="progress-track" aria-label="Playback progress">
+      <div className="progress-track" aria-label="Trace progress">
         <div className="progress-fill" style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="player-meta">
+      <div className="progress-copy">
         Step {totalSteps > 0 ? currentStep + 1 : 0} of {totalSteps}
       </div>
     </section>

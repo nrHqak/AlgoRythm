@@ -10,11 +10,11 @@ export function VisualCanvas({ step, totalSteps }) {
 
   if (!values.length) {
     return (
-      <section className="panel visual-panel">
-        <div className="panel__header">
+      <section className="panel">
+        <div className="panel-header">
           <div>
-            <h2>Visualization</h2>
-            <p>Trace output appears here as animated bars.</p>
+            <h2>Visualizer</h2>
+            <p>The current array state will appear here as animated bars.</p>
           </div>
         </div>
         <div className="empty-state">Array is empty</div>
@@ -23,55 +23,42 @@ export function VisualCanvas({ step, totalSteps }) {
     );
   }
 
-  const maxValue = Math.max(...values.map((value) => Math.abs(Number(value) || 0)), 1);
-  const chartHeight = 240;
+  const width = 660;
+  const height = 260;
   const gap = 10;
-  const width = 640;
+  const maxValue = Math.max(...values.map((value) => Math.abs(Number(value) || 0)), 1);
   const barWidth = Math.max((width - gap * (values.length - 1)) / values.length, 18);
-  const eventName = step?.event || "step";
   const highlightSet = new Set(
     Array.isArray(step?.highlights) && step.highlights.length > 0
       ? step.highlights
-      : eventName === "error"
+      : step?.event === "error"
         ? values.map((_, index) => index)
         : []
   );
 
   return (
-    <section className="panel visual-panel">
-      <div className="panel__header">
+    <section className="panel">
+      <div className="panel-header">
         <div>
-          <h2>Visualization</h2>
-          <p>Each step updates the bars with event-specific highlights.</p>
+          <h2>Visualizer</h2>
+          <p>Event colors reflect comparisons, swaps, and failures in the trace.</p>
         </div>
       </div>
 
       <div className="chart-shell">
-        <svg className="chart-svg" viewBox={`0 0 ${width} ${chartHeight + 40}`} preserveAspectRatio="none">
+        <svg className="chart-svg" viewBox={`0 0 ${width} ${height + 42}`} preserveAspectRatio="none">
           {values.map((value, index) => {
             const normalized = Math.abs(Number(value) || 0) / maxValue;
-            const rawHeight = Number(value) * 4;
-            const height = Math.max(
-              8,
-              Math.min(chartHeight - 20, rawHeight > 0 ? rawHeight : normalized * (chartHeight - 20))
-            );
+            const scaledHeight = Math.max(8, Math.min(height - 20, normalized * (height - 20)));
             const x = index * (barWidth + gap);
-            const y = chartHeight - height;
+            const y = height - scaledHeight;
             const isHighlighted = highlightSet.has(index);
-            const fill = isHighlighted ? EVENT_COLORS[eventName] || EVENT_COLORS.step : "#888780";
+            const fill = isHighlighted ? EVENT_COLORS[step?.event || "step"] : "#888780";
 
             return (
               <g key={`${index}-${value}`}>
-                <rect
-                  className="chart-bar"
-                  x={x}
-                  y={y}
-                  width={barWidth}
-                  height={height}
-                  rx="8"
-                  fill={fill}
-                />
-                <text className="chart-value" x={x + barWidth / 2} y={chartHeight + 20} textAnchor="middle">
+                <rect className="chart-bar" x={x} y={y} width={barWidth} height={scaledHeight} rx="8" fill={fill} />
+                <text className="chart-value" x={x + barWidth / 2} y={height + 24} textAnchor="middle">
                   {value}
                 </text>
               </g>
@@ -81,7 +68,7 @@ export function VisualCanvas({ step, totalSteps }) {
       </div>
 
       <div className="step-label">
-        Step {(step?.step ?? 0) + 1} / {totalSteps}
+        Step {totalSteps > 0 ? (step?.step ?? 0) + 1 : 0} / {totalSteps}
       </div>
     </section>
   );
