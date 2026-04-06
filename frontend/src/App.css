@@ -1,0 +1,397 @@
+:root {
+  color-scheme: light;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1c1914;
+  background:
+    radial-gradient(circle at top left, rgba(239, 159, 39, 0.2), transparent 30%),
+    radial-gradient(circle at top right, rgba(29, 158, 117, 0.16), transparent 28%),
+    linear-gradient(180deg, #f7f3e8 0%, #efe8da 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: rgba(255, 252, 245, 0.88);
+  border: 1px solid rgba(28, 25, 20, 0.08);
+  box-shadow: 0 20px 60px rgba(80, 63, 38, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.hero h1 {
+  margin: 8px 0 12px;
+  max-width: 860px;
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.hero p,
+.panel__header p,
+.field span,
+.player-meta,
+.step-label,
+.editor-footnote,
+.status-banner,
+.empty-chat,
+.empty-state {
+  color: #5d584e;
+}
+
+.eyebrow {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(239, 159, 39, 0.16);
+  color: #8c5a08;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.layout-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel {
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(255, 250, 241, 0.84);
+  border: 1px solid rgba(28, 25, 20, 0.08);
+  box-shadow: 0 18px 40px rgba(80, 63, 38, 0.08);
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.panel__header h2 {
+  margin: 0 0 4px;
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  font-size: 1.25rem;
+}
+
+.panel__header p {
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.field span {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.text-input,
+.code-textarea {
+  width: 100%;
+  border: 1px solid rgba(28, 25, 20, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #1c1914;
+}
+
+.text-input {
+  padding: 12px 14px;
+}
+
+.primary-button,
+.secondary-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.primary-button {
+  background: #1c1914;
+  color: #fffaf1;
+}
+
+.secondary-button {
+  background: rgba(28, 25, 20, 0.08);
+  color: #1c1914;
+}
+
+.editor-shell {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  border: 1px solid rgba(28, 25, 20, 0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fffdf7;
+}
+
+.editor-lines {
+  padding: 14px 0;
+  background: rgba(28, 25, 20, 0.04);
+  border-right: 1px solid rgba(28, 25, 20, 0.08);
+}
+
+.editor-line-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8477;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.92rem;
+}
+
+.editor-line-number.is-error {
+  background: rgba(226, 75, 74, 0.18);
+  color: #a72827;
+}
+
+.editor-surface {
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-error-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: rgba(226, 75, 74, 0.14);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.code-textarea {
+  position: relative;
+  z-index: 1;
+  min-height: 360px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 0;
+  resize: vertical;
+  background: transparent;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.95rem;
+  line-height: 24px;
+}
+
+.code-textarea:focus,
+.text-input:focus {
+  outline: 2px solid rgba(29, 158, 117, 0.28);
+  outline-offset: 0;
+}
+
+.editor-footnote {
+  margin-top: 14px;
+}
+
+.visual-panel {
+  min-height: 390px;
+}
+
+.chart-shell {
+  height: 300px;
+}
+
+.chart-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-bar {
+  transition: height 0.35s ease, y 0.35s ease, fill 0.35s ease;
+}
+
+.chart-value {
+  fill: #5d584e;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14px;
+}
+
+.step-label {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.empty-state,
+.empty-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  border: 1px dashed rgba(28, 25, 20, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.player-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.progress-track {
+  margin-top: 18px;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(28, 25, 20, 0.08);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ef9f27 0%, #1d9e75 100%);
+  transition: width 0.3s ease;
+}
+
+.player-meta {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.mentor-panel {
+  min-height: 340px;
+}
+
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.chat-bubble {
+  max-width: 85%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  line-height: 1.45;
+}
+
+.chat-bubble.is-user {
+  align-self: flex-end;
+  background: rgba(28, 25, 20, 0.08);
+}
+
+.chat-bubble.is-mentor {
+  align-self: flex-start;
+  background: rgba(239, 159, 39, 0.18);
+}
+
+.chat-loading {
+  color: #5d584e;
+  font-style: italic;
+}
+
+.chat-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.status-banner {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(28, 25, 20, 0.06);
+}
+
+.status-banner.is-error {
+  background: rgba(226, 75, 74, 0.12);
+  color: #8f2322;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .layout-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .hero {
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    padding: 20px 14px 32px;
+  }
+
+  .hero,
+  .panel {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .chart-shell {
+    height: 260px;
+  }
+
+  .chat-form {
+    grid-template-columns: 1fr;
+  }
+}
