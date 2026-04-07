@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { CodeEditor } from "../components/CodeEditor";
+import { ComplexityChart } from "../components/ComplexityChart";
 import { MentorChat } from "../components/MentorChat";
 import { StepPlayer } from "../components/StepPlayer";
 import { VisualCanvas } from "../components/VisualCanvas";
@@ -57,21 +58,19 @@ function getApiUrl(path) {
   return `${base}${path}`;
 }
 
-function detectAlgorithmType(code, task) {
-  if (task?.expected_algorithm) {
-    return task.expected_algorithm;
-  }
-
-  const normalized = code.toLowerCase();
-  if (normalized.includes("bubble")) return "bubble_sort";
-  if (normalized.includes("binary")) return "binary_search";
-  if (normalized.includes("insertion")) return "insertion_sort";
-  if (normalized.includes("target")) return "search";
-  return "custom";
-}
-
 function summarizeTraceSteps(steps, count = 5) {
   return JSON.stringify((steps || []).slice(-count), null, 2);
+}
+
+function formatAlgorithmLabel(value) {
+  if (!value) {
+    return "";
+  }
+
+  return value
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 export function PlaygroundPage({ achievementUi }) {
@@ -99,6 +98,8 @@ export function PlaygroundPage({ achievementUi }) {
   const [sessionId, setSessionId] = useState(null);
   const [proactiveTriggered, setProactiveTriggered] = useState(false);
   const [mentorMessageCount, setMentorMessageCount] = useState(0);
+  const [complexityData, setComplexityData] = useState(null);
+  const [complexityLoading, setComplexityLoading] = useState(false);
   const currentTraceStep =
     traceData.steps.length > 0 ? traceData.steps[Math.min(currentStep, traceData.steps.length - 1)] : null;
 
@@ -129,6 +130,8 @@ export function PlaygroundPage({ achievementUi }) {
       setSelectedExample("task");
       setArrayVar("arr");
       resetTrace();
+      setComplexityData(null);
+      setComplexityLoading(false);
       setMentorMessages([]);
       setMentorMessageCount(0);
       setProactiveTriggered(false);
@@ -141,6 +144,8 @@ export function PlaygroundPage({ achievementUi }) {
       setCode(selected.code);
       setArrayVar(selected.arrayVar);
       resetTrace();
+      setComplexityData(null);
+      setComplexityLoading(false);
       setMentorMessages([]);
       setMentorMessageCount(0);
       setProactiveTriggered(false);
@@ -340,7 +345,7 @@ export function PlaygroundPage({ achievementUi }) {
         trace: result.steps,
         error: result.error,
         total_steps: result.total_steps,
-        algorithm_type: detectAlgorithmType(code, task),
+        algorithm_type: result.algorithm_type || task?.expected_algorithm || "custom",
         solved: !result.error,
         xp_earned: xpEarned,
         task_id: task?.id || null,
@@ -357,11 +362,51 @@ export function PlaygroundPage({ achievementUi }) {
     return response.json();
   }
 
+  async function fetchComplexityAnalysis(sourceCode, sourceArrayVar) {
+    setComplexityLoading(true);
+
+    try {
+      const response = await fetch(getApiUrl("/complexity"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: sourceCode,
+          array_var: sourceArrayVar,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Complexity request failed with status ${response.status}.`);
+      }
+
+      const data = await response.json();
+      setComplexityData(data.error ? null : data);
+    } catch {
+      setComplexityData(null);
+    } finally {
+      setComplexityLoading(false);
+    }
+  }
+
+  function handleCodeChange(value) {
+    setCode(value);
+    setComplexityData(null);
+    setComplexityLoading(false);
+  }
+
+  function handleArrayVarChange(value) {
+    setArrayVar(value);
+    setComplexityData(null);
+    setComplexityLoading(false);
+  }
+
   async function handleRun() {
     await unlockAudio();
     setSaveFeedback("");
     setSaveError("");
     setXpNotice("");
+    setComplexityData(null);
+    setComplexityLoading(false);
     setProactiveTriggered(false);
 
     const result = await analyzeCode(code, arrayVar);
@@ -383,6 +428,10 @@ export function PlaygroundPage({ achievementUi }) {
         if (taskContext.attempts <= 3) {
           xpEarned += 30;
         }
+      }
+
+      if (solved) {
+        fetchComplexityAnalysis(code, arrayVar);
       }
 
       await saveTaskProgress({ solved, steps, xpEarned, context: taskContext });
@@ -435,6 +484,11 @@ export function PlaygroundPage({ achievementUi }) {
       {traceData.truncated ? <div className="status-banner">{t("playground.traceStopped")}</div> : null}
       {saveFeedback ? <div className="status-banner is-success">{saveFeedback}</div> : null}
       {saveError ? <div className="status-banner is-error">{saveError}</div> : null}
+      {traceData.algorithm_type ? (
+        <div className="status-banner is-success">
+          {`${formatAlgorithmLabel(traceData.algorithm_type)} detected ✓`}
+        </div>
+      ) : null}
       {traceData.error?.type === "timeout" ? (
         <div className="status-banner is-error">{traceData.error.message}</div>
       ) : null}
@@ -447,8 +501,8 @@ export function PlaygroundPage({ achievementUi }) {
             arrayVar={arrayVar}
             errorLine={traceData.error?.line || null}
             isLoading={isLoading}
-            onCodeChange={setCode}
-            onArrayVarChange={setArrayVar}
+            onCodeChange={handleCodeChange}
+            onArrayVarChange={handleArrayVarChange}
             onRun={handleRun}
             examples={examples}
             selectedExample={selectedExample}
@@ -469,6 +523,7 @@ export function PlaygroundPage({ achievementUi }) {
             onPause={pause}
             onNext={next}
           />
+          <ComplexityChart complexityData={complexityData} isLoading={complexityLoading} />
           <MentorChat
             messages={mentorMessages}
             loading={mentorLoading}

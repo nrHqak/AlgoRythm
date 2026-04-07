@@ -170,3 +170,9 @@ class AlgorithmTracer:
         if isinstance(value, dict):
             return {str(key): self._sanitize_value(val) for key, val in value.items()}
         return repr(value)
+
+
+def trace_code(code: str, array_var: str, max_steps: int = 300) -> dict[str, Any]:
+    from sandbox import execute_code
+
+    return execute_code(code, array_var, max_steps=max_steps)

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { AlgorithmDNA } from "../components/AlgorithmDNA";
 import { LevelBadge } from "../components/LevelBadge";
 import { StreakBadge } from "../components/StreakBadge";
 import { XPBar } from "../components/XPBar";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useDNA } from "../hooks/useDNA";
 import { useLocale } from "../hooks/useLocale.jsx";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { supabase } from "../lib/supabase";
@@ -60,6 +62,7 @@ export function ProfilePage() {
   const { user } = useAuth();
   const { t } = useLocale();
   const { profile, levelMeta } = useProfile();
+  const { dna, loading: dnaLoading } = useDNA(user?.id);
   const [allAchievements, setAllAchievements] = useState([]);
   const [earnedAchievements, setEarnedAchievements] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -177,6 +180,8 @@ export function ProfilePage() {
       </section>
 
       {error ? <div className="status-banner is-error">{error}</div> : null}
+
+      <AlgorithmDNA dna={dna} loading={dnaLoading} />
 
       <section className="stats-grid">
         <article className="stat-card">

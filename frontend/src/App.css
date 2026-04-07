@@ -820,6 +820,183 @@ img {
   gap: 20px;
 }
 
+.complexity-panel,
+.dna-panel {
+  overflow: hidden;
+}
+
+.complexity-summary {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.complexity-summary strong {
+  font-size: 2rem;
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+}
+
+.complexity-summary span,
+.complexity-footer p,
+.dna-tip {
+  color: var(--text-muted);
+}
+
+.complexity-chart-shell {
+  padding: 12px 6px 0;
+}
+
+.complexity-chart-svg {
+  width: 100%;
+  height: 180px;
+  overflow: visible;
+}
+
+.complexity-axis,
+.complexity-grid-line {
+  stroke: rgba(243, 255, 249, 0.14);
+  stroke-width: 1;
+}
+
+.complexity-grid-line {
+  stroke-dasharray: 4 6;
+}
+
+.complexity-tick {
+  fill: rgba(243, 255, 249, 0.58);
+  font-size: 10px;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.complexity-line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.complexity-line.is-visible {
+  stroke-dashoffset: 0;
+}
+
+.complexity-footer {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.complexity-skeleton,
+.dna-skeleton {
+  display: grid;
+  gap: 14px;
+}
+
+.skeleton-title,
+.skeleton-chart,
+.skeleton-radar {
+  border-radius: 18px;
+  background: linear-gradient(
+    90deg,
+    rgba(243, 255, 249, 0.06) 0%,
+    rgba(243, 255, 249, 0.12) 50%,
+    rgba(243, 255, 249, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.skeleton-title {
+  width: 120px;
+  height: 28px;
+}
+
+.skeleton-chart {
+  width: 100%;
+  height: 180px;
+}
+
+.complexity-empty {
+  min-height: 180px;
+}
+
+.dna-skeleton {
+  min-height: 360px;
+}
+
+.skeleton-radar {
+  width: 100%;
+  height: 320px;
+}
+
+.dna-empty,
+.dna-visual {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+
+.dna-chart-svg {
+  width: min(100%, 420px);
+  height: auto;
+}
+
+.dna-chart-svg--muted {
+  opacity: 0.45;
+}
+
+.dna-grid-ring {
+  fill: rgba(243, 255, 249, 0.04);
+  stroke: rgba(243, 255, 249, 0.15);
+  stroke-width: 1;
+}
+
+.dna-axis-line {
+  stroke: rgba(243, 255, 249, 0.3);
+  stroke-width: 1;
+}
+
+.dna-axis-label {
+  fill: rgba(243, 255, 249, 0.74);
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+.dna-polygon {
+  fill: rgba(83, 74, 183, 0.2);
+  stroke: #534AB7;
+  stroke-width: 2;
+  transition: all 0.8s ease-out;
+}
+
+.dna-point {
+  fill: #534AB7;
+  transition: all 0.8s ease-out;
+}
+
+.dna-insights {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.dna-pill--weak {
+  background: rgba(226, 75, 74, 0.16);
+  color: #ffd2d2;
+}
+
+.dna-pill--strong {
+  background: rgba(99, 153, 34, 0.16);
+  color: #dff9ba;
+}
+
+.dna-placeholder-copy {
+  min-height: 120px;
+}
+
 .task-banner {
   margin-bottom: 18px;
   padding: 16px 18px;
@@ -1361,6 +1538,15 @@ img {
   }
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 

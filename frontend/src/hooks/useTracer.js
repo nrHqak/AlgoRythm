@@ -11,6 +11,8 @@ export function useTracer() {
     error: null,
     total_steps: 0,
     truncated: false,
+    algorithm_type: "",
+    algorithm_confidence: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [requestError, setRequestError] = useState("");
@@ -36,11 +38,20 @@ export function useTracer() {
         error: data.error || null,
         total_steps: data.total_steps || 0,
         truncated: Boolean(data.truncated),
+        algorithm_type: data.algorithm_type || "",
+        algorithm_confidence: Number(data.algorithm_confidence || 0),
       });
       return data;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to analyze code.";
-      setTraceData({ steps: [], error: null, total_steps: 0, truncated: false });
+      setTraceData({
+        steps: [],
+        error: null,
+        total_steps: 0,
+        truncated: false,
+        algorithm_type: "",
+        algorithm_confidence: 0,
+      });
       setRequestError(message);
       return null;
     } finally {
@@ -49,7 +60,14 @@ export function useTracer() {
   }
 
   function resetTrace() {
-    setTraceData({ steps: [], error: null, total_steps: 0, truncated: false });
+    setTraceData({
+      steps: [],
+      error: null,
+      total_steps: 0,
+      truncated: false,
+      algorithm_type: "",
+      algorithm_confidence: 0,
+    });
     setRequestError("");
   }
 
