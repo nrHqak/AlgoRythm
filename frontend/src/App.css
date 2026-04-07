@@ -728,6 +728,191 @@ img {
   gap: 18px;
 }
 
+.ritual-grid {
+  display: grid;
+  grid-template-columns: 1.06fr 0.94fr;
+  gap: 20px;
+}
+
+.ritual-card {
+  min-height: 330px;
+}
+
+.ritual-pill {
+  background: rgba(123, 255, 230, 0.12);
+  color: #cbfff4;
+}
+
+.ritual-skeleton {
+  width: 100%;
+  height: 260px;
+  border-radius: 24px;
+  background: linear-gradient(
+    90deg,
+    rgba(243, 255, 249, 0.06) 0%,
+    rgba(243, 255, 249, 0.13) 50%,
+    rgba(243, 255, 249, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.pet-stage-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.pet-avatar {
+  min-height: 190px;
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(243, 255, 249, 0.1);
+  background:
+    radial-gradient(circle at top, rgba(123, 255, 230, 0.24), transparent 34%),
+    linear-gradient(180deg, rgba(13, 44, 39, 0.88), rgba(8, 28, 25, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.pet-avatar span {
+  font-size: clamp(1.3rem, 3vw, 2.2rem);
+  text-align: center;
+  line-height: 1.25;
+}
+
+.pet-avatar.is-spark {
+  background:
+    radial-gradient(circle at top, rgba(239, 177, 77, 0.24), transparent 34%),
+    linear-gradient(180deg, rgba(27, 53, 38, 0.92), rgba(8, 28, 25, 0.95));
+}
+
+.pet-avatar.is-sprite {
+  background:
+    radial-gradient(circle at top, rgba(111, 255, 234, 0.28), transparent 34%),
+    linear-gradient(180deg, rgba(16, 58, 49, 0.92), rgba(8, 28, 25, 0.95));
+}
+
+.pet-avatar.is-guardian {
+  background:
+    radial-gradient(circle at top, rgba(122, 179, 255, 0.28), transparent 34%),
+    linear-gradient(180deg, rgba(18, 44, 69, 0.92), rgba(8, 28, 25, 0.95));
+}
+
+.pet-avatar.is-legend {
+  background:
+    radial-gradient(circle at top, rgba(193, 145, 255, 0.32), transparent 34%),
+    linear-gradient(180deg, rgba(37, 27, 73, 0.92), rgba(8, 28, 25, 0.95));
+}
+
+.pet-copy,
+.pet-stats,
+.quiz-options,
+.quiz-complete-state {
+  display: grid;
+  gap: 12px;
+}
+
+.pet-name-row,
+.ritual-progress-copy {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.mini-track {
+  margin-top: 8px;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(243, 255, 249, 0.08);
+}
+
+.mini-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.mini-fill.is-mood {
+  background: linear-gradient(90deg, #ffd27b, #efb14d);
+}
+
+.mini-fill.is-energy {
+  background: linear-gradient(90deg, #7bffe6, #1d9e75);
+}
+
+.mini-fill.is-hunger {
+  background: linear-gradient(90deg, #7ecf8a, #639922);
+}
+
+.pet-footer {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(243, 255, 249, 0.1);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(243, 255, 249, 0.07);
+}
+
+.quiz-feedback.is-correct {
+  background: rgba(99, 153, 34, 0.14);
+  color: #e6ffc8;
+}
+
+.quiz-feedback.is-soft {
+  background: rgba(239, 177, 77, 0.13);
+  color: #ffe0a7;
+}
+
+.quiz-question-card {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(243, 255, 249, 0.05);
+  border: 1px solid rgba(243, 255, 249, 0.08);
+}
+
+.quiz-question-card h3 {
+  margin: 8px 0 0;
+  font-size: 1.18rem;
+}
+
+.quiz-option {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(243, 255, 249, 0.1);
+  background: rgba(243, 255, 249, 0.05);
+  color: var(--text-strong);
+  text-align: left;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.quiz-option:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(123, 255, 230, 0.24);
+  background: rgba(123, 255, 230, 0.08);
+}
+
+.quiz-option:disabled {
+  opacity: 0.72;
+  cursor: default;
+}
+
+.quiz-complete-state {
+  min-height: 180px;
+  place-content: center;
+}
+
 .learn-column {
   display: grid;
   gap: 14px;
@@ -1556,6 +1741,7 @@ img {
   .playground-layout,
   .mentor-layout,
   .dashboard-grid,
+  .ritual-grid,
   .landing-hero,
   .landing-features,
   .landing-grid {
@@ -1608,7 +1794,8 @@ img {
 
   .showcase-metrics,
   .dashboard-stats,
-  .context-grid {
+  .context-grid,
+  .pet-stage-grid {
     grid-template-columns: 1fr;
   }
 }

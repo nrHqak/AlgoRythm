@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { AlgorithmPet } from "../components/AlgorithmPet";
+import { DailyQuizCard } from "../components/DailyQuizCard";
 import { TaskCard } from "../components/TaskCard";
 import { StreakBadge } from "../components/StreakBadge";
 import { XPBar } from "../components/XPBar";
 import { useAuth } from "../hooks/useAuth.jsx";
+import { useDailyQuiz } from "../hooks/useDailyQuiz";
 import { useLocale } from "../hooks/useLocale.jsx";
+import { usePet } from "../hooks/usePet";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { supabase } from "../lib/supabase";
 
@@ -40,13 +44,25 @@ function buildStatusMap(tasks, progressRows) {
 
 export function LearnPage() {
   const { user } = useAuth();
-  const { t } = useLocale();
-  const { profile } = useProfile();
+  const { locale, t } = useLocale();
+  const { profile, refreshProfile } = useProfile();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [progressRows, setProgressRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [ritualNotice, setRitualNotice] = useState("");
+  const [feedBusy, setFeedBusy] = useState(false);
+  const { pet, loading: petLoading, error: petError, feedPet, addPetProgress } = usePet(user?.id, profile?.xp || 0);
+  const quiz = useDailyQuiz(user?.id, locale, async (reward) => {
+    await addPetProgress(reward.correct ? 12 : 4, reward.correct ? 8 : 2, reward.correct ? 4 : 1);
+    await refreshProfile();
+    setRitualNotice(
+      t("learn.quizReward")
+        .replace("{xp}", String(reward.xpEarned))
+        .replace("{status}", reward.correct ? t("learn.quizCorrectWord") : t("learn.quizPracticeWord"))
+    );
+  });
 
   useEffect(() => {
     async function loadData() {
@@ -82,6 +98,26 @@ export function LearnPage() {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    if (!ritualNotice) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => setRitualNotice(""), 2600);
+    return () => window.clearTimeout(timer);
+  }, [ritualNotice]);
+
+  async function handleFeedPet() {
+    setFeedBusy(true);
+    const result = await feedPet();
+    if (result?.ok) {
+      setRitualNotice(t("learn.feedSuccess"));
+    } else if (result?.alreadyFed) {
+      setRitualNotice(t("learn.feedDone"));
+    }
+    setFeedBusy(false);
+  }
+
   const statusMap = buildStatusMap(tasks, progressRows);
   const progressByTask = new Map(progressRows.map((row) => [row.task_id, row]));
   const completedCount = progressRows.filter((row) => row.status === "completed").length;
@@ -110,6 +146,63 @@ export function LearnPage() {
       </section>
 
       {error ? <div className="status-banner is-error">{error}</div> : null}
+      {ritualNotice ? <div className="status-banner is-success">{ritualNotice}</div> : null}
+
+      <section className="ritual-grid">
+        <AlgorithmPet
+          pet={pet}
+          loading={petLoading}
+          error={petError}
+          onFeed={handleFeedPet}
+          feedBusy={feedBusy}
+          copy={{
+            title: t("learn.petTitle"),
+            subtitle: t("learn.petSubtitle"),
+            growthLabel: t("learn.petGrowth"),
+            stageIntro: t("learn.petStageIntro"),
+            stageLabels: {
+              seed: t("learn.petStageSeed"),
+              spark: t("learn.petStageSpark"),
+              sprite: t("learn.petStageSprite"),
+              guardian: t("learn.petStageGuardian"),
+              legend: t("learn.petStageLegend"),
+            },
+            mood: t("learn.petMood"),
+            energy: t("learn.petEnergy"),
+            hunger: t("learn.petHunger"),
+            feedAction: t("learn.petFeedAction"),
+            feedDone: t("learn.petFeedDone"),
+            feedHint: t("learn.petFeedHint"),
+            feedCooldown: t("learn.petFeedCooldown"),
+          }}
+        />
+
+        <DailyQuizCard
+          quiz={quiz}
+          loading={quiz.loading}
+          error={quiz.error}
+          onAnswer={quiz.submitAnswer}
+          busy={quiz.submitting}
+          onOpenPlayground={() => navigate("/playground")}
+          copy={{
+            title: t("learn.quizTitle"),
+            subtitle: t("learn.quizSubtitle"),
+            progress: t("learn.quizProgress"),
+            ready: t("learn.quizReady"),
+            startTitle: t("learn.quizStartTitle"),
+            startText: t("learn.quizStartText"),
+            startAction: t("learn.quizStartAction"),
+            complete: t("learn.quizComplete"),
+            correct: t("learn.quizCorrect"),
+            incorrect: t("learn.quizIncorrect"),
+            timeout: t("learn.quizTimeout"),
+            completeTitle: t("learn.quizCompleteTitle"),
+            completeText: t("learn.quizCompleteText"),
+            playgroundCta: t("learn.quizPlaygroundCta"),
+            questionLabel: t("learn.quizQuestionLabel"),
+          }}
+        />
+      </section>
 
       {loading ? (
         <div className="page-loading">{t("learn.loading")}</div>
