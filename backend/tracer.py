@@ -2,6 +2,23 @@ import copy
 import re
 from typing import Any
 
+HIGHLIGHT_CANDIDATES = (
+    "i",
+    "j",
+    "mid",
+    "left",
+    "right",
+    "low",
+    "high",
+    "min_idx",
+    "current",
+    "pivot_idx",
+)
+
+COMPARISON_OPERATORS = ("==", "!=", "<=", ">=", "<", ">")
+SEARCH_TOKENS = ("target", "key", "pivot", "needle", "value")
+FOUND_TOKENS = ("result", "found", "return", "break")
+
 
 class TraceLimitReached(Exception):
     """Raised internally to stop execution after the trace limit."""
@@ -114,15 +131,45 @@ class AlgorithmTracer:
         return ""
 
     def _detect_event(self, source_line: str) -> str:
+        if self._is_found_line(source_line):
+            return "found"
         if self._is_swap_line(source_line):
             return "swap"
+        if self._is_shift_line(source_line):
+            return "shift"
+        if self._is_write_line(source_line):
+            return "write"
+        if self._is_search_line(source_line):
+            return "search"
         if self._is_compare_line(source_line):
             return "compare"
         return "step"
 
     def _is_compare_line(self, source_line: str) -> bool:
+        stripped = source_line.strip()
+        if not stripped.startswith(("if ", "elif ", "while ")):
+            return False
+
         pattern = re.compile(rf"{re.escape(self.array_var)}\[[^\]]+\]")
-        return "if" in source_line and len(pattern.findall(source_line)) >= 2
+        has_array_access = bool(pattern.search(source_line))
+        has_comparison_operator = any(operator in source_line for operator in COMPARISON_OPERATORS)
+        return has_array_access and has_comparison_operator
+
+    def _is_search_line(self, source_line: str) -> bool:
+        if not self._is_compare_line(source_line):
+            return False
+        lowered = source_line.lower()
+        return any(token in lowered for token in SEARCH_TOKENS)
+
+    def _is_found_line(self, source_line: str) -> bool:
+        stripped = source_line.strip().lower()
+        if not stripped:
+            return False
+        if stripped.startswith("return "):
+            return True
+        if "=" not in stripped:
+            return False
+        return any(token in stripped for token in FOUND_TOKENS) and "[" not in stripped
 
     def _is_swap_line(self, source_line: str) -> bool:
         escaped = re.escape(self.array_var)
@@ -131,6 +178,16 @@ class AlgorithmTracer:
             rf"{escaped}\[(?P=b)\]\s*,\s*{escaped}\[(?P=a)\]\s*$"
         )
         return bool(pattern.match(source_line))
+
+    def _is_shift_line(self, source_line: str) -> bool:
+        escaped = re.escape(self.array_var)
+        pattern = re.compile(rf"^\s*{escaped}\[[^\]]+\]\s*=\s*{escaped}\[[^\]]+\]\s*$")
+        return bool(pattern.match(source_line))
+
+    def _is_write_line(self, source_line: str) -> bool:
+        escaped = re.escape(self.array_var)
+        pattern = re.compile(rf"^\s*{escaped}\[[^\]]+\]\s*=\s*.+$")
+        return bool(pattern.match(source_line)) and not self._is_shift_line(source_line)
 
     def _extract_array(self, value: Any) -> list[Any] | None:
         if isinstance(value, list):
@@ -141,7 +198,7 @@ class AlgorithmTracer:
 
     def _extract_highlights(self, local_vars: dict[str, Any], array_length: int) -> list[int]:
         highlights: list[int] = []
-        for name in ("i", "j"):
+        for name in HIGHLIGHT_CANDIDATES:
             value = local_vars.get(name)
             if isinstance(value, int):
                 if array_length > 0:

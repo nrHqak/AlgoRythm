@@ -3,6 +3,10 @@ import { useRef, useState } from "react";
 const SOUND_MAP = {
   compare: { frequency: 523, duration: 80, type: "sine" },
   swap: { frequency: 330, duration: 120, type: "sine" },
+  search: { frequency: 440, duration: 90, type: "triangle" },
+  found: { frequency: 659, duration: 140, type: "sine" },
+  shift: { frequency: 294, duration: 110, type: "triangle" },
+  write: { frequency: 247, duration: 100, type: "sine" },
   error: { frequency: 150, duration: 300, type: "sawtooth" },
 };
 

@@ -3,6 +3,10 @@ import { useLocale } from "../hooks/useLocale.jsx";
 const EVENT_COLORS = {
   compare: "#EF9F27",
   swap: "#1D9E75",
+  search: "#5DA271",
+  found: "#2DB9B0",
+  shift: "#BA7517",
+  write: "#B48E2F",
   error: "#E24B4A",
   step: "#888780",
 };

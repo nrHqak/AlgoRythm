@@ -26,6 +26,31 @@ for i in range(len(arr)):
             arr[j], arr[j + 1] = arr[j + 1], arr[j]`,
   },
   {
+    key: "selection_sort",
+    label: "Selection Sort",
+    arrayVar: "arr",
+    code: `arr = [5, 3, 1, 4, 2]
+for i in range(len(arr)):
+    min_idx = i
+    for j in range(i + 1, len(arr)):
+        if arr[j] < arr[min_idx]:
+            min_idx = j
+    arr[i], arr[min_idx] = arr[min_idx], arr[i]`,
+  },
+  {
+    key: "insertion_sort",
+    label: "Insertion Sort",
+    arrayVar: "arr",
+    code: `arr = [5, 3, 1, 4, 2]
+for i in range(1, len(arr)):
+    key = arr[i]
+    j = i - 1
+    while j >= 0 and arr[j] > key:
+        arr[j + 1] = arr[j]
+        j -= 1
+    arr[j + 1] = key`,
+  },
+  {
     key: "binary_search",
     label: "Binary Search",
     arrayVar: "arr",
@@ -43,6 +68,17 @@ while left <= right:
         left = mid + 1
     else:
         right = mid - 1`,
+  },
+  {
+    key: "linear_search",
+    label: "Linear Search",
+    arrayVar: "arr",
+    code: `arr = [4, 8, 2, 9, 1]
+target = 9
+for i in range(len(arr)):
+    if arr[i] == target:
+        result = i
+        break`,
   },
   {
     key: "index_error",
