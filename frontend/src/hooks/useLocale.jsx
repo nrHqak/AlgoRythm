@@ -69,7 +69,7 @@ const dictionaries = {
       password: "Password",
       signInButton: "Sign In",
       signUpButton: "Create Account",
-      googleButton: "Continue with Google",
+      demoButton: "Use Demo Account",
       working: "Working...",
     },
     learn: {
@@ -293,7 +293,7 @@ const dictionaries = {
       password: "Пароль",
       signInButton: "Войти",
       signUpButton: "Создать аккаунт",
-      googleButton: "Продолжить через Google",
+      demoButton: "Войти в Demo",
       working: "Подождите...",
     },
     learn: {

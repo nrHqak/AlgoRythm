@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth.jsx";
 import { useLocale } from "../hooks/useLocale.jsx";
 
 export function AuthPage() {
-  const { user, loading, signIn, signUp, signInWithGoogle, configError } = useAuth();
+  const { user, loading, signIn, signUp, configError } = useAuth();
   const { t } = useLocale();
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +17,8 @@ export function AuthPage() {
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const demoEmail = import.meta.env.VITE_DEMO_EMAIL || "";
+  const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || "";
 
   const redirectPath = location.state?.from || "/learn";
 
@@ -45,14 +47,20 @@ export function AuthPage() {
     }
   }
 
-  async function handleGoogle() {
+  async function handleDemoLogin() {
+    if (!demoEmail || !demoPassword) {
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
     try {
-      await signInWithGoogle();
+      await signIn(demoEmail, demoPassword);
+      navigate("/learn", { replace: true });
     } catch (authError) {
-      setError(authError.message || "Google sign-in failed.");
+      setError(authError.message || "Demo sign-in failed.");
+    } finally {
       setSubmitting(false);
     }
   }
@@ -135,9 +143,11 @@ export function AuthPage() {
               <button className="primary-button" type="submit" disabled={submitting}>
                 {submitting ? t("auth.working") : mode === "signin" ? t("auth.signInButton") : t("auth.signUpButton")}
               </button>
-              <button className="ghost-button" type="button" disabled={submitting} onClick={handleGoogle}>
-                {t("auth.googleButton")}
-              </button>
+              {mode === "signin" && demoEmail && demoPassword ? (
+                <button className="ghost-button" type="button" disabled={submitting} onClick={handleDemoLogin}>
+                  {t("auth.demoButton")}
+                </button>
+              ) : null}
             </div>
           </form>
         </section>

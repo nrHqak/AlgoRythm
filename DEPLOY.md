@@ -13,6 +13,28 @@ Run this file in the Supabase SQL editor before deploying:
 
 `supabase/pet_quiz_schema.sql`
 
+## Demo Data
+
+To seed a polished demo account plus synthetic users:
+
+```bash
+cd backend
+source ../venv/bin/activate
+python seed_demo_data.py
+```
+
+The script uses:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_KEY`
+- optional `DEMO_EMAIL`
+- optional `DEMO_PASSWORD`
+
+If you want one-click demo login on the frontend, also set:
+
+- `VITE_DEMO_EMAIL`
+- `VITE_DEMO_PASSWORD`
+
 ## Backend on Render
 
 This repo includes `render.yaml`, so you can deploy with a Render Blueprint or create a Web Service manually.

@@ -100,24 +100,6 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  async function signInWithGoogle() {
-    if (!supabase) {
-      throw new Error(supabaseConfigError);
-    }
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/learn`,
-      },
-    });
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  }
-
   async function signOut() {
     if (!supabase) {
       throw new Error(supabaseConfigError);
@@ -137,7 +119,6 @@ export function AuthProvider({ children }) {
         configError: supabaseConfigError,
         signIn,
         signUp,
-        signInWithGoogle,
         signOut,
       }}
     >
