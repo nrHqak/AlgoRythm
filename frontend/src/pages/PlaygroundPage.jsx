@@ -113,7 +113,7 @@ export function PlaygroundPage({ achievementUi }) {
   const { taskId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { t } = useLocale();
   const { refreshProfile } = useProfile();
   const { traceData, isLoading, requestError, analyzeCode, resetTrace } = useTracer();
@@ -371,11 +371,18 @@ export function PlaygroundPage({ achievementUi }) {
   }
 
   async function saveSession(result, xpEarned, taskContext) {
+    const accessToken = session?.access_token;
+    if (!accessToken) {
+      throw new Error("You must be signed in to save a session.");
+    }
+
     const response = await fetch(getApiUrl("/session/save"), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
       body: JSON.stringify({
-        user_id: user.id,
         code,
         array_var: arrayVar,
         trace: result.steps,

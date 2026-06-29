@@ -4,11 +4,12 @@ from datetime import date, datetime, timedelta
 from typing import Any
 
 import numpy as np
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from supabase import Client, create_client
+from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
 from classifier import classify_algorithm
 from mentor import generate_mentor_hint
@@ -51,7 +52,6 @@ class MentorRequest(BaseModel):
 
 
 class SessionSaveRequest(BaseModel):
-    user_id: str
     code: str
     array_var: str = "arr"
     trace: list[dict[str, Any]] = Field(default_factory=list)
@@ -99,6 +99,33 @@ def require_supabase() -> Client:
     if supabase is None:
         raise RuntimeError("Supabase service configuration is missing.")
     return supabase
+
+
+def _parse_bearer_token(authorization: str | None) -> str:
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing Authorization header.")
+
+    scheme, _, credentials = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not credentials.strip():
+        raise HTTPException(status_code=401, detail="Invalid Authorization header.")
+
+    return credentials.strip()
+
+
+def verify_authenticated_user_id(authorization: str | None = Header(default=None)) -> str:
+    """Validate the Supabase access token and return the authenticated user's id."""
+    access_token = _parse_bearer_token(authorization)
+    client = require_supabase()
+
+    try:
+        response = client.auth.get_user(jwt=access_token)
+    except (AuthApiError, AuthInvalidJwtError) as exc:
+        raise HTTPException(status_code=401, detail="Invalid or expired access token.") from exc
+
+    if not response or not response.user or not response.user.id:
+        raise HTTPException(status_code=401, detail="Invalid or expired access token.")
+
+    return str(response.user.id)
 
 
 def calculate_level(xp: int) -> int:
@@ -300,11 +327,11 @@ def mentor(request: MentorRequest):
 
 
 @app.post("/session/save")
-def save_session(request: SessionSaveRequest):
+def save_session(request: SessionSaveRequest, user_id: str = Depends(verify_authenticated_user_id)):
     client = require_supabase()
 
     session_payload = {
-        "user_id": request.user_id,
+        "user_id": user_id,
         "code": request.code,
         "array_var": request.array_var,
         "trace": request.trace,
@@ -317,7 +344,7 @@ def save_session(request: SessionSaveRequest):
     }
 
     created_session = client.table("sessions").insert(session_payload).execute().data[0]
-    user_data = load_user_data(client, request.user_id)
+    user_data = load_user_data(client, user_id)
     profile = user_data["profile"]
     previous_streak = profile.get("streak", 0) or 0
     current_streak, active_date = compute_streak(profile.get("last_active_date"), previous_streak)
@@ -341,7 +368,7 @@ def save_session(request: SessionSaveRequest):
 
         client.table("user_achievements").insert(
             {
-                "user_id": request.user_id,
+                "user_id": user_id,
                 "achievement_id": achievement["id"],
             }
         ).execute()
@@ -358,7 +385,7 @@ def save_session(request: SessionSaveRequest):
             "streak": current_streak,
             "last_active_date": active_date,
         }
-    ).eq("id", request.user_id).execute()
+    ).eq("id", user_id).execute()
 
     return {
         "session_id": created_session["id"],

@@ -14,11 +14,19 @@ load_dotenv()
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
 
+# Passwords must be set per environment — never commit real values to the repo.
 DEMO_EMAIL = os.environ.get("DEMO_EMAIL", "demo@algorythm.app")
-DEMO_PASSWORD = os.environ.get("DEMO_PASSWORD", "AlgoRythmDemo123!")
+DEMO_PASSWORD = os.environ.get("DEMO_PASSWORD")
+SEED_USER_PASSWORD = os.environ.get("SEED_USER_PASSWORD")
 
 if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
   raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_KEY must be set before seeding demo data.")
+
+if not DEMO_PASSWORD:
+  raise RuntimeError("DEMO_PASSWORD must be set before seeding demo data.")
+
+if not SEED_USER_PASSWORD:
+  raise RuntimeError("SEED_USER_PASSWORD must be set before seeding demo data.")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
@@ -132,11 +140,11 @@ print(arr[5])""",
 
 SEED_USERS = [
   SeedUser(DEMO_EMAIL, DEMO_PASSWORD, "demo_algonaut", 1480, 4, 6, 0, "coach", "Byte"),
-  SeedUser("maya@algorythm.app", "AlgoRythmSeed123!", "maya_loop", 920, 3, 4, 0, "calm", "Nova"),
-  SeedUser("ivan@algorythm.app", "AlgoRythmSeed123!", "ivan_mid", 610, 3, 3, 1, "strict", "Pulse"),
-  SeedUser("sara@algorythm.app", "AlgoRythmSeed123!", "sara_sort", 1240, 4, 5, 0, "warm", "Orbit"),
-  SeedUser("leo@algorythm.app", "AlgoRythmSeed123!", "leo_search", 430, 2, 2, 2, "quiet", "Knot"),
-  SeedUser("dina@algorythm.app", "AlgoRythmSeed123!", "dina_trace", 210, 2, 1, 1, "gentle", "Luma"),
+  SeedUser("maya@algorythm.app", SEED_USER_PASSWORD, "maya_loop", 920, 3, 4, 0, "calm", "Nova"),
+  SeedUser("ivan@algorythm.app", SEED_USER_PASSWORD, "ivan_mid", 610, 3, 3, 1, "strict", "Pulse"),
+  SeedUser("sara@algorythm.app", SEED_USER_PASSWORD, "sara_sort", 1240, 4, 5, 0, "warm", "Orbit"),
+  SeedUser("leo@algorythm.app", SEED_USER_PASSWORD, "leo_search", 430, 2, 2, 2, "quiet", "Knot"),
+  SeedUser("dina@algorythm.app", SEED_USER_PASSWORD, "dina_trace", 210, 2, 1, 1, "gentle", "Luma"),
 ]
 
 
