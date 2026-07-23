@@ -137,8 +137,8 @@ export function AlgorithmDNA({ dna, loading }) {
           </div>
 
           <div className="dna-insights">
-            <span className="pill dna-pill dna-pill--weak">{`⚠ Weak: ${dna.weak_spot}`}</span>
-            <span className="pill dna-pill dna-pill--strong">{`✓ Strong: ${dna.strong_spot}`}</span>
+            <span className="dna-pill dna-pill--weak">{`WEAK / ${dna.weak_spot}`}</span>
+            <span className="dna-pill dna-pill--strong">{`STRONG / ${dna.strong_spot}`}</span>
           </div>
           <p className="helper-text dna-tip">{TIPS[dna.weak_spot]}</p>
         </>

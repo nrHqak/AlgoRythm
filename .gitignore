@@ -7,8 +7,8 @@ __pycache__/
 *.pyd
 .DS_Store
 
-backend/.env
-frontend/.env
+*.env
+!.env.example
 
 frontend/node_modules/
 frontend/dist/

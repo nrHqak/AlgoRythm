@@ -11,10 +11,18 @@ export function MentorChat({
   disabled,
   multiline = true,
   note,
+  structured = false,
 }) {
   const { t } = useLocale();
+  function formatTime(value) {
+    if (!value) return "NOW";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "NOW";
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
   return (
-    <section className="panel mentor-chat">
+    <section className={`panel mentor-chat${structured ? " is-structured" : ""}`}>
       <div className="panel-header">
         <div>
           <h2>{title}</h2>
@@ -26,18 +34,31 @@ export function MentorChat({
 
       <div className="chat-list">
         {messages.length === 0 ? (
-          <div className="empty-state">{t("playground.mentorSubtitle")}</div>
+          <div className="empty-state">{structured ? t("mentorPage.emptyTrace") : t("playground.mentorSubtitle")}</div>
         ) : (
-          messages.map((message, index) => (
-            <div
-              key={`${message.role}-${index}-${message.message || message.text}`}
-              className={`chat-bubble ${message.role === "mentor" ? "is-mentor" : "is-user"}`}
-            >
-              {message.message || message.text}
-            </div>
-          ))
+          messages.map((message, index) =>
+            structured ? (
+              <article
+                key={`${message.role}-${index}-${message.message || message.text}`}
+                className={`message-block ${message.role === "mentor" ? "is-mentor" : "is-user"}`}
+              >
+                <header>
+                  <span>{message.role === "mentor" ? "MENTOR" : "YOU"}</span>
+                  <time dateTime={message.created_at || undefined}>{formatTime(message.created_at)}</time>
+                </header>
+                <div>{message.message || message.text}</div>
+              </article>
+            ) : (
+              <div
+                key={`${message.role}-${index}-${message.message || message.text}`}
+                className={`chat-bubble ${message.role === "mentor" ? "is-mentor" : "is-user"}`}
+              >
+                {message.message || message.text}
+              </div>
+            )
+          )
         )}
-        {loading ? <div className="chat-note">Mentor is thinking...</div> : null}
+        {loading ? <div className="chat-note">{structured ? t("mentorPage.thinking") : "Mentor is thinking..."}</div> : null}
       </div>
 
       <form

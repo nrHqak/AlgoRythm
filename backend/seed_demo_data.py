@@ -357,7 +357,6 @@ def main():
 
   print("\nDemo login:")
   print(f"email: {DEMO_EMAIL}")
-  print(f"password: {DEMO_PASSWORD}")
 
 
 if __name__ == "__main__":

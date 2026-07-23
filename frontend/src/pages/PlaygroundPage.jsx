@@ -504,10 +504,13 @@ export function PlaygroundPage({ achievementUi }) {
   }
 
   return (
-    <>
+    <div className="signal-page playground-page">
       <section className="hero-banner">
         <div>
-          <div className="eyebrow">{t("playground.eyebrow")}</div>
+          <div className="section-kicker">
+            <span aria-hidden="true" />
+            {t("playground.eyebrow")}
+          </div>
           <h1>{t("playground.title")}</h1>
           <p className="meta-text">{t("playground.subtitle")}</p>
         </div>
@@ -529,7 +532,7 @@ export function PlaygroundPage({ achievementUi }) {
       {saveError ? <div className="status-banner is-error">{saveError}</div> : null}
       {traceData.algorithm_type ? (
         <div className="status-banner is-success">
-          {`${formatAlgorithmLabel(traceData.algorithm_type)} detected ✓`}
+          {`${formatAlgorithmLabel(traceData.algorithm_type)} detected`}
         </div>
       ) : null}
       {traceData.error?.type === "timeout" ? (
@@ -538,46 +541,54 @@ export function PlaygroundPage({ achievementUi }) {
       {xpNotice ? <div className="xp-notice inline-success">{xpNotice}</div> : null}
 
       <div className="playground-layout">
-        <div className="panel-stack">
-          <CodeEditor
-            code={code}
-            arrayVar={arrayVar}
-            errorLine={traceData.error?.line || null}
-            isLoading={isLoading}
-            onCodeChange={handleCodeChange}
-            onArrayVarChange={handleArrayVarChange}
-            onRun={handleRun}
-            examples={examples}
-            selectedExample={selectedExample}
-            onExampleChange={setSelectedExample}
-            task={task}
-          />
+        <div className="playground-primary-grid">
+          <div className="playground-editor-zone">
+            <CodeEditor
+              code={code}
+              arrayVar={arrayVar}
+              errorLine={traceData.error?.line || null}
+              isLoading={isLoading}
+              onCodeChange={handleCodeChange}
+              onArrayVarChange={handleArrayVarChange}
+              onRun={handleRun}
+              examples={examples}
+              selectedExample={selectedExample}
+              onExampleChange={setSelectedExample}
+              task={task}
+            />
+          </div>
+
+          <div className="playground-trace-zone">
+            <VisualCanvas step={currentTraceStep} totalSteps={traceData.total_steps} />
+            <StepPlayer
+              currentStep={currentStep}
+              totalSteps={traceData.total_steps}
+              isPlaying={isPlaying}
+              progress={progress}
+              onPrev={prev}
+              onPlay={play}
+              onPause={pause}
+              onNext={next}
+            />
+          </div>
         </div>
 
-        <div className="panel-stack">
-          <VisualCanvas step={currentTraceStep} totalSteps={traceData.total_steps} />
-          <StepPlayer
-            currentStep={currentStep}
-            totalSteps={traceData.total_steps}
-            isPlaying={isPlaying}
-            progress={progress}
-            onPrev={prev}
-            onPlay={play}
-            onPause={pause}
-            onNext={next}
-          />
+        <div className="playground-context-grid">
           <ComplexityChart complexityData={complexityData} isLoading={complexityLoading} />
           <MentorChat
+            title={t("playground.mentorTitle")}
+            subtitle={t("playground.mentorSubtitle")}
             messages={mentorMessages}
             loading={mentorLoading}
             inputValue={mentorInput}
             onInputChange={setMentorInput}
             onSend={() => sendMentorMessage({ question: mentorInput, mode: "free_chat" })}
             disabled={false}
+            structured
             note={t("playground.mentorNote")}
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

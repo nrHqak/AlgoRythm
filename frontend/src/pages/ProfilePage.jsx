@@ -159,15 +159,15 @@ export function ProfilePage() {
   }, [heatmapDays]);
 
   return (
-    <>
+    <div className="signal-page profile-page">
       <section className="hero-banner profile-top">
         <div className="profile-top-row">
           <div className="profile-user">
             <div className="avatar-large">{getInitials(profile?.username || user?.email || "AR")}</div>
             <div>
-              <h1 style={{ margin: 0 }}>{profile?.username || t("profile.titleFallback")}</h1>
+              <h1>{profile?.username || t("profile.titleFallback")}</h1>
               <div className="meta-text">{user?.email}</div>
-              <div className="button-row" style={{ marginTop: "12px" }}>
+              <div className="button-row profile-badges">
                 <LevelBadge level={levelMeta.level} title={levelMeta.title} />
                 <StreakBadge streak={profile?.streak || 0} />
               </div>
@@ -325,7 +325,11 @@ export function ProfilePage() {
                 className={`achievement-card${earned ? " is-earned" : " is-locked"}`}
               >
                 <div className="achievement-row">
-                  <div className="achievement-icon">{achievement.icon}</div>
+                  <div className="achievement-icon" aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
                   <div>
                     <div className="achievement-title">{achievement.title}</div>
                     <div className="meta-text">{achievement.description}</div>
@@ -370,6 +374,6 @@ export function ProfilePage() {
           })}
         </div>
       </section>
-    </>
+    </div>
   );
 }

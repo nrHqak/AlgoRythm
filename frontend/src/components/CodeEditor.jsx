@@ -44,7 +44,7 @@ export function CodeEditor({
       ) : null}
 
       <div className="toolbar-row">
-        <div className="field" style={{ flex: 1 }}>
+        <div className="field">
           <label htmlFor="array-var">{t("playground.arrayVar")}</label>
           <input
             id="array-var"
@@ -54,7 +54,7 @@ export function CodeEditor({
             placeholder="arr"
           />
         </div>
-        <div className="field" style={{ flex: 1 }}>
+        <div className="field">
           <label htmlFor="example-select">{t("playground.loadExample")}</label>
           <select id="example-select" value={selectedExample} onChange={(event) => onExampleChange(event.target.value)}>
             {examples.map((example) => (

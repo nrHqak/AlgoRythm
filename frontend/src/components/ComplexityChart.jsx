@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 const COLORS = {
-  "O(log n)": "#1D9E75",
-  "O(n)": "#639922",
-  "O(n log n)": "#BA7517",
-  "O(n²)": "#D85A30",
-  "O(n³)": "#E24B4A",
-  "O(√n)": "#4FC7B3",
+  "O(log n)": "var(--color-signal)",
+  "O(n)": "var(--color-success)",
+  "O(n log n)": "var(--color-timing)",
+  "O(n²)": "var(--color-error)",
+  "O(n³)": "var(--color-error)",
+  "O(√n)": "var(--color-signal)",
 };
 
 const EXPLANATIONS = {
@@ -78,7 +78,7 @@ export function ComplexityChart({ complexityData, isLoading }) {
     return null;
   }
 
-  const color = COLORS[complexityData?.complexity] || "#7BFFE6";
+  const color = COLORS[complexityData?.complexity] || "var(--color-signal)";
   const explanation = EXPLANATIONS[complexityData?.complexity] || "Run more traces to understand how your work scales.";
 
   return (

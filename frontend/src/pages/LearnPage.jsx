@@ -129,10 +129,13 @@ export function LearnPage() {
   };
 
   return (
-    <>
+    <div className="signal-page learn-page">
       <section className="hero-banner">
         <div>
-          <div className="eyebrow">{t("learn.eyebrow")}</div>
+          <div className="section-kicker">
+            <span aria-hidden="true" />
+            {t("learn.eyebrow")}
+          </div>
           <h1>{t("learn.title")}</h1>
           <p className="meta-text">{t("learn.subtitle")}</p>
           <div className="meta-text">
@@ -167,6 +170,8 @@ export function LearnPage() {
               guardian: t("learn.petStageGuardian"),
               legend: t("learn.petStageLegend"),
             },
+            growthTo: t("learn.petGrowthTo"),
+            growthMax: t("learn.petGrowthMax"),
             mood: t("learn.petMood"),
             energy: t("learn.petEnergy"),
             hunger: t("learn.petHunger"),
@@ -228,6 +233,6 @@ export function LearnPage() {
           ))}
         </section>
       )}
-    </>
+    </div>
   );
 }
