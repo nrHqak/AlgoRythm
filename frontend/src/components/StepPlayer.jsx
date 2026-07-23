@@ -25,19 +25,19 @@ export function StepPlayer({
 
       <div className="player-controls">
         <button className="secondary-button" type="button" onClick={onPrev} disabled={atStart}>
-          ⏮ {t("playground.prev")}
+          {t("playground.prev")}
         </button>
         {isPlaying ? (
           <button className="primary-button" type="button" onClick={onPause}>
-            ⏸ {t("playground.pause")}
+            {t("playground.pause")}
           </button>
         ) : (
           <button className="primary-button" type="button" onClick={onPlay} disabled={atEnd}>
-            ▶ {t("playground.play")}
+            {t("playground.play")}
           </button>
         )}
         <button className="secondary-button" type="button" onClick={onNext} disabled={atEnd}>
-          ⏭ {t("playground.next")}
+          {t("playground.next")}
         </button>
       </div>
 

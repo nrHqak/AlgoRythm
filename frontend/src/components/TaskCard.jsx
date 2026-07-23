@@ -8,7 +8,11 @@ export function TaskCard({ task, status, userProgress, onOpen }) {
   return (
     <article className={`task-card${isLocked ? " is-locked" : ""}${isCompleted ? " is-completed" : ""}`}>
       <div className="task-row">
-        <div className="task-icon">{isLocked ? "🔒" : isCompleted ? "✓" : "▶"}</div>
+        <div className={`task-signal${isLocked ? " is-locked" : ""}${isCompleted ? " is-completed" : ""}`} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
         <span className={`difficulty-badge ${task.difficulty}`}>{task.difficulty}</span>
       </div>
 

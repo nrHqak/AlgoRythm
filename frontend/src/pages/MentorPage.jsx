@@ -128,17 +128,15 @@ export function MentorPage() {
   }
 
   return (
-    <>
+    <div className="signal-page mentor-page">
       <section className="hero-banner">
         <div>
-          <div className="eyebrow">Mentor Studio</div>
+          <div className="section-kicker">
+            <span aria-hidden="true" />
+            {t("mentorPage.eyebrow")}
+          </div>
           <h1>{t("mentorPage.title")}</h1>
           <p className="meta-text">{t("mentorPage.subtitle")}</p>
-        </div>
-        <div className="mentor-mode-tabs">
-          <button className="mentor-mode-tab is-active" type="button">
-            {t("mentorPage.freeChat")}
-          </button>
         </div>
       </section>
 
@@ -175,6 +173,7 @@ export function MentorPage() {
             onSend={handleSend}
             disabled={false}
             multiline
+            structured
             note={t("mentorPage.note")}
           />
 
@@ -223,6 +222,6 @@ export function MentorPage() {
           </section>
         </div>
       </div>
-    </>
+    </div>
   );
 }

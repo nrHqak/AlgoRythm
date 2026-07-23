@@ -7,21 +7,23 @@ export function LandingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLocale();
+  const bars = [5, 3, 8, 4, 7, 2, 6];
 
   return (
     <div className="landing-shell">
       <header className="landing-nav">
         <div className="landing-brand">
+          <div className="landing-brand-signal" aria-hidden="true">
+            {[34, 62, 100, 72, 46].map((height) => (
+              <span key={height} style={{ height: `${height}%` }} />
+            ))}
+          </div>
           <div className="landing-wordmark">
             <div className="landing-wordmark-title">AlgoRythm</div>
-            <div className="landing-wordmark-tag">{t("nav.tagline")}</div>
           </div>
         </div>
 
         <div className="button-row">
-          <button className="ghost-button" type="button" onClick={() => navigate("/learn")}>
-            {t("landing.secondaryCta")}
-          </button>
           <button className="primary-button" type="button" onClick={() => navigate(user ? "/learn" : "/auth")}>
             {t("landing.primaryCta")}
           </button>
@@ -31,59 +33,69 @@ export function LandingPage() {
       <main className="landing-page">
         <section className="landing-hero">
           <div className="landing-copy">
-            <div className="eyebrow">{t("landing.eyebrow")}</div>
+            <div className="section-kicker">
+              <span aria-hidden="true" />
+              {t("landing.eyebrow")}
+            </div>
             <h1>{t("landing.title")}</h1>
             <p>{t("landing.subtitle")}</p>
             <div className="button-row">
               <button className="primary-button landing-cta" type="button" onClick={() => navigate(user ? "/learn" : "/auth")}>
                 {t("landing.primaryCta")}
               </button>
-              <button className="secondary-button" type="button" onClick={() => navigate("/learn")}>
-                {t("landing.secondaryCta")}
-              </button>
             </div>
           </div>
 
           <div className="landing-visual">
-            <div className="orb orb-one" />
-            <div className="orb orb-two" />
             <div className="landing-showcase">
               <div className="showcase-top">
-                <div className="signal-pill">{t("landing.signalTrace")}</div>
-                <div className="signal-pill">{t("landing.signalMentor")}</div>
-                <div className="signal-pill">{t("landing.signalStreak")}</div>
+                <strong>Execution signal</strong>
+                <span className="module-status"><i /> LIVE TRACE</span>
               </div>
               <div className="showcase-screen">
+                <div className="signal-code-row">
+                  <span>06</span>
+                  <code>if arr[j] &gt; arr[j + 1]:</code>
+                </div>
+                <div className="signal-readout">
+                  <span>STEP / 018</span>
+                  <span>EVENT / COMPARE</span>
+                </div>
                 <div className="showcase-bars">
-                  {[32, 54, 74, 46, 68, 88, 58].map((height, index) => (
+                  {bars.map((value, index) => (
+                    <span className="showcase-bar-column" key={`${value}-${index}`}>
+                      <span
+                        className={`showcase-bar${index === 2 || index === 3 ? " is-active" : ""}`}
+                        style={{ height: `${value * 11}%` }}
+                      />
+                      <small>{value}</small>
+                    </span>
+                  ))}
+                </div>
+                <div className="execution-rail" aria-label="Execution timeline, step 7 of 12">
+                  {Array.from({ length: 12 }, (_, index) => (
                     <span
-                      key={height}
-                      className={`showcase-bar${index === 2 || index === 3 ? " is-active" : ""}`}
-                      style={{ height: `${height}%` }}
+                      key={index}
+                      className={`${index < 7 ? "is-complete" : ""}${index === 6 ? " is-current" : ""}`}
                     />
                   ))}
                 </div>
-                <div className="showcase-metrics">
-                  <div className="showcase-card">
-                    <span>84%</span>
-                    <small>{t("landing.metric3")}</small>
-                  </div>
-                  <div className="showcase-card">
-                    <span>1.2K</span>
-                    <small>{t("landing.metric1")}</small>
-                  </div>
-                  <div className="showcase-card">
-                    <span>347</span>
-                    <small>{t("landing.metric2")}</small>
-                  </div>
+                <div className="showcase-footer">
+                  <span><i className="legend-swatch is-compare" /> COMPARE</span>
+                  <span><i className="legend-swatch is-swap" /> SWAP</span>
+                  <strong>AUDIO / ON</strong>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="landing-section">
+        <section className="landing-section landing-section--contrast">
           <div className="landing-section-heading">
+            <div className="section-kicker">
+              <span aria-hidden="true" />
+              {t("landing.sectionEyebrow")}
+            </div>
             <h2>{t("landing.sectionTitle")}</h2>
             <p>{t("landing.sectionText")}</p>
           </div>
@@ -104,7 +116,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="landing-grid">
+        <section className="landing-grid" aria-label="Platform details">
           <article className="landing-story-card">
             <h3>{t("landing.cardsTitle1")}</h3>
             <p>{t("landing.cardsText1")}</p>
@@ -120,8 +132,10 @@ export function LandingPage() {
         </section>
 
         <section className="landing-final">
-          <h2>{t("landing.finalTitle")}</h2>
-          <p>{t("landing.finalText")}</p>
+          <div>
+            <h2>{t("landing.finalTitle")}</h2>
+            <p>{t("landing.finalText")}</p>
+          </div>
           <button className="primary-button" type="button" onClick={() => navigate(user ? "/learn" : "/auth")}>
             {t("landing.primaryCta")}
           </button>

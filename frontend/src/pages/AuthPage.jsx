@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth.jsx";
 import { useLocale } from "../hooks/useLocale.jsx";
 
 export function AuthPage() {
-  const { user, loading, signIn, signUp, configError } = useAuth();
+  const { user, loading, signIn, signUp, configError, supabase } = useAuth();
   const { t } = useLocale();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,7 +18,6 @@ export function AuthPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const demoEmail = import.meta.env.VITE_DEMO_EMAIL || "";
-  const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || "";
 
   const redirectPath = location.state?.from || "/learn";
 
@@ -48,7 +47,7 @@ export function AuthPage() {
   }
 
   async function handleDemoLogin() {
-    if (!demoEmail || !demoPassword) {
+    if (!demoEmail) {
       return;
     }
 
@@ -56,8 +55,29 @@ export function AuthPage() {
     setError("");
 
     try {
-      await signIn(demoEmail, demoPassword);
-      navigate("/learn", { replace: true });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/demo-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Demo login failed.");
+      }
+
+      const { access_token, refresh_token } = await response.json();
+
+      if (access_token && refresh_token) {
+        await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+        navigate("/learn", { replace: true });
+      } else {
+        throw new Error("Invalid session data received.");
+      }
     } catch (authError) {
       setError(authError.message || "Demo sign-in failed.");
     } finally {
@@ -70,7 +90,10 @@ export function AuthPage() {
       <div className="auth-card">
         <section className="auth-hero">
           <div>
-            <div className="eyebrow">AlgoRythm Platform</div>
+            <div className="section-kicker auth-kicker">
+              <span aria-hidden="true" />
+              AlgoRythm
+            </div>
             <h1>{t("auth.title")}</h1>
             <p className="meta-text">{t("auth.subtitle")}</p>
           </div>
@@ -100,7 +123,7 @@ export function AuthPage() {
             </button>
           </div>
 
-          <form className="stack" onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+          <form className="stack" onSubmit={handleSubmit}>
             {mode === "signup" ? (
               <div className="field">
                 <label htmlFor="username">{t("auth.username")}</label>
@@ -143,7 +166,7 @@ export function AuthPage() {
               <button className="primary-button" type="submit" disabled={submitting}>
                 {submitting ? t("auth.working") : mode === "signin" ? t("auth.signInButton") : t("auth.signUpButton")}
               </button>
-              {mode === "signin" && demoEmail && demoPassword ? (
+              {mode === "signin" && demoEmail ? (
                 <button className="ghost-button" type="button" disabled={submitting} onClick={handleDemoLogin}>
                   {t("auth.demoButton")}
                 </button>

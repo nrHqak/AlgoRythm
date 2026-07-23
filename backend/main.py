@@ -4,10 +4,14 @@ from datetime import date, datetime, timedelta
 from typing import Any
 
 import numpy as np
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 from supabase import Client, create_client
 from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
@@ -18,11 +22,39 @@ from tracer import trace_code
 
 load_dotenv()
 
+# In-memory rate limiting is fine for a single process, but it will not enforce
+# correct limits across multiple server instances/workers. Use Redis-backed
+# storage before scaling horizontally.
+limiter = Limiter(key_func=get_remote_address)
+DEFAULT_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://algorythm-seven.vercel.app",
+]
+allowed_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.environ.get("ALLOWED_ORIGINS", ",".join(DEFAULT_ALLOWED_ORIGINS)).split(",")
+    if origin.strip()
+]
+
 app = FastAPI(title="AlgoRythm API")
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    retry_after_seconds = 60
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": "Too many requests. Please retry after 60 seconds.",
+            "retry_after_seconds": retry_after_seconds,
+        },
+        headers={"Retry-After": str(retry_after_seconds)},
+    )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,6 +66,14 @@ supabase: Client | None = None
 
 if SUPABASE_URL and SUPABASE_SERVICE_KEY:
     supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
+DEMO_EMAIL = os.environ.get("DEMO_EMAIL")
+DEMO_PASSWORD = os.environ.get("DEMO_PASSWORD")
+
+# In-memory rate limiting
+RATE_LIMIT_WINDOW = 60  # seconds
+RATE_LIMIT_MAX_REQUESTS = 10
+demo_login_attempts = {}
 
 
 class AnalyzeRequest(BaseModel):
@@ -300,29 +340,32 @@ def curriculum():
 
 
 @app.post("/analyze")
-def analyze(request: AnalyzeRequest):
-    result = execute_code(request.code, request.array_var)
-    classification = classify_algorithm(request.code)
+@limiter.limit("20/minute")
+def analyze(request: Request, payload: AnalyzeRequest):
+    result = execute_code(payload.code, payload.array_var)
+    classification = classify_algorithm(payload.code)
     result["algorithm_type"] = classification.get("algorithm", "unknown")
     result["algorithm_confidence"] = classification.get("confidence", 0.0)
     return result
 
 
 @app.post("/complexity")
-def complexity(request: ComplexityRequest):
-    return analyze_complexity_curve(request.code, request.array_var)
+@limiter.limit("5/minute")
+def complexity(request: Request, payload: ComplexityRequest):
+    return analyze_complexity_curve(payload.code, payload.array_var)
 
 
 @app.post("/mentor")
-def mentor(request: MentorRequest):
+@limiter.limit("20/minute")
+def mentor(request: Request, payload: MentorRequest):
     return generate_mentor_hint(
-        code=request.code,
-        error=request.error,
-        error_line=request.error_line,
-        trace_context=request.trace_context,
-        user_question=request.user_question,
-        mode=request.mode,
-        user_history=request.user_history,
+        code=payload.code,
+        error=payload.error,
+        error_line=payload.error_line,
+        trace_context=payload.trace_context,
+        user_question=payload.user_question,
+        mode=payload.mode,
+        user_history=payload.user_history,
     )
 
 
@@ -391,3 +434,44 @@ def save_session(request: SessionSaveRequest, user_id: str = Depends(verify_auth
         "session_id": created_session["id"],
         "achievements_earned": achievements_earned,
     }
+
+
+@app.post("/auth/demo-login")
+async def demo_login(request: Request):
+    if not DEMO_EMAIL or not DEMO_PASSWORD:
+        raise HTTPException(status_code=404, detail="Demo mode is disabled.")
+
+    client = require_supabase()
+
+    # Rate limiting logic
+    ip_address = request.client.host
+    current_time = datetime.now()
+
+    if ip_address not in demo_login_attempts:
+        demo_login_attempts[ip_address] = []
+
+    # Remove old attempts
+    demo_login_attempts[ip_address] = [
+        t for t in demo_login_attempts[ip_address] if current_time - t < timedelta(seconds=RATE_LIMIT_WINDOW)
+    ]
+
+    if len(demo_login_attempts[ip_address]) >= RATE_LIMIT_MAX_REQUESTS:
+        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+
+    demo_login_attempts[ip_address].append(current_time)
+
+    try:
+        response = client.auth.sign_in_with_password(
+            {
+                "email": DEMO_EMAIL,
+                "password": DEMO_PASSWORD,
+            }
+        )
+        return {
+            "access_token": response.session.access_token,
+            "refresh_token": response.session.refresh_token,
+        }
+    except AuthApiError as e:
+        raise HTTPException(status_code=400, detail=f"Demo login failed: {e.message}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")

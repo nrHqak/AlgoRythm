@@ -8,6 +8,7 @@ export function DailyQuizCard({ quiz, loading, error, onAnswer, busy, copy, onOp
   }
 
   const progressValue = Math.min(100, (quiz.attempts.length / 3) * 100);
+  const timeProgress = quiz.started && !quiz.completed ? Math.max(0, Math.min(100, (quiz.timeLeft / 30) * 100)) : 100;
 
   return (
     <section className="panel ritual-card ritual-quiz-card">
@@ -16,17 +17,27 @@ export function DailyQuizCard({ quiz, loading, error, onAnswer, busy, copy, onOp
           <h2>{copy.title}</h2>
           <p>{copy.subtitle}</p>
         </div>
-        <span className="pill ritual-pill">{quiz.correctCount}/3</span>
+        <span className="ritual-readout">{quiz.correctCount}/3</span>
       </div>
 
       {error ? <div className="status-banner is-error">{error}</div> : null}
 
-      <div className="ritual-progress-copy">
-        <span>{copy.progress.replace("{done}", quiz.attempts.length).replace("{total}", "3")}</span>
-        <span>{quiz.completed ? copy.complete : quiz.started ? `${quiz.timeLeft}s` : copy.ready}</span>
+      <div className="calibration-nodes" aria-label={copy.progress.replace("{done}", quiz.attempts.length).replace("{total}", "3")}>
+        {[0, 1, 2].map((index) => (
+          <div
+            key={index}
+            className={`calibration-node${index < quiz.attempts.length ? " is-complete" : ""}${index === quiz.currentIndex && quiz.started ? " is-current" : ""}`}
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+          </div>
+        ))}
       </div>
-      <div className="progress-track">
-        <div className="progress-fill" style={{ width: `${progressValue}%` }} />
+      <div className="countdown-readout">
+        <span>{copy.progress.replace("{done}", quiz.attempts.length).replace("{total}", "3")}</span>
+        <strong>{quiz.completed ? copy.complete : quiz.started ? `${String(quiz.timeLeft).padStart(2, "0")}s` : copy.ready}</strong>
+      </div>
+      <div className="countdown-rail" aria-hidden="true">
+        <div className="countdown-fill" style={{ width: `${quiz.started ? timeProgress : progressValue}%` }} />
       </div>
 
       {quiz.feedback ? (
@@ -68,7 +79,8 @@ export function DailyQuizCard({ quiz, loading, error, onAnswer, busy, copy, onOp
                 onClick={() => onAnswer(index)}
                 disabled={busy || Boolean(quiz.feedback)}
               >
-                {option}
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{option}</strong>
               </button>
             ))}
           </div>
