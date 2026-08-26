@@ -117,6 +117,27 @@ const dictionaries = {
       intermediate: "Intermediate",
       advanced: "Advanced",
       tasks: "tasks",
+      patternLabel: "Thinking pattern",
+      patterns: {
+        localReordering: {
+          title: "Local Reordering",
+          description: "Restore order progressively through local swaps or shifts while expanding an ordered region.",
+        },
+        selectAndPlace: {
+          title: "Select & Place",
+          description: "Repeatedly find the extremum in the remaining range and swap it into its final position.",
+        },
+        scanAndMatch: {
+          title: "Scan & Match",
+          description: "Scan sequentially, evaluating each element against a target match or a running best-so-far value.",
+        },
+        divideAndConquer: {
+          title: "Divide & Conquer",
+          description: "Use structure to discard a large portion of the remaining search space at each step.",
+        },
+        uncategorizedTitle: "Other Patterns",
+        fallbackDescription: "Practice tasks connected by a shared problem-solving technique.",
+      },
       loading: "Loading curriculum...",
     },
     playground: {
@@ -343,6 +364,27 @@ const dictionaries = {
       intermediate: "Средний",
       advanced: "Продвинутый",
       tasks: "заданий",
+      patternLabel: "Паттерн мышления",
+      patterns: {
+        localReordering: {
+          title: "Локальная перестановка",
+          description: "Постепенно восстанавливайте порядок локальными обменами или сдвигами, расширяя упорядоченную область.",
+        },
+        selectAndPlace: {
+          title: "Выбор и размещение",
+          description: "На каждом шаге находите экстремум в оставшемся диапазоне и обменом помещайте его на итоговую позицию.",
+        },
+        scanAndMatch: {
+          title: "Сканирование и сопоставление",
+          description: "Последовательно просматривайте элементы, сравнивая каждый с искомым условием или текущим лучшим значением.",
+        },
+        divideAndConquer: {
+          title: "Разделяй и властвуй",
+          description: "Используйте структуру, чтобы на каждом шаге отбрасывать значительную часть оставшегося пространства поиска.",
+        },
+        uncategorizedTitle: "Другие паттерны",
+        fallbackDescription: "Практические задания, объединённые общей техникой решения задач.",
+      },
       loading: "Загрузка учебного пути...",
     },
     playground: {

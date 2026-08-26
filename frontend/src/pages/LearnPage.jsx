@@ -13,6 +13,29 @@ import { usePet } from "../hooks/usePet";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { supabase } from "../lib/supabase";
 
+const PATTERN_DEFINITIONS = [
+  {
+    key: "local_reordering",
+    titleKey: "learn.patterns.localReordering.title",
+    descriptionKey: "learn.patterns.localReordering.description",
+  },
+  {
+    key: "select_and_place",
+    titleKey: "learn.patterns.selectAndPlace.title",
+    descriptionKey: "learn.patterns.selectAndPlace.description",
+  },
+  {
+    key: "scan_and_match",
+    titleKey: "learn.patterns.scanAndMatch.title",
+    descriptionKey: "learn.patterns.scanAndMatch.description",
+  },
+  {
+    key: "divide_and_conquer",
+    titleKey: "learn.patterns.divideAndConquer.title",
+    descriptionKey: "learn.patterns.divideAndConquer.description",
+  },
+];
+
 function getApiUrl(path) {
   const base = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
   return `${base}${path}`;
@@ -121,12 +144,32 @@ export function LearnPage() {
   const statusMap = buildStatusMap(tasks, progressRows);
   const progressByTask = new Map(progressRows.map((row) => [row.task_id, row]));
   const completedCount = progressRows.filter((row) => row.status === "completed").length;
-
-  const groupedTasks = {
-    beginner: tasks.filter((task) => task.difficulty === "beginner"),
-    intermediate: tasks.filter((task) => task.difficulty === "intermediate"),
-    advanced: tasks.filter((task) => task.difficulty === "advanced"),
-  };
+  const groupedTasks = tasks.reduce((groups, task) => {
+    const pattern = task.pattern || "uncategorized";
+    groups[pattern] = groups[pattern] || [];
+    groups[pattern].push(task);
+    return groups;
+  }, {});
+  const knownPatterns = new Set(PATTERN_DEFINITIONS.map(({ key }) => key));
+  const additionalPatterns = Object.keys(groupedTasks)
+    .filter((pattern) => !knownPatterns.has(pattern))
+    .sort();
+  const patternSections = [
+    ...PATTERN_DEFINITIONS.map((definition) => ({
+      key: definition.key,
+      title: t(definition.titleKey),
+      description: t(definition.descriptionKey),
+      tasks: groupedTasks[definition.key] || [],
+    })),
+    ...additionalPatterns.map((pattern) => ({
+      key: pattern,
+      title: pattern === "uncategorized"
+        ? t("learn.patterns.uncategorizedTitle")
+        : pattern.split("_").map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`).join(" "),
+      description: t("learn.patterns.fallbackDescription"),
+      tasks: groupedTasks[pattern],
+    })),
+  ].filter((section) => section.tasks.length > 0);
 
   return (
     <div className="signal-page learn-page">
@@ -212,23 +255,32 @@ export function LearnPage() {
       {loading ? (
         <div className="page-loading">{t("learn.loading")}</div>
       ) : (
-        <section className="learn-columns">
-          {["beginner", "intermediate", "advanced"].map((difficulty) => (
-            <div key={difficulty} className="learn-column">
-              <div className="difficulty-header">
-                <h2 className="section-title">{t(`learn.${difficulty}`)}</h2>
-                <span className={`difficulty-badge ${difficulty}`}>{groupedTasks[difficulty].length} {t("learn.tasks")}</span>
+        <section className="learn-columns pattern-list">
+          {patternSections.map((pattern) => (
+            <div key={pattern.key} className="learn-column pattern-section">
+              <div className="pattern-header">
+                <div className="pattern-heading-copy">
+                  <div className="section-kicker">
+                    <span aria-hidden="true" />
+                    {t("learn.patternLabel")}
+                  </div>
+                  <h2 className="section-title">{pattern.title}</h2>
+                  <p className="pattern-description">{pattern.description}</p>
+                </div>
+                <span className="pattern-count">{pattern.tasks.length} {t("learn.tasks")}</span>
               </div>
 
-              {groupedTasks[difficulty].map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  status={statusMap[task.id] || "locked"}
-                  userProgress={progressByTask.get(task.id)}
-                  onOpen={() => navigate(`/learn/${task.id}`)}
-                />
-              ))}
+              <div className="pattern-task-grid">
+                {pattern.tasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    status={statusMap[task.id] || "locked"}
+                    userProgress={progressByTask.get(task.id)}
+                    onOpen={() => navigate(`/learn/${task.id}`)}
+                  />
+                ))}
+              </div>
             </div>
           ))}
         </section>
