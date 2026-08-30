@@ -1,0 +1,37 @@
+# Known issues and context boundaries
+
+## Missing canonical database baseline
+
+The repository does not contain `CREATE TABLE` definitions for all core tables described by the application. Existing SQL includes incremental changes, RLS policies, and pet/quiz table creation. Do not fabricate columns or claim a clean database can be built solely from these files. Exporting and reviewing a canonical baseline is a separate database project.
+
+## Deprecated Gemini SDK
+
+The backend still uses `google-generativeai`. It is intentionally unchanged in this infrastructure task. Provider migration requires separate behavior and regression review.
+
+## Classifier artifact/library version mismatch
+
+`algo_classifier.pkl` was serialized with scikit-learn 1.6.1 while the runtime pins scikit-learn 1.9.0. The artifact currently loads and the regression test verifies a known classification, but scikit-learn warns that cross-version pickle compatibility is not guaranteed. Retraining or re-exporting the artifact with the runtime version is separate model-maintenance work.
+
+## In-memory rate limits
+
+Rate limiting is process-local. It is suitable for the current single-process deployment but will not coordinate across multiple workers or instances.
+
+## Complexity estimation limitations
+
+Complexity fitting rewrites the first list literal and measures trace steps on a fixed small size set. It is educational guidance, not a formal complexity proof.
+
+## Sandbox security boundary
+
+The sandbox uses process isolation, safe builtins, timeout termination, tracing, and Linux memory limits. It is not a replacement for OS/container isolation when executing fully hostile multi-tenant code.
+
+## Frontend concentration
+
+`App.css`, locale data, and some page/hook modules are large. Avoid broad reads when a selector, translation key, or focused component search is sufficient.
+
+The initial ESLint baseline also reports existing `react-hooks/exhaustive-deps` findings as warnings. Resolve them feature-by-feature with behavioral tests rather than applying blind dependency-array changes.
+
+The current online `npm audit` reports four advisories across the Vite 5/esbuild development toolchain and React Router 6. Safe transitive fixes have been applied; the remaining automated fixes require Vite 8 and React Router 7. Those major migrations are intentionally deferred because they can change build and routing behavior and need dedicated compatibility passes.
+
+## External/live facts
+
+Deployment status, live Supabase schema, secrets, provider dashboards, and production data are not inferable from the repository. Use an authorized live connector or ask the system owner when those facts are required.

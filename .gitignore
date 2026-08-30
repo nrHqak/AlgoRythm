@@ -2,9 +2,14 @@ venv/
 .venv/
 .idea/
 __pycache__/
+.pytest_cache/
+.ruff_cache/
 *.pyc
 *.pyo
 *.pyd
+.coverage
+coverage.json
+htmlcov/
 .DS_Store
 
 *.env
@@ -12,3 +17,4 @@ __pycache__/
 
 frontend/node_modules/
 frontend/dist/
+frontend/coverage/

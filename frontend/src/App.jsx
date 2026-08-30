@@ -15,7 +15,7 @@ import { PlaygroundPage } from "./pages/PlaygroundPage";
 import { ProfilePage } from "./pages/ProfilePage";
 
 
-function ProtectedRoute({ children }) {
+export function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -31,7 +31,7 @@ function ProtectedRoute({ children }) {
 }
 
 
-function AppRoutes() {
+export function AppRoutes() {
   const achievementUi = useAchievements();
 
   return (
