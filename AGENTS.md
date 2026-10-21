@@ -5,7 +5,7 @@ This file is the small, always-on instruction layer. Do not read the entire repo
 ## Repository map
 
 - `frontend/`: React 18 + Vite client. Browser auth and low-risk user-owned data access use Supabase directly.
-- `backend/`: FastAPI service, process-isolated Python execution, tracing, classification, mentor integration, and privileged persistence.
+- `backend/`: FastAPI service for AST classification, mentor integration, and privileged persistence; never executes user Python source.
 - `supabase/`: append-only migrations and legacy/manual schema SQL.
 - `docs/context/`: architecture, contracts, workflows, decisions, known issues, and the generated repository map.
 

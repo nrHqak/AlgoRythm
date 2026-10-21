@@ -15,7 +15,7 @@
 - `README.md`: 1 mapped file(s)
 - `TECHNICAL_ARCHITECTURE.md`: 1 mapped file(s)
 - `backend/`: 17 mapped file(s)
-- `docs/`: 11 mapped file(s)
+- `docs/`: 12 mapped file(s)
 - `frontend/`: 68 mapped file(s)
 - `pyproject.toml`: 1 mapped file(s)
 - `render.yaml`: 1 mapped file(s)
