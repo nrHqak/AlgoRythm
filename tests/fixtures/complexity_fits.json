@@ -1,0 +1,134 @@
+[
+  {
+    "name": "O(√n)",
+    "sizes": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "steps": [
+      22,
+      32,
+      45,
+      63,
+      89
+    ],
+    "expected": {
+      "complexity": "O(√n)",
+      "label": "Sublinear — work grows very gently.",
+      "confidence": 1.0
+    }
+  },
+  {
+    "name": "O(log n)",
+    "sizes": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "steps": [
+      16,
+      23,
+      30,
+      37,
+      44
+    ],
+    "expected": {
+      "complexity": "O(log n)",
+      "label": "Logarithmic — doubling input adds only a little extra work.",
+      "confidence": 1.0
+    }
+  },
+  {
+    "name": "O(n)",
+    "sizes": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "steps": [
+      50,
+      100,
+      200,
+      400,
+      800
+    ],
+    "expected": {
+      "complexity": "O(n)",
+      "label": "Linear — work grows proportionally with input size.",
+      "confidence": 1.0
+    }
+  },
+  {
+    "name": "O(n log n)",
+    "sizes": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "steps": [
+      80,
+      230,
+      599,
+      1476,
+      3506
+    ],
+    "expected": {
+      "complexity": "O(n log n)",
+      "label": "Near-optimal for sorting — a strong result for comparison-based algorithms.",
+      "confidence": 1.0
+    }
+  },
+  {
+    "name": "O(n²)",
+    "sizes": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "steps": [
+      250,
+      1000,
+      4000,
+      16000,
+      64000
+    ],
+    "expected": {
+      "complexity": "O(n²)",
+      "label": "Quadratic — typical for nested loops.",
+      "confidence": 1.0
+    }
+  },
+  {
+    "name": "O(n³)",
+    "sizes": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "steps": [
+      1250,
+      10000,
+      80000,
+      640000,
+      5120000
+    ],
+    "expected": {
+      "complexity": "O(n³)",
+      "label": "Cubic — very expensive on larger inputs.",
+      "confidence": 1.0
+    }
+  }
+]

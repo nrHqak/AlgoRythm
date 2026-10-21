@@ -28,6 +28,7 @@ class AlgorithmTracer:
     def __init__(self, source_code: str, array_var: str, max_steps: int = 300) -> None:
         self.source_lines = source_code.splitlines()
         self.array_var = array_var
+        self.line_events = [self._detect_event(line.strip()) for line in self.source_lines]
         self.max_steps = max_steps
         self.steps: list[dict[str, Any]] = []
         self.error: dict[str, Any] | None = None
@@ -57,7 +58,7 @@ class AlgorithmTracer:
 
         line_number = frame.f_lineno
         locals_snapshot = self._snapshot_locals(frame.f_locals)
-        event_type = self._detect_event(self._get_source_line(line_number))
+        event_type = self.line_events[line_number - 1] if 1 <= line_number <= len(self.line_events) else "step"
         highlights = self._extract_highlights(frame.f_locals, len(array_value))
 
         self.steps.append(
@@ -109,6 +110,7 @@ class AlgorithmTracer:
 
     def build_response(self) -> dict[str, Any]:
         return {
+            "trace_version": 1,
             "steps": self.steps,
             "error": self.error,
             "total_steps": len(self.steps),
@@ -190,10 +192,12 @@ class AlgorithmTracer:
         return bool(pattern.match(source_line)) and not self._is_shift_line(source_line)
 
     def _extract_array(self, value: Any) -> list[Any] | None:
-        if isinstance(value, list):
-            return copy.deepcopy(value)
-        if isinstance(value, tuple):
-            return list(value)
+        if isinstance(value, (list, tuple)):
+            # Primitive values are immutable; only the outer list needs copying.
+            # Nested values still need independent historical snapshots.
+            if all(type(item) in (str, int, float, bool, type(None)) for item in value):
+                return list(value)
+            return copy.deepcopy(list(value))
         return None
 
     def _extract_highlights(self, local_vars: dict[str, Any], array_length: int) -> list[int]:
@@ -212,7 +216,7 @@ class AlgorithmTracer:
     def _snapshot_locals(self, local_vars: dict[str, Any]) -> dict[str, Any]:
         snapshot: dict[str, Any] = {}
         for key, value in local_vars.items():
-            if key.startswith("__"):
+            if key.startswith("__") or (key == self.array_var and isinstance(value, (list, tuple))):
                 continue
             snapshot[key] = self._sanitize_value(value)
         return snapshot
@@ -227,9 +231,3 @@ class AlgorithmTracer:
         if isinstance(value, dict):
             return {str(key): self._sanitize_value(val) for key, val in value.items()}
         return repr(value)
-
-
-def trace_code(code: str, array_var: str, max_steps: int = 300) -> dict[str, Any]:
-    from sandbox import execute_code
-
-    return execute_code(code, array_var, max_steps=max_steps)

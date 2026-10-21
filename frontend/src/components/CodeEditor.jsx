@@ -9,6 +9,7 @@ export function CodeEditor({
   arrayVar,
   errorLine,
   isLoading,
+  runDisabled = false,
   onCodeChange,
   onArrayVarChange,
   onRun,
@@ -28,7 +29,7 @@ export function CodeEditor({
           <h2>{t("playground.codeWorkspace")}</h2>
           <p>{t("playground.codeSubtitle")}</p>
         </div>
-        <button className="primary-button" type="button" onClick={onRun} disabled={isLoading}>
+        <button className="primary-button" type="button" onClick={onRun} disabled={isLoading || runDisabled}>
           {isLoading ? t("common.running") : t("common.run")}
         </button>
       </div>

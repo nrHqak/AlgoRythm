@@ -74,6 +74,10 @@ Deploy the `frontend/` app.
 
 The file `frontend/vercel.json` already adds the SPA rewrite required for React Router.
 
+Python execution and complexity run only in the browser worker. Keep `VITE_API_URL` for classification, mentor, and authenticated session saving. Pyodide assets load from the version-pinned jsDelivr URL; deployment CSP/network policy must permit that loader and its assets. Smoke-test Python readiness, Retry after initialization failure, tracing, explicit complexity/cache reuse, classification, mentor, and session saving. The backend has no execution routes.
+
+Demo seeding reads saved example traces from `backend/demo_traces.json`; it never executes the stored source.
+
 ## Local Pre-Deploy Checks
 
 ### Frontend
@@ -90,6 +94,6 @@ npm run build
 cd backend
 source ../venv/bin/activate
 pip install -r requirements.txt
-python -m py_compile main.py tracer.py mentor.py sandbox.py classifier.py
+python -m py_compile main.py mentor.py classifier.py
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```

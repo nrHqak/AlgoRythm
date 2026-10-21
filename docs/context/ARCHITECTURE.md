@@ -8,8 +8,9 @@ AlgoRythm is an algorithm-learning platform. A learner submits Python code, rece
 
 ```text
 Browser (React/Vite on Vercel)
-  |-- public and compute requests --> FastAPI on Render
-  |                                    |-- child process --> user-code tracer
+  |-- Web Worker / Pyodide --> normal trace + explicit complexity counts
+  |-- public/enrichment requests --> FastAPI on Render
+  |                                    |-- AST features/model --> classification
   |                                    |-- Gemini API --> mentor response
   |                                    `-- service role --> Supabase
   `-- authenticated anon client -------------------------> Supabase Auth/Postgres
@@ -33,21 +34,47 @@ State is organized by focused hooks:
 - playback: `usePlayer`;
 - persistence-backed pet, quiz, DNA, and achievement features: their corresponding hooks.
 
-The frontend talks to both FastAPI and Supabase. This is intentional: compute, mentor, demo login, and privileged session persistence go through FastAPI; user-owned state protected by RLS is accessed through the Supabase anon client.
+The frontend talks to both FastAPI and Supabase. Classification, mentor, demo login, and privileged session persistence go through FastAPI; user-owned state protected by RLS uses the Supabase anon client. Normal tracing and explicit complexity sampling run in the browser worker.
+
+A browser Python runtime is also prewarmed on Playground mount using a module
+Web Worker and Pyodide. BrowserEngine is the only execution engine. Runtime initialization failure
+leaves Run unavailable and shows Retry, which initializes a fresh worker through
+the existing manager. No backend execution fallback exists. A committed browser trace
+starts asynchronous `/classify` enrichment, independent of visualization and
+playback. Optional audio starts under the Run gesture without awaiting readiness;
+late sounds use the same execution generation. Post-run progress and classification
+start after the trace commit, independently of execution/playback. Session saving awaits enrichment (bounded to ten seconds,
+then unknown) and task progress inside background work. Mount-local promise tails
+serialize progress read/modify/write and session XP updates across rapid Runs;
+failed jobs release their slots without bypassing an older save. A successful
+current save publishes Run-specific XP/achievements. Each successful historical
+or current save performs one fresh global profile read, guarded by the execution
+generation current when that read starts and the provider's latest-read identity.
+There were no duplicate post-run profile reads to remove. Historical saves may finish,
+but the same `useTracer` generation guards save feedback, XP, achievements,
+mentor replies and profile commits. Reactive mentor requests start directly from
+the committed error, independent of saving; conversation inserts await that Run's
+session ID (or null on save failure). Runtime, execution, classification,
+persistence, mentor and explicit complexity each have independent status.
+Normal Run performs one main Python execution and no complexity work. Analyze
+Complexity is explicit, reuses the prewarmed worker in count mode, and caches up
+to 20 results by code/array variable/sampling parameters. Cancellation, failure,
+and recovery leave visible trace/player/editor state intact.
+The worker emits Trace Protocol v1, using the single canonical
+`frontend/src/runtime/tracer.py` AlgorithmTracer source. A reusable manager
+owns lifecycle and hard timeout recovery; navigation away terminates the worker. See [Browser Python runtime](PYTHON_RUNTIME.md)
+for the message contract and current limitations.
 
 ## Backend
 
-`backend/main.py` defines the FastAPI application, request models, rate limits, authentication verification, complexity fitting, achievement evaluation, and persistence orchestration.
+`backend/main.py` defines the FastAPI application, request models, rate limits, authentication verification, achievement evaluation, and persistence orchestration.
 
-Analysis flow:
-
-1. `/analyze` accepts source code and the array variable name.
-2. `sandbox.execute_code` starts a separate `multiprocessing.Process`.
-3. The child applies Linux address-space limits, compiles the code, installs `sys.settrace`, and executes with a small safe-builtin set.
-4. The parent terminates the child after the timeout and returns a structured result.
-5. The classifier extracts AST features and adds algorithm type/confidence.
-
-The tracer records only `<user_code>` frames, snapshots selected state, infers visualization events, and enforces a step cap. Complexity analysis runs the tracer over generated input sizes and fits candidate growth profiles.
+**The backend does not execute user Python code.** `/classify` receives source,
+extracts AST features, and uses the existing model for algorithm type/confidence.
+Mentor requests receive source as context. `/session/save` receives source and
+browser-generated trace data for privileged authenticated persistence; it does
+not regenerate the trace. Demo seeding reads saved example traces. Execution,
+tracing, and complexity counting/fitting belong to the browser system.
 
 The mentor builds context in `backend/mentor.py`, calls Gemini when configured, and returns deterministic fallback guidance when the provider fails.
 

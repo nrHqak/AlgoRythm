@@ -1,71 +1,41 @@
 import { act, renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
-
+import { expect, it, vi } from "vitest";
 import { useTracer } from "../useTracer";
+import { BrowserEngine } from "../../execution/browserEngine";
+import { emptyTrace } from "../../execution/traceProtocol";
 
-describe("useTracer", () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
+const classify = async () => ({ algorithm_type: "unknown", algorithm_confidence: 0 });
+function renderExecution(execute) {
+  const engine = new BrowserEngine({ manager: { executionTimeoutMs: 2000, execute, initialize: async () => {}, getStatus: () => "ready" } });
+  return renderHook(() => useTracer({ engine, classify }));
+}
 
-  it("normalizes a successful analyze response", async () => {
-    const response = {
-      steps: [{ step: 0 }],
-      error: null,
-      total_steps: 1,
-      truncated: false,
-      algorithm_type: "bubble_sort",
-      algorithm_confidence: 0.98,
-    };
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: vi.fn().mockResolvedValue(response) });
-    vi.stubGlobal("fetch", fetchMock);
-    const { result } = renderHook(() => useTracer());
+it("commits a browser trace with asynchronous metadata", async () => {
+  const trace = { ...emptyTrace(), steps: [{ step: 0 }], total_steps: 1 };
+  const { result } = renderExecution(vi.fn().mockResolvedValue(trace));
+  let returned;
+  await act(async () => { returned = await result.current.analyzeCode("arr = [1]", "arr"); });
+  expect(returned).toEqual(trace);
+  expect(result.current.traceData).toMatchObject({ ...trace, algorithm_type: "unknown" });
+  expect(result.current.requestError).toBe("");
+});
 
-    let returned;
-    await act(async () => {
-      returned = await result.current.analyzeCode("arr = [2, 1]", "arr");
-    });
+it("clears stale trace after a worker infrastructure failure", async () => {
+  const execute = vi.fn().mockResolvedValueOnce({ ...emptyTrace(), steps: [{ step: 0 }], total_steps: 1 }).mockRejectedValueOnce(new Error("Worker failed"));
+  const { result } = renderExecution(execute);
+  await act(async () => { await result.current.analyzeCode("arr = [1]", "arr"); });
+  await act(async () => { await result.current.analyzeCode("arr = [1]", "arr"); });
+  expect(result.current.traceData.steps).toEqual([]);
+  expect(result.current.traceData.trace_version).toBeNull();
+  expect(result.current.requestError).toBe("Worker failed");
+  expect(result.current.isLoading).toBe(false);
+});
 
-    expect(returned).toEqual(response);
-    expect(result.current.traceData).toEqual(response);
-    expect(result.current.requestError).toBe("");
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/analyze",
-      expect.objectContaining({ method: "POST" }),
-    );
-  });
-
-  it("clears stale trace state after a non-success response", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ steps: [{ step: 0 }], total_steps: 1 }),
-      })
-      .mockResolvedValueOnce({ ok: false, status: 500 });
-    vi.stubGlobal("fetch", fetchMock);
-    const { result } = renderHook(() => useTracer());
-
-    await act(async () => {
-      await result.current.analyzeCode("arr = [1]", "arr");
-      await result.current.analyzeCode("arr = [1]", "arr");
-    });
-
-    expect(result.current.traceData.steps).toEqual([]);
-    expect(result.current.requestError).toContain("status 500");
-  });
-
-  it("returns null and records a network error", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
-    const { result } = renderHook(() => useTracer());
-
-    let returned;
-    await act(async () => {
-      returned = await result.current.analyzeCode("arr = [1]", "arr");
-    });
-
-    expect(returned).toBeNull();
-    expect(result.current.requestError).toBe("offline");
-    expect(result.current.isLoading).toBe(false);
-  });
+it("displays canonical timeout errors without an infrastructure error", async () => {
+  const trace = emptyTrace({ type: "timeout", message: "Execution exceeded 2 seconds.", line: 1 });
+  const error = Object.assign(new Error("timeout"), { name: "timeout", trace });
+  const { result } = renderExecution(vi.fn().mockRejectedValue(error));
+  await act(async () => { await result.current.analyzeCode("while True: pass", "arr"); });
+  expect(result.current.traceData.error).toEqual(trace.error);
+  expect(result.current.requestError).toBe("");
 });
