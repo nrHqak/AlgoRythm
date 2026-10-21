@@ -20,9 +20,14 @@ Rate limiting is process-local. It is suitable for the current single-process de
 
 Complexity fitting rewrites the first list literal and measures trace steps on a fixed small size set. It is educational guidance, not a formal complexity proof.
 
-## Sandbox security boundary
+## Browser execution boundary
 
-The sandbox uses process isolation, safe builtins, timeout termination, tracing, and Linux memory limits. It is not a replacement for OS/container isolation when executing fully hostile multi-tenant code.
+The backend does not execute user Python code. The Pyodide worker keeps ordinary
+execution off the UI thread and preserves safe builtins, step caps, and hard
+worker termination/recovery. There is no browser memory quota; builtin filtering
+is not proof against all Python escapes or worker JavaScript/network access.
+Initial Pyodide loading requires jsDelivr access; offline/self-hosted assets are
+not configured. Suspended-tab scheduling can delay timeout enforcement.
 
 ## Frontend concentration
 

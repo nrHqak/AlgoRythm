@@ -1,4 +1,6 @@
 import os
+import json
+from pathlib import Path
 import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -7,7 +9,6 @@ from dotenv import load_dotenv
 from supabase import create_client
 
 from classifier import classify_algorithm
-from sandbox import execute_code
 
 load_dotenv()
 
@@ -42,6 +43,9 @@ class SeedUser:
   last_active_days_ago: int
   mentor_style: str
   pet_name: str
+
+
+DEMO_TRACES = json.loads(Path(__file__).with_name("demo_traces.json").read_text())
 
 
 ALGORITHM_CASES = [
@@ -193,7 +197,10 @@ def reset_user_rows(user_id):
 
 
 def build_session_payload(case, offset_days):
-  traced = execute_code(case["code"], case["array_var"])
+  frozen = DEMO_TRACES[case["key"]]
+  if frozen["code"] != case["code"] or frozen["array_var"] != case["array_var"]:
+    raise ValueError("Demo source must match its saved browser trace.")
+  traced = frozen["trace"]
   classification = classify_algorithm(case["code"])
   created_at = datetime.now(timezone.utc) - timedelta(days=offset_days, hours=random.randint(1, 20))
   return {

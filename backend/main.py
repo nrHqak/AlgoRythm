@@ -1,9 +1,7 @@
 import os
-import re
 from datetime import date, datetime, timedelta
 from typing import Any
 
-import numpy as np
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -17,8 +15,6 @@ from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
 from classifier import classify_algorithm
 from mentor import generate_mentor_hint
-from sandbox import execute_code
-from tracer import trace_code
 
 load_dotenv()
 
@@ -76,9 +72,8 @@ RATE_LIMIT_MAX_REQUESTS = 10
 demo_login_attempts = {}
 
 
-class AnalyzeRequest(BaseModel):
+class ClassifyRequest(BaseModel):
     code: str = Field(..., min_length=1)
-    array_var: str = Field(..., min_length=1)
 
 
 class MentorRequest(BaseModel):
@@ -106,32 +101,12 @@ class SessionSaveRequest(BaseModel):
     mentor_messages_count: int = 0
 
 
-class ComplexityRequest(BaseModel):
-    code: str = Field(..., min_length=1)
-    array_var: str = Field(..., min_length=1)
-
-
 LEVELS = [
     {"level": 1, "min_xp": 0, "max_xp": 199},
     {"level": 2, "min_xp": 200, "max_xp": 499},
     {"level": 3, "min_xp": 500, "max_xp": 999},
     {"level": 4, "min_xp": 1000, "max_xp": 1999},
     {"level": 5, "min_xp": 2000, "max_xp": float("inf")},
-]
-
-COMPLEXITY_SIZES = [5, 10, 20, 40, 80]
-COMPLEXITY_MAX_STEPS = 25000
-COMPLEXITY_PROFILES = [
-    {"kind": "power", "exponent": 0.5, "complexity": "O(√n)", "label": "Sublinear — work grows very gently."},
-    {"kind": "log", "complexity": "O(log n)", "label": "Logarithmic — doubling input adds only a little extra work."},
-    {"kind": "power", "exponent": 1.0, "complexity": "O(n)", "label": "Linear — work grows proportionally with input size."},
-    {
-        "kind": "nlogn",
-        "complexity": "O(n log n)",
-        "label": "Near-optimal for sorting — a strong result for comparison-based algorithms.",
-    },
-    {"kind": "power", "exponent": 2.0, "complexity": "O(n²)", "label": "Quadratic — typical for nested loops."},
-    {"kind": "power", "exponent": 3.0, "complexity": "O(n³)", "label": "Cubic — very expensive on larger inputs."},
 ]
 
 
@@ -245,88 +220,6 @@ def evaluate_achievements(
     return slugs
 
 
-def _replace_first_list_literal(code: str, generated_array: list[int]) -> str:
-    replacement = str(generated_array)
-    pattern = re.compile(r"(\b\w+\b)\s*=\s*\[[^\]]*\]", re.MULTILINE)
-    return pattern.sub(lambda match: f"{match.group(1)} = {replacement}", code, count=1)
-
-
-def _complexity_feature(sizes: np.ndarray, profile: dict[str, Any]) -> np.ndarray:
-    if profile["kind"] == "power":
-        return np.power(sizes, profile["exponent"])
-    if profile["kind"] == "log":
-        return np.log(np.maximum(sizes, 2))
-    if profile["kind"] == "nlogn":
-        return sizes * np.log(np.maximum(sizes, 2))
-    raise ValueError("Unknown complexity profile.")
-
-
-def _fit_profile(sizes: list[int], steps: list[int], profile: dict[str, Any]) -> dict[str, Any]:
-    sizes_array = np.array(sizes, dtype=float)
-    steps_array = np.array(steps, dtype=float)
-    feature = _complexity_feature(sizes_array, profile)
-    denominator = float(np.dot(feature, feature))
-    scale = float(np.dot(feature, steps_array) / denominator) if denominator else 0.0
-    predicted = scale * feature
-    residual = steps_array - predicted
-    sse = float(np.sum(np.square(residual)))
-    mean_steps = float(np.mean(steps_array))
-    sst = float(np.sum(np.square(steps_array - mean_steps)))
-    r_squared = 1.0 if sst == 0 else max(0.0, min(1.0, 1 - (sse / sst)))
-
-    return {
-        "complexity": profile["complexity"],
-        "label": profile["label"],
-        "confidence": round(r_squared, 3),
-        "sse": sse,
-    }
-
-
-def analyze_complexity_curve(code: str, array_var: str) -> dict[str, Any]:
-    successful_sizes: list[int] = []
-    successful_steps: list[int] = []
-    all_steps: list[int] = []
-
-    for size in COMPLEXITY_SIZES:
-        generated_array = list(range(size, 0, -1))
-        modified_code = _replace_first_list_literal(code, generated_array)
-
-        try:
-            result = trace_code(modified_code, array_var, max_steps=COMPLEXITY_MAX_STEPS)
-        except Exception:
-            all_steps.append(0)
-            continue
-
-        if result.get("error"):
-            all_steps.append(0)
-            continue
-
-        step_count = int(result.get("total_steps", 0) or 0)
-        all_steps.append(step_count)
-
-        if step_count > 0:
-            successful_sizes.append(size)
-            successful_steps.append(step_count)
-
-    if len(successful_sizes) < 3:
-        return {
-            "error": "not enough data",
-            "sizes": COMPLEXITY_SIZES,
-            "steps": all_steps,
-        }
-
-    fits = [_fit_profile(successful_sizes, successful_steps, profile) for profile in COMPLEXITY_PROFILES]
-    best_fit = min(fits, key=lambda item: item["sse"])
-
-    return {
-        "sizes": COMPLEXITY_SIZES,
-        "steps": all_steps,
-        "complexity": best_fit["complexity"],
-        "label": best_fit["label"],
-        "confidence": best_fit["confidence"],
-    }
-
-
 @app.get("/")
 def root():
     return {"status": "ok"}
@@ -339,20 +232,14 @@ def curriculum():
     return {"tasks": tasks}
 
 
-@app.post("/analyze")
+@app.post("/classify")
 @limiter.limit("20/minute")
-def analyze(request: Request, payload: AnalyzeRequest):
-    result = execute_code(payload.code, payload.array_var)
+def classify(request: Request, payload: ClassifyRequest):
     classification = classify_algorithm(payload.code)
-    result["algorithm_type"] = classification.get("algorithm", "unknown")
-    result["algorithm_confidence"] = classification.get("confidence", 0.0)
-    return result
-
-
-@app.post("/complexity")
-@limiter.limit("5/minute")
-def complexity(request: Request, payload: ComplexityRequest):
-    return analyze_complexity_curve(payload.code, payload.array_var)
+    return {
+        "algorithm_type": classification.get("algorithm", "unknown"),
+        "algorithm_confidence": classification.get("confidence", 0.0),
+    }
 
 
 @app.post("/mentor")

@@ -38,7 +38,11 @@ class ContextMapTests(unittest.TestCase):
             secret_path.write_text(f"DO_NOT_EMIT={secret_value}\n", encoding="utf-8")
             generated = context_map.generate()
 
-        self.assertIn("`/analyze`", generated)
+        self.assertIn("`/classify`", generated)
+        self.assertNotIn("`/analyze`", generated)
+        self.assertNotIn("`/complexity`", generated)
+        self.assertIn("frontend/src/runtime/tracer.py", generated)
+        self.assertNotIn("backend/sandbox.py", generated)
         self.assertNotIn(secret_value, generated)
         self.assertNotIn("DO_NOT_EMIT", generated)
 

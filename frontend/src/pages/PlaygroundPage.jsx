@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { CodeEditor } from "../components/CodeEditor";
@@ -6,10 +6,12 @@ import { ComplexityChart } from "../components/ComplexityChart";
 import { MentorChat } from "../components/MentorChat";
 import { StepPlayer } from "../components/StepPlayer";
 import { VisualCanvas } from "../components/VisualCanvas";
+import { useComplexity } from "../hooks/useComplexity";
 import { useAudio } from "../hooks/useAudio";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { useLocale } from "../hooks/useLocale.jsx";
 import { usePlayer } from "../hooks/usePlayer";
+import { usePythonRuntimePrewarm } from "../hooks/usePythonRuntimePrewarm";
 import { useProfile } from "../hooks/useProfile.jsx";
 import { useTracer } from "../hooks/useTracer";
 import { supabase } from "../lib/supabase";
@@ -110,13 +112,15 @@ function formatAlgorithmLabel(value) {
 }
 
 export function PlaygroundPage({ achievementUi }) {
+  const runtimeRef = usePythonRuntimePrewarm();
   const { taskId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, session } = useAuth();
   const { t } = useLocale();
   const { refreshProfile } = useProfile();
-  const { traceData, isLoading, requestError, analyzeCode, resetTrace } = useTracer();
+  const { traceData, isLoading, requestError, analyzeCode, resetTrace, waitForClassification, captureExecution, invalidateExecution,
+    runtimeStatus, retryRuntime, classificationStatus, canRun } = useTracer({ runtimeRef });
   const { currentStep, isPlaying, play, pause, next, prev, progress } = usePlayer(traceData.total_steps);
   const { muted, toggleMute, unlockAudio, playSound } = useAudio();
 
@@ -128,18 +132,26 @@ export function PlaygroundPage({ achievementUi }) {
   const [mentorMessages, setMentorMessages] = useState([]);
   const [mentorInput, setMentorInput] = useState("");
   const [mentorLoading, setMentorLoading] = useState(false);
+  const [mentorError, setMentorError] = useState("");
+  const [persistenceLoading, setPersistenceLoading] = useState(false);
+  const [postExecutionJob, setPostExecutionJob] = useState(null);
+  const progressTail = useRef(Promise.resolve());
+  const sessionTail = useRef(Promise.resolve());
+  const activeMentor = useRef(null);
+  const preparingRun = useRef(false);
   const [saveFeedback, setSaveFeedback] = useState("");
   const [saveError, setSaveError] = useState("");
   const [xpNotice, setXpNotice] = useState("");
-  const [sessionId, setSessionId] = useState(null);
+  const savedRunSession = useRef(Promise.resolve(null));
   const [proactiveTriggered, setProactiveTriggered] = useState(false);
   const [mentorMessageCount, setMentorMessageCount] = useState(0);
-  const [complexityData, setComplexityData] = useState(null);
-  const [complexityLoading, setComplexityLoading] = useState(false);
+  const { complexityData, complexityLoading, complexityError, complexityRuntimeStatus, analyzeComplexity, cancelComplexity } = useComplexity(runtimeRef);
+  const canStartRun = canRun || (complexityLoading && runtimeStatus === "running");
   const currentTraceStep =
     traceData.steps.length > 0 ? traceData.steps[Math.min(currentStep, traceData.steps.length - 1)] : null;
 
   useEffect(() => {
+    let active = true;
     async function loadTask() {
       if (!taskId) {
         setTask(null);
@@ -149,6 +161,7 @@ export function PlaygroundPage({ achievementUi }) {
 
       setLoadingTask(true);
       const { data, error } = await supabase.from("tasks").select("*").eq("id", taskId).maybeSingle();
+      if (!active) return;
       if (error) {
         setSaveError(error.message || "Unable to load task.");
       } else {
@@ -157,7 +170,10 @@ export function PlaygroundPage({ achievementUi }) {
       setLoadingTask(false);
     }
 
-    loadTask();
+    loadTask().catch((error) => {
+      if (active) { setSaveError(error.message || "Unable to load task."); setLoadingTask(false); }
+    });
+    return () => { active = false; };
   }, [taskId]);
 
   useEffect(() => {
@@ -166,8 +182,8 @@ export function PlaygroundPage({ achievementUi }) {
       setSelectedExample("task");
       setArrayVar("arr");
       resetTrace();
-      setComplexityData(null);
-      setComplexityLoading(false);
+      clearSecondaryState();
+      cancelComplexity();
       setMentorMessages([]);
       setMentorMessageCount(0);
       setProactiveTriggered(false);
@@ -180,8 +196,8 @@ export function PlaygroundPage({ achievementUi }) {
       setCode(selected.code);
       setArrayVar(selected.arrayVar);
       resetTrace();
-      setComplexityData(null);
-      setComplexityLoading(false);
+      clearSecondaryState();
+      cancelComplexity();
       setMentorMessages([]);
       setMentorMessageCount(0);
       setProactiveTriggered(false);
@@ -192,7 +208,9 @@ export function PlaygroundPage({ achievementUi }) {
     if (!currentTraceStep) {
       return;
     }
-    playSound(currentTraceStep.event);
+    // Optional sound must neither delay tracing nor play a retired Run after
+    // a suspended audio context finally resumes.
+    playSound(currentTraceStep.event, captureExecution()).catch(() => {});
   }, [currentStep, currentTraceStep]);
 
   useEffect(() => {
@@ -208,6 +226,7 @@ export function PlaygroundPage({ achievementUi }) {
           {
             event: currentTraceStep.event,
             line: currentTraceStep.line,
+            array: currentTraceStep.array,
             locals: currentTraceStep.locals,
           },
           null,
@@ -237,68 +256,79 @@ export function PlaygroundPage({ achievementUi }) {
     return base;
   })();
 
-  async function persistMentorMessage(role, message, triggerType, sessionOverride = null) {
-    if (!user?.id || !message) {
-      return;
-    }
+  function clearSecondaryState() {
+    activeMentor.current?.controller.abort();
+    activeMentor.current = null;
+    setMentorLoading(false);
+    setMentorError("");
+    setPersistenceLoading(false);
+    savedRunSession.current = Promise.resolve(null);
+    setSaveFeedback("");
+    setSaveError("");
+    setXpNotice("");
+    setProactiveTriggered(false);
+  }
 
-    await supabase.from("mentor_messages").insert({
-      user_id: user.id,
-      session_id: sessionOverride || sessionId,
-      role,
-      message,
-      trigger_type: triggerType,
+  useEffect(() => () => { activeMentor.current?.controller.abort(); }, []);
+
+  async function persistMentorMessage(role, message, triggerType, savedSessionId) {
+    if (!user?.id || !message) return;
+    const { error } = await supabase.from("mentor_messages").insert({
+      user_id: user.id, session_id: savedSessionId, role, message, trigger_type: triggerType,
     });
+    if (error) throw error;
   }
 
   async function sendMentorMessage({
-    question,
-    mode,
-    traceOverride,
-    suppressUserMessage = false,
-    userHistory = null,
-    sessionOverride = null,
+    question, mode, traceOverride, suppressUserMessage = false, userHistory = null,
+    context = { code, result: traceData }, isCurrent = captureExecution(),
+    savedSession = savedRunSession.current,
   }) {
+    if (!isCurrent()) return;
+    activeMentor.current?.controller.abort();
+    const request = { controller: new AbortController() };
+    activeMentor.current = request;
+    const current = () => isCurrent() && activeMentor.current === request;
     setMentorLoading(true);
-    setSaveError("");
-        const trimmedQuestion = question.trim();
-
+    setMentorError("");
+    const trimmedQuestion = question.trim();
+    const records = [];
     try {
       if (!suppressUserMessage && trimmedQuestion) {
-        const userMessage = { role: "user", message: trimmedQuestion };
-        setMentorMessages((previous) => [...previous.slice(-9), userMessage]);
+        setMentorMessages((previous) => [...previous.slice(-9), { role: "user", message: trimmedQuestion }]);
         setMentorMessageCount((previous) => previous + 1);
-        await persistMentorMessage("user", trimmedQuestion, mode, sessionOverride);
+        records.push({ role: "user", message: trimmedQuestion });
       }
-
+      const result = context.result;
       const response = await fetch(getApiUrl("/mentor"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" }, signal: request.controller.signal,
         body: JSON.stringify({
-          code,
-          error: traceData.error ? `${traceData.error.type}: ${traceData.error.message}` : null,
-          error_line: traceData.error?.line || null,
-          trace_context: traceOverride || summarizeTraceSteps(traceData.steps, 5),
-          user_question: trimmedQuestion || null,
-          mode,
-          user_history: userHistory,
+          code: context.code,
+          error: result.error ? `${result.error.type}: ${result.error.message}` : null,
+          error_line: result.error?.line || null,
+          trace_context: traceOverride || summarizeTraceSteps(result.steps, 5),
+          user_question: trimmedQuestion || null, mode, user_history: userHistory,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Mentor request failed with status ${response.status}.`);
-      }
-
+      if (!response.ok) throw new Error(`Mentor request failed with status ${response.status}.`);
       const data = await response.json();
-      const mentorMessage = { role: "mentor", message: data.message };
-      setMentorMessages((previous) => [...previous.slice(-9), mentorMessage]);
-      setMentorMessageCount((previous) => previous + 1);
-      await persistMentorMessage("mentor", data.message, mode, sessionOverride);
+      records.push({ role: "mentor", message: data.message });
+      if (current()) {
+        setMentorMessages((previous) => [...previous.slice(-9), { role: "mentor", message: data.message }]);
+        setMentorMessageCount((previous) => previous + 1);
+      }
     } catch (error) {
-      setSaveError(error.message || "Mentor request failed.");
+      if (current()) setMentorError(error.message || "Mentor request failed.");
     } finally {
-      setMentorLoading(false);
-      setMentorInput("");
+      if (current()) { setMentorLoading(false); setMentorInput(""); }
+    }
+    // Answers can be visible while the matching historical session is saving.
+    // A failed session resolves to null; it must never attach a reply to a newer session.
+    try {
+      const savedSessionId = await savedSession;
+      for (const record of records) await persistMentorMessage(record.role, record.message, mode, savedSessionId);
+    } catch (error) {
+      if (current()) setMentorError(`${t("playground.mentorSaveFailed")} ${error.message || ""}`);
     }
   }
 
@@ -307,13 +337,14 @@ export function PlaygroundPage({ achievementUi }) {
       return { existing: null, completedFirstTime: false, attempts: 1 };
     }
 
-    const { data: existing } = await supabase
+    const { data: existing, error } = await supabase
       .from("task_progress")
       .select("*")
       .eq("user_id", user.id)
       .eq("task_id", task.id)
       .maybeSingle();
 
+    if (error) throw error;
     const attempts = (existing?.attempts || 0) + 1;
     return {
       existing: existing || null,
@@ -349,14 +380,15 @@ export function PlaygroundPage({ achievementUi }) {
     }
 
     if (solved) {
-      const { data: nextTask } = await supabase
+      const { data: nextTask, error: nextError } = await supabase
         .from("tasks")
         .select("*")
         .eq("order_index", task.order_index + 1)
         .maybeSingle();
 
+      if (nextError) throw nextError;
       if (nextTask) {
-        await supabase.from("task_progress").upsert(
+        const { error: unlockError } = await supabase.from("task_progress").upsert(
           {
             user_id: user.id,
             task_id: nextTask.id,
@@ -364,6 +396,7 @@ export function PlaygroundPage({ achievementUi }) {
           },
           { onConflict: "user_id,task_id" }
         );
+        if (unlockError) throw unlockError;
       }
     }
 
@@ -405,97 +438,93 @@ export function PlaygroundPage({ achievementUi }) {
     return response.json();
   }
 
-  async function fetchComplexityAnalysis(sourceCode, sourceArrayVar) {
-    setComplexityLoading(true);
-
-    try {
-      const response = await fetch(getApiUrl("/complexity"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: sourceCode,
-          array_var: sourceArrayVar,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Complexity request failed with status ${response.status}.`);
-      }
-
-      const data = await response.json();
-      setComplexityData(data.error ? null : data);
-    } catch {
-      setComplexityData(null);
-    } finally {
-      setComplexityLoading(false);
-    }
-  }
-
   function handleCodeChange(value) {
     setCode(value);
-    setComplexityData(null);
-    setComplexityLoading(false);
+    cancelComplexity();
   }
 
   function handleArrayVarChange(value) {
     setArrayVar(value);
-    setComplexityData(null);
-    setComplexityLoading(false);
+    cancelComplexity();
   }
 
+  // React runs this effect after the trace has been committed to the DOM.
+  // The job captures the code/task/auth inputs from that Run, not later editor state.
+  useEffect(() => {
+    if (!postExecutionJob || postExecutionJob.started) return;
+    postExecutionJob.started = true;
+    postExecutionJob.start(); // start owns all success/failure handling below.
+  }, [postExecutionJob]);
+
   async function handleRun() {
-    await unlockAudio();
-    setSaveFeedback("");
-    setSaveError("");
-    setXpNotice("");
-    setComplexityData(null);
-    setComplexityLoading(false);
-    setProactiveTriggered(false);
-
-    const result = await analyzeCode(code, arrayVar);
-    if (!result) {
-      return;
-    }
-
+    if (!canStartRun || preparingRun.current) return;
+    preparingRun.current = true;
+    invalidateExecution();
+    const preparationCurrent = captureExecution();
+    clearSecondaryState();
+    // Start under the click gesture, but audio readiness is not a trace dependency.
+    unlockAudio().catch(() => null);
     try {
-      const solved = !result.error;
-      const steps = result.total_steps || 0;
-      const taskContext = await getTaskProgressContext();
-
-      let xpEarned = solved ? 30 : 10;
-      if (solved && task && taskContext.completedFirstTime) {
-        xpEarned += task.max_xp || 0;
-        if (mentorMessageCount === 0) {
-          xpEarned += 50;
-        }
-        if (taskContext.attempts <= 3) {
-          xpEarned += 30;
-        }
-      }
-
-      if (solved) {
-        fetchComplexityAnalysis(code, arrayVar);
-      }
-
-      await saveTaskProgress({ solved, steps, xpEarned, context: taskContext });
-      const savePayload = await saveSession(result, xpEarned, taskContext);
-      setSessionId(savePayload.session_id);
-      setSaveFeedback(solved ? t("playground.sessionSaved") : t("playground.errorSaved"));
-      setXpNotice(`+${xpEarned} XP earned!`);
-      achievementUi.pushAchievements(savePayload.achievements_earned || []);
-      await refreshProfile();
-
-      if (result.error) {
-        await sendMentorMessage({
-          question: "",
-          mode: "reactive",
-          traceOverride: summarizeTraceSteps(result.steps, 5),
-          suppressUserMessage: true,
-          sessionOverride: savePayload.session_id,
+      await cancelComplexity();
+      if (!preparationCurrent()) return;
+      const result = await analyzeCode(code, arrayVar);
+      if (!result) return;
+      const isCurrent = captureExecution(result);
+      setPostExecutionJob({ started: false, start() {
+        if (!isCurrent()) return;
+        setPersistenceLoading(true);
+        const solved = !result.error;
+        // Serialize read/modify/write progress to preserve attempts and first-solve
+        // rewards across rapid Runs. Classification runs independently in parallel.
+        const progressWork = progressTail.current.then(async () => {
+          const taskContext = await getTaskProgressContext();
+          let xpEarned = solved ? 30 : 10;
+          if (solved && task && taskContext.completedFirstTime) {
+            xpEarned += task.max_xp || 0;
+            if (mentorMessageCount === 0) xpEarned += 50;
+            if (taskContext.attempts <= 3) xpEarned += 30;
+          }
+          await saveTaskProgress({ solved, steps: result.total_steps || 0, xpEarned, context: taskContext });
+          return { taskContext, xpEarned };
         });
-      }
+        progressTail.current = progressWork.catch(() => {});
+        // Session saves update XP with a backend read/modify/write. Preserve Run
+        // order locally instead of allowing this page's saves to race each other.
+        const previousSession = sessionTail.current;
+        const sessionWork = Promise.all([progressWork, waitForClassification(result), previousSession])
+          .then(async ([{ taskContext, xpEarned }, enrichedResult]) => {
+            const payload = await saveSession(enrichedResult, xpEarned, taskContext);
+            if (isCurrent()) {
+              setSaveFeedback(solved ? t("playground.sessionSaved") : t("playground.errorSaved"));
+              setXpNotice(`+${xpEarned} XP earned!`);
+              achievementUi.pushAchievements(payload.achievements_earned || []);
+            }
+            return payload;
+          });
+        // A failed middle Run must not let later saves bypass an older pending save.
+        sessionTail.current = Promise.allSettled([previousSession, sessionWork]).then(() => undefined);
+        const savedSession = sessionWork.then((payload) => payload.session_id, () => null);
+        savedRunSession.current = savedSession;
+        sessionWork.then(async () => {
+          // Profile XP is cumulative across historical saves. Read fresh global
+          // state after each successful save, guarded by the generation current
+          // when the read starts plus ProfileProvider's overlapping-read guard.
+          const profileCurrent = captureExecution();
+          if (profileCurrent()) await refreshProfile({ isCurrent: profileCurrent });
+        }).catch((error) => {
+          if (isCurrent()) setSaveError(`${t("playground.persistenceFailed")} ${error.message || ""}`);
+        }).finally(() => { if (isCurrent()) setPersistenceLoading(false); });
+        if (result.error) {
+          // Reactive help uses this exact error/code, and starts without waiting
+          // for classification, database work, or profile refresh.
+          sendMentorMessage({ question: "", mode: "reactive", suppressUserMessage: true,
+            context: { code, result }, isCurrent, savedSession });
+        }
+      } });
     } catch (error) {
-      setSaveError(error.message || "Unable to save session.");
+      if (preparationCurrent()) setSaveError(error.message || "Unable to prepare execution.");
+    } finally {
+      preparingRun.current = false;
     }
   }
 
@@ -526,6 +555,15 @@ export function PlaygroundPage({ achievementUi }) {
         </div>
       </section>
 
+      <div className="status-banner" role="status" data-runtime-status={runtimeStatus}>
+        {t(`playground.runtime.${runtimeStatus}`)}
+        {runtimeStatus === "error" && <>{" "}<button type="button" className="secondary-button" onClick={retryRuntime}>{t("playground.runtimeRetry")}</button></>}
+      </div>
+      {classificationStatus === "loading" ? (
+        <div className="status-banner" role="status">{t("playground.classifying")}</div>
+      ) : null}
+      {persistenceLoading ? <div className="status-banner" role="status">{t("playground.savingSession")}</div> : null}
+      {mentorError ? <div className="status-banner is-error" role="alert">{mentorError}</div> : null}
       {requestError ? <div className="status-banner is-error">{requestError}</div> : null}
       {traceData.truncated ? <div className="status-banner">{t("playground.traceStopped")}</div> : null}
       {saveFeedback ? <div className="status-banner is-success">{saveFeedback}</div> : null}
@@ -548,6 +586,7 @@ export function PlaygroundPage({ achievementUi }) {
               arrayVar={arrayVar}
               errorLine={traceData.error?.line || null}
               isLoading={isLoading}
+              runDisabled={!canStartRun}
               onCodeChange={handleCodeChange}
               onArrayVarChange={handleArrayVarChange}
               onRun={handleRun}
@@ -574,7 +613,9 @@ export function PlaygroundPage({ achievementUi }) {
         </div>
 
         <div className="playground-context-grid">
-          <ComplexityChart complexityData={complexityData} isLoading={complexityLoading} />
+          <ComplexityChart complexityData={complexityData} isLoading={complexityLoading}
+            error={complexityError} onAnalyze={() => analyzeComplexity(code, arrayVar)}
+            disabled={complexityRuntimeStatus !== "ready" || isLoading} />
           <MentorChat
             title={t("playground.mentorTitle")}
             subtitle={t("playground.mentorSubtitle")}

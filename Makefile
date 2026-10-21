@@ -19,7 +19,7 @@ dev-frontend:
 	npm --prefix frontend run dev
 
 lint: $(VENV_PYTHON)
-	$(VENV_PYTHON) -m ruff check backend scripts tests
+	$(VENV_PYTHON) -m ruff check backend frontend/src/runtime scripts tests
 	npm --prefix frontend run lint
 
 test: $(VENV_PYTHON)
@@ -31,7 +31,7 @@ test-context:
 	$(PYTHON) -m unittest discover -s tests -p 'test_context_*.py'
 
 build: $(VENV_PYTHON)
-	$(VENV_PYTHON) -m py_compile backend/main.py backend/tracer.py backend/mentor.py backend/sandbox.py backend/classifier.py
+	$(VENV_PYTHON) -m py_compile backend/main.py backend/mentor.py backend/classifier.py frontend/src/runtime/tracer.py frontend/src/runtime/browser_trace.py
 	npm --prefix frontend run build
 
 check: lint test build context-check
