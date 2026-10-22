@@ -97,7 +97,8 @@ try {
     };
     const nativeStart=OscillatorNode.prototype.start;OscillatorNode.prototype.start=function(...args){window.audit.audioStarts++;return nativeStart.apply(this,args);};
   },{session});
-  const task={id:'audit-task',title:'Audit starter task',description:'Synthetic task',difficulty:'easy',order_index:1,max_xp:100,starter_code:'arr = [3, 2, 1]\narr.sort()'};
+  const task={id:'00000000-0000-4000-8000-000000000003',title:'Audit starter task',description:'Synthetic task',difficulty:'easy',order_index:1,max_xp:100,starter_code:'arr = [3, 2, 1]\narr.sort()'};
+  let acceptedSaves=0;
   let classificationDelay=80, saveDelay=120, failClassification=false, failSave=false, failMentor=false, blockCDN=false;
   const assets=[]; context.on('response',response=>{const url=response.url();if(url.includes('cdn.jsdelivr.net') || /\/assets\/.*\.js/.test(url))assets.push({url,status:response.status()});});
   const network=[];const completions={classification:[],persistence:[]};
@@ -118,8 +119,10 @@ try {
         completions.classification.push(Date.now()-start);return;
       }
       if(url.pathname==='/session/save'){
-        assert.equal(req.headers().authorization,'Bearer synthetic-audit-token');await new Promise(r=>setTimeout(r,saveDelay));
-        try{await route.fulfill(failSave?{status:503,json:{}}:{json:{session_id:'synthetic-session',achievements_earned:[]}});}catch{}
+        assert.equal(req.headers().authorization,'Bearer synthetic-audit-token');
+        const body=req.postDataJSON();assert.match(body.idempotency_key,/^[a-f0-9-]{36}$/);
+        for(const forbidden of ['xp_earned','solved','task_completed','task_attempts','mentor_messages_count'])assert.ok(!(forbidden in body));await new Promise(r=>setTimeout(r,saveDelay));
+        try{await route.fulfill(failSave?{status:503,json:{}}:{json:{session_id:'synthetic-session',achievements_earned:[],xp_awarded:acceptedSaves++===0?5:0,reward_status:'activity-v1',completion_verified:false,replayed:false}});}catch{}
         completions.persistence.push(Date.now()-start);return;
       }
       if(url.pathname==='/curriculum')return route.fulfill({json:{tasks:[]}});
@@ -144,6 +147,7 @@ try {
   check('one normal trace, no counts',await ui.evaluate(()=>window.audit.dispatches.length===1 && !window.audit.dispatches[0].data.mode));
   await ui.getByText('Bubble Sort detected',{exact:true}).waitFor();
   await ui.getByText('Saving progress…',{exact:true}).waitFor({state:'hidden'});
+  check('authoritative activity XP displayed',await ui.getByText('+5 XP activity reward saved.',{exact:true}).isVisible());
   await ui.getByRole('button',{name:'Next',exact:true}).click();
   check('Next renders second step',await ui.locator('.chart-svg').getAttribute('aria-label').then(x=>x.includes('step 2 ')));
   await ui.getByRole('button',{name:'Prev',exact:true}).click();
@@ -249,7 +253,7 @@ try {
   await ui.getByText(/SyntaxError: invalid syntax/).waitFor();
   check('SyntaxError shown without a visualization or Mentor',await ui.locator('.chart-svg').count()===0);
   results.performance.syntheticFetch=await ui.evaluate(()=>window.audit.fetchTimings);
-  await ui.goto(`${production}/learn/audit-task`);await ui.getByText('Audit starter task',{exact:true}).first().waitFor();
+  await ui.goto(`${production}/learn/${task.id}`);await ui.getByText('Audit starter task',{exact:true}).first().waitFor();
   await ui.locator('[data-runtime-status="ready"]').waitFor({timeout:65000});
   check('task starter populates editor',(await ui.locator('.code-textarea').inputValue())===task.starter_code);
   await runOnce();check('task starter executes',await ui.locator('.chart-svg').isVisible());

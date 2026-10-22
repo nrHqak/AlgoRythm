@@ -43,32 +43,16 @@ function getApiUrl(path) {
 
 function buildStatusMap(tasks, progressRows) {
   const progressByTask = new Map(progressRows.map((row) => [row.task_id, row]));
-  const completedOrderIndexes = new Set(
-    tasks.filter((task) => progressByTask.get(task.id)?.status === "completed").map((task) => task.order_index)
-  );
-
-  return tasks.reduce((map, task) => {
-    const progress = progressByTask.get(task.id);
-    if (progress?.status === "completed") {
-      map[task.id] = "completed";
-      return map;
-    }
-
-    if (task.order_index === 1) {
-      map[task.id] = "unlocked";
-      return map;
-    }
-
-    const previousCompleted = completedOrderIndexes.has(task.order_index - 1);
-    map[task.id] = previousCompleted || progress?.status === "unlocked" ? "unlocked" : "locked";
-    return map;
-  }, {});
+  // Practice access is open to everyone; these are self-reported annotations,
+  // not verified completions or completion-gated unlocks.
+  return Object.fromEntries(tasks.map(task => [task.id,
+    progressByTask.get(task.id)?.reported_completed ? "completed" : "unlocked"]));
 }
 
 export function LearnPage() {
   const { user } = useAuth();
   const { locale, t } = useLocale();
-  const { profile, refreshProfile } = useProfile();
+  const { profile } = useProfile();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [progressRows, setProgressRows] = useState([]);
@@ -79,7 +63,6 @@ export function LearnPage() {
   const { pet, loading: petLoading, error: petError, feedPet, addPetProgress } = usePet(user?.id, profile?.xp || 0);
   const quiz = useDailyQuiz(user?.id, locale, async (reward) => {
     await addPetProgress(reward.correct ? 12 : 4, reward.correct ? 8 : 2, reward.correct ? 4 : 1);
-    await refreshProfile();
     setRitualNotice(
       t("learn.quizReward")
         .replace("{xp}", String(reward.xpEarned))
@@ -95,7 +78,7 @@ export function LearnPage() {
       try {
         const [taskResponse, progressResponse] = await Promise.all([
           fetch(getApiUrl("/curriculum")),
-          supabase.from("task_progress").select("*").eq("user_id", user.id),
+          supabase.from("practice_progress").select("*").eq("user_id", user.id),
         ]);
 
         if (!taskResponse.ok) {
@@ -143,7 +126,7 @@ export function LearnPage() {
 
   const statusMap = buildStatusMap(tasks, progressRows);
   const progressByTask = new Map(progressRows.map((row) => [row.task_id, row]));
-  const completedCount = progressRows.filter((row) => row.status === "completed").length;
+  const completedCount = progressRows.filter((row) => row.reported_completed).length;
   const groupedTasks = tasks.reduce((groups, task) => {
     const pattern = task.pattern || "uncategorized";
     groups[pattern] = groups[pattern] || [];
@@ -235,6 +218,7 @@ export function LearnPage() {
           copy={{
             title: t("learn.quizTitle"),
             subtitle: t("learn.quizSubtitle"),
+            practiceOnly: t("taskCard.practiceOnly"),
             progress: t("learn.quizProgress"),
             ready: t("learn.quizReady"),
             startTitle: t("learn.quizStartTitle"),

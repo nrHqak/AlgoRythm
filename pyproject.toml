@@ -1,5 +1,5 @@
 [tool.pytest.ini_options]
-testpaths = ["backend/tests", "tests/browser_runtime"]
+testpaths = ["backend/tests", "tests/browser_runtime", "tests/database"]
 pythonpath = ["backend", "frontend/src/runtime"]
 addopts = "--strict-markers --strict-config"
 filterwarnings = [

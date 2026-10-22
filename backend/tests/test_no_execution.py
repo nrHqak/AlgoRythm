@@ -68,46 +68,26 @@ def test_session_save_stores_browser_trace_without_executing_source(monkeypatch,
     marker = tmp_path / "must-not-exist"
     source = f"__import__('pathlib').Path({str(marker)!r}).write_text('executed')"
     trace = [{"step": 0, "line": 1, "array": [1], "event": "step", "highlights": [], "locals": {}, "error": None}]
-    writes = []
-
-    def table(name):
-        state = {}
-        query = SimpleNamespace()
-        def write(action, payload):
-            state.update(action=action, payload=payload)
-            return query
-        query.insert = lambda payload: write("insert", payload)
-        query.update = lambda payload: write("update", payload)
-        def eq(key, value):
-            state["owner"] = (key, value)
-            return query
-        query.eq = eq
-        def execute():
-            writes.append((name, dict(state)))
-            return SimpleNamespace(data=[{"id": "saved-session"}] if name == "sessions" else [])
-        query.execute = execute
-        return query
-
-    monkeypatch.setattr(main, "supabase", SimpleNamespace(table=table))
-    achievement = {"id": "first-run", "slug": "first_run", "xp_reward": 10}
-    monkeypatch.setattr(main, "load_user_data", lambda _client, user_id: {
-        "profile": {"xp": 100}, "sessions": [{"error": None}], "task_progress": [],
-        "achievements": [achievement], "user_achievements": [],
-    })
+    calls = []
+    def rpc(name, parameters):
+        calls.append((name, parameters))
+        return SimpleNamespace(execute=lambda: SimpleNamespace(data={
+            "session_id": "saved-session", "xp_awarded": 5, "achievements_earned": [],
+            "completion_verified": False, "reward_status": "awarded", "replayed": False,
+        }))
+    monkeypatch.setattr(main, "supabase", SimpleNamespace(rpc=rpc))
     main.app.dependency_overrides[main.verify_authenticated_user_id] = lambda: "verified-user"
     try:
         response = TestClient(main.app).post("/session/save", json={
-            "user_id": "untrusted-body-user", "code": source, "trace": trace,
-            "total_steps": 1, "solved": True, "xp_earned": 30,
+            "idempotency_key": "00000000-0000-4000-8000-000000000001",
+            "code": source, "trace": trace, "total_steps": 1, "execution_succeeded": True,
         })
     finally:
         main.app.dependency_overrides.pop(main.verify_authenticated_user_id)
     assert response.status_code == 200
-    assert response.json() == {"session_id": "saved-session", "achievements_earned": [achievement]}
-    saved = next(state["payload"] for name, state in writes if name == "sessions")
-    assert saved["code"] == source and saved["trace"] == trace
-    assert saved["user_id"] == "verified-user"
-    profile = next(state for name, state in writes if name == "profiles")
-    assert profile["payload"]["xp"] == 140
-    assert profile["owner"] == ("id", "verified-user")
+    name, parameters = calls[0]
+    assert name == "settle_activity_session" and parameters["p_user_id"] == "verified-user"
+    assert parameters["p_payload"]["code"] == source
+    assert parameters["p_payload"]["trace"] == trace
+    assert "xp_earned" not in parameters["p_payload"]
     assert not marker.exists()

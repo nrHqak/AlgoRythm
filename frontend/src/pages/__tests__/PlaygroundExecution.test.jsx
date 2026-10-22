@@ -232,29 +232,19 @@ function deferred() {
   return { promise, resolve, reject };
 }
 const metadataResponse = (algorithm_type = "bubble_sort") => ({ ok: true, json: async () => ({ algorithm_type, algorithm_confidence: 0.94 }) });
-const sessionResponse = (session_id = "saved", achievements_earned = []) => ({ ok: true, json: async () => ({ session_id, achievements_earned }) });
+const sessionResponse = (session_id = "saved", achievements_earned = []) => ({ ok: true, json: async () => ({ session_id, achievements_earned, xp_awarded: 5, reward_status: "awarded", completion_verified: false, replayed: false }) });
 async function ready() { await act(async () => { worker.onmessage({ data: { type: "ready" } }); }); }
 function taskFixture() {
   return { id: "task-1", title: "Starter task", difficulty: "easy", starter_code: "arr = [2, 1]\narr.sort()", order_index: 1, max_xp: 100, expected_algorithm: "bubble_sort" };
 }
 
-it("commits trace before progress queries; independent progress advances while classification waits", async () => {
+it("commits trace before settlement; browser never writes task rewards while classification waits", async () => {
   mocks.task = taskFixture();
-  mocks.query.mockImplementation(async (table, filters) => {
-    if (table === "task_progress") expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
-    return { data: table === "tasks" && filters.id ? mocks.task : null, error: null };
-  });
-  mocks.upsert.mockImplementation(async () => {
-    expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
-    return { error: null };
-  });
-  mount("/playground/task-1");
-  await screen.findByText("Starter task"); await ready(); await runTrace();
-  await waitFor(() => expect(mocks.upsert).toHaveBeenCalledOnce());
+  mount("/playground/task-1"); await screen.findByText("Starter task"); await ready(); await runTrace();
+  expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
+  expect(mocks.upsert).not.toHaveBeenCalled();
   expect(screen.getByText("Saving progress…")).toBeTruthy();
-  expect(screen.getByText("Detecting algorithm…")).toBeTruthy();
   expect(screen.getByRole("button", { name: "Run" }).disabled).toBe(false);
-  expect(screen.getByRole("button", { name: "Analyze Complexity" }).disabled).toBe(false);
   expect(fetchMock.mock.calls.some(([url]) => url.endsWith("/session/save"))).toBe(false);
 });
 
@@ -270,17 +260,18 @@ it("preserves task/session snapshots, XP and achievements, and refreshes profile
   fireEvent.change(container.querySelector("#array-var"), { target: { value: "other" } });
   const [, options] = fetchMock.mock.calls.find(([url]) => url.endsWith("/session/save"));
   expect(JSON.parse(options.body)).toMatchObject({ code: mocks.task.starter_code, array_var: "arr", algorithm_type: "bubble_sort",
-    total_steps: 2, solved: true, error: null, task_id: "task-1", task_completed: true, task_attempts: 1, mentor_messages_count: 0, xp_earned: 210 });
+    total_steps: 2, execution_succeeded: true, error: null, task_id: "task-1", idempotency_key: expect.any(String) });
+  expect(JSON.parse(options.body)).not.toHaveProperty("xp_earned");
+  expect(JSON.parse(options.body)).not.toHaveProperty("task_completed");
   expect(JSON.parse(options.body).trace).toHaveLength(2);
   expect(options.headers.Authorization).toBe("Bearer synthetic-token");
-  expect(mocks.upsert.mock.calls[0][1]).toMatchObject({ user_id: "test-user", task_id: "task-1", attempts: 1,
-    status: "completed", best_steps: 2, xp_earned: 210, completed_at: expect.any(String) });
+  expect(mocks.upsert).not.toHaveBeenCalled();
   expect(mocks.refresh).not.toHaveBeenCalled();
   expect(screen.getByRole("button", { name: "Run" }).disabled).toBe(false);
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
   const awards = [{ id: "award-1", slug: "first_run" }];
   await act(async () => { pendingSave.resolve(sessionResponse("saved-task", awards)); });
-  expect(screen.getByText("+210 XP earned!")).toBeTruthy();
+  expect(screen.getByText("+5 XP activity reward saved.")).toBeTruthy();
   expect(mocks.achievements).toHaveBeenCalledWith(awards);
   expect(mocks.refresh).toHaveBeenCalledOnce();
   expect(mocks.refresh.mock.calls[0][0].isCurrent()).toBe(true);
@@ -290,14 +281,12 @@ it("preserves task/session snapshots, XP and achievements, and refreshes profile
   expect(screen.queryByText("Saving progress…")).toBeNull();
 });
 
-it.each(["session", "progress", "classifier"])("isolates %s failure from successful execution and playback", async (failure) => {
-  if (failure === "progress") { mocks.task = taskFixture(); mocks.upsert.mockResolvedValue({ error: new Error("database unavailable") }); }
+it.each(["session", "classifier"])("isolates %s failure from successful execution and playback", async (failure) => {
   fetchMock.mockImplementation((url) => {
     if (url.endsWith("/classify")) return failure === "classifier" ? Promise.reject(new Error("classification offline")) : Promise.resolve(metadataResponse());
     return Promise.resolve(failure === "session" ? { ok: false, status: 503 } : sessionResponse());
   });
-  mount(failure === "progress" ? "/playground/task-1" : "/playground");
-  if (failure === "progress") await screen.findByText("Starter task");
+  mount();
   await ready(); await runTrace();
   await waitFor(() => expect(screen.queryByText("Saving progress…")).toBeNull());
   expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
@@ -338,7 +327,7 @@ it("reactive mentor starts from the committed error while classifier/save wait; 
   expect(container.querySelector(".editor-line-number.is-error").textContent).toBe("2");
   expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
   await act(async () => { classifyResolve(metadataResponse("unknown")); });
-  expect(screen.getByText("+10 XP earned!")).toBeTruthy();
+  expect(screen.getByText("+5 XP activity reward saved.")).toBeTruthy();
 });
 
 it("ignores stale classifier, persistence, achievements and profile completions across rapid Runs", async () => {
@@ -354,7 +343,7 @@ it("ignores stale classifier, persistence, achievements and profile completions 
   expect(screen.getByText("Binary Search detected")).toBeTruthy();
   await act(async () => { oldClassify.resolve(metadataResponse("bubble_sort")); oldSave.resolve(sessionResponse("old-session", [{ id: "old-award" }])); });
   await waitFor(() => expect(saves).toBe(2));
-  expect(screen.queryByText("+30 XP earned!")).toBeNull();
+  expect(screen.queryByText("+5 XP activity reward saved.")).toBeNull();
   expect(mocks.achievements).not.toHaveBeenCalled();
   expect(mocks.refresh).toHaveBeenCalledOnce();
   expect(screen.getByText("Saving progress…")).toBeTruthy();
@@ -386,51 +375,32 @@ it("ignores old reactive mentor replies without clearing the newer request or it
   expect(mocks.insert.mock.calls.find(([, row]) => row.message === "obsolete hint")[1].session_id).toBe("session-1");
 });
 
-it("serializes task attempts and first-solve rewards while successive executions remain usable", async () => {
+it("uses distinct operation keys for new Runs and never submits bonus eligibility claims", async () => {
   mocks.task = taskFixture();
-  let progress = null;
-  const firstWrite = deferred(); let writes = 0;
-  mocks.query.mockImplementation(async (table, filters) => ({ data: table === "tasks" && filters.id ? mocks.task : table === "task_progress" ? progress : null }));
-  mocks.upsert.mockImplementation(async (_table, row) => {
-    if (++writes === 1) await firstWrite.promise;
-    progress = row; return { error: null };
-  });
   fetchMock.mockImplementation((url) => Promise.resolve(url.endsWith("/classify") ? metadataResponse() : sessionResponse()));
   mount("/playground/task-1"); await screen.findByText("Starter task"); await ready();
   await runTrace(); await runTrace();
-  expect(writes).toBe(1);
-  expect(worker.postMessage).toHaveBeenCalledTimes(2);
-  await act(async () => { firstWrite.resolve(); });
-  await waitFor(() => expect(writes).toBe(2));
-  const payloads = fetchMock.mock.calls.filter(([url]) => url.endsWith("/session/save")).map(([, request]) => JSON.parse(request.body));
+  const payloads = fetchMock.mock.calls.filter(([url]) => url.endsWith("/session/save")).map(([, options]) => JSON.parse(options.body));
   expect(payloads).toHaveLength(2);
-  expect(payloads[0]).toMatchObject({ xp_earned: 210, task_attempts: 1, task_completed: true });
-  expect(payloads[1]).toMatchObject({ xp_earned: 30, task_attempts: 2, task_completed: false });
-  expect(progress).toMatchObject({ attempts: 2, xp_earned: 240, status: "completed" });
+  expect(payloads[0].idempotency_key).not.toBe(payloads[1].idempotency_key);
+  for (const payload of payloads) for (const field of ["xp_earned", "task_completed", "task_attempts", "mentor_messages_count", "solved"])
+    expect(payload).not.toHaveProperty(field);
+  expect(mocks.upsert).not.toHaveBeenCalled();
 });
 
-
-it("a failed middle progress write cannot let Run C bypass Run A's pending XP save", async () => {
-  mocks.task = taskFixture(); let reads = 0; let saves = 0;
-  mocks.query.mockImplementation(async (table, filters) => {
-    if (table === "task_progress" && ++reads === 2) return { error: new Error("Run B progress failed") };
-    return { data: table === "tasks" && filters.id ? mocks.task : null };
-  });
-  const oldSave = deferred();
+it("a failed middle settlement releases the queue without overtaking an older pending save", async () => {
+  const oldSave = deferred(); let saves = 0;
   fetchMock.mockImplementation((url) => {
     if (url.endsWith("/classify")) return Promise.resolve(metadataResponse());
-    return ++saves === 1 ? oldSave.promise : Promise.resolve(sessionResponse("run-c"));
+    saves++;
+    return saves === 1 ? oldSave.promise : Promise.resolve(saves === 2 ? { ok: false, status: 503 } : sessionResponse("run-c"));
   });
-  mount("/playground/task-1"); await screen.findByText("Starter task"); await ready();
-  await runTrace(); await waitFor(() => expect(saves).toBe(1));
-  await runTrace(); await screen.findByText(/Run B progress failed/);
-  await runTrace();
+  mount(); await ready(); await runTrace(); await runTrace(); await runTrace();
   expect(saves).toBe(1);
-  expect(screen.getByText("Saving progress…")).toBeTruthy();
   await act(async () => { oldSave.resolve(sessionResponse("run-a")); });
-  await waitFor(() => expect(saves).toBe(2));
-  expect(screen.queryByText(/Run B progress failed/)).toBeNull();
+  await waitFor(() => expect(saves).toBe(3));
   expect(mocks.refresh).toHaveBeenCalledTimes(2);
+  expect(screen.queryByText(/Progress could not be saved/)).toBeNull();
 });
 
 it("a late persistence failure cannot replace a newer successful run's save state", async () => {
@@ -443,7 +413,7 @@ it("a late persistence failure cannot replace a newer successful run's save stat
   await act(async () => { oldSave.reject(new Error("obsolete failure")); });
   await waitFor(() => expect(mocks.refresh).toHaveBeenCalledOnce());
   expect(screen.queryByText(/obsolete failure/)).toBeNull();
-  expect(screen.getByText("+30 XP earned!")).toBeTruthy();
+  expect(screen.getByText("+5 XP activity reward saved.")).toBeTruthy();
   expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
 });
 
@@ -455,7 +425,7 @@ it("mentor message persistence failure is separate from both the Python error an
   expect(screen.getByText("Helpful hint")).toBeTruthy();
   expect(screen.getByRole("alert").textContent).toContain("Mentor conversation could not be saved.");
   expect(container.querySelector(".editor-line-number.is-error").textContent).toBe("2");
-  expect(screen.getByText("+10 XP earned!")).toBeTruthy();
+  expect(screen.getByText("+5 XP activity reward saved.")).toBeTruthy();
   expect(mocks.refresh).toHaveBeenCalledOnce();
 });
 
@@ -469,7 +439,7 @@ it("resetting the example invalidates a pending profile refresh with the same ex
   expect(isCurrent()).toBe(false);
   await act(async () => { profile.resolve({ xp: 30 }); });
   expect(screen.queryByText("Saving progress…")).toBeNull();
-  expect(screen.queryByText("+30 XP earned!")).toBeNull();
+  expect(screen.queryByText("+5 XP activity reward saved.")).toBeNull();
   expect(screen.queryByText("Bubble Sort detected")).toBeNull();
 });
 
@@ -493,19 +463,15 @@ it("shows free-chat answers before saving while linking their stored messages to
   ]);
 });
 
-it("reactive help still arrives when progress fails, without changing the actual Python error", async () => {
-  mocks.task = taskFixture(); mocks.upsert.mockResolvedValue({ error: new Error("progress offline") });
-  fetchMock.mockImplementation((url) => Promise.resolve(url.endsWith("/classify") ? metadataResponse("unknown")
-    : { ok: true, json: async () => ({ message: "Independent error hint" }) }));
-  const { container } = mount("/playground/task-1"); await screen.findByText("Starter task"); await ready();
-  await runTrace({ type: "IndexError", message: "bad index", line: 2 });
+it("reactive help arrives when the atomic settlement fails, preserving the Python error", async () => {
+  fetchMock.mockImplementation((url) => Promise.resolve(url.endsWith("/classify") ? metadataResponse("unknown") :
+    url.endsWith("/session/save") ? { ok: false, status: 503 } : { ok: true, json: async () => ({ message: "Independent error hint" }) }));
+  const { container } = mount(); await ready(); await runTrace({ type: "IndexError", message: "bad index", line: 2 });
   expect(screen.getByText("Independent error hint")).toBeTruthy();
   expect(screen.getByText(/Progress could not be saved/)).toBeTruthy();
   expect(container.querySelector(".editor-line-number.is-error").textContent).toBe("2");
-  expect(fetchMock.mock.calls.some(([url]) => url.endsWith("/session/save"))).toBe(false);
   expect(mocks.insert.mock.calls[0][1].session_id).toBeNull();
 });
-
 
 it("refreshes cumulative XP from an older successful save even when the newest save fails", async () => {
   const oldSave = deferred(); const profile = deferred(); let saves = 0;
@@ -521,24 +487,23 @@ it("refreshes cumulative XP from an older successful save even when the newest s
   const profileCurrent = mocks.refresh.mock.calls[0][0].isCurrent;
   expect(profileCurrent()).toBe(true);
   expect(mocks.achievements).not.toHaveBeenCalled();
-  expect(screen.queryByText("+30 XP earned!")).toBeNull();
+  expect(screen.queryByText("+5 XP activity reward saved.")).toBeNull();
   await runTrace(); // The old refresh cannot commit once Run C begins.
   expect(profileCurrent()).toBe(false);
   await act(async () => { profile.resolve({ xp: 30 }); });
   expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
 });
 
-it("preserves next-task unlocking and ownership in the independent progress work", async () => {
+it("successful execution does not issue verified completion, XP, or unlock writes from the browser", async () => {
   mocks.task = taskFixture();
-  mocks.query.mockImplementation(async (table, filters) => ({ data: table === "tasks" ?
-    filters.id ? mocks.task : { id: "next-task", order_index: 2 } : null }));
-  fetchMock.mockImplementation((url) => Promise.resolve(url.endsWith("/classify") ? metadataResponse() : sessionResponse()));
+  fetchMock.mockImplementation((url) => Promise.resolve(url.endsWith("/classify") ? metadataResponse() :
+    { ok: true, json: async () => ({ session_id: "saved", xp_awarded: 0, reward_status: "daily_limit", achievements_earned: [] }) }));
   mount("/playground/task-1"); await screen.findByText("Starter task"); await ready(); await runTrace();
-  expect(mocks.upsert).toHaveBeenCalledTimes(2);
-  expect(mocks.upsert.mock.calls[1]).toEqual(["task_progress", { user_id: "test-user", task_id: "next-task", status: "unlocked" }, { onConflict: "user_id,task_id" }]);
-  expect(mocks.refresh).toHaveBeenCalledOnce();
+  expect(mocks.upsert).not.toHaveBeenCalled();
+  expect(screen.getByText("Session saved. No additional activity XP is eligible.")).toBeTruthy();
+  expect(screen.queryByText(/XP activity reward saved/)).toBeNull();
+  expect(mocks.achievements).toHaveBeenCalledWith([]);
 });
-
 
 it("slow optional audio cannot delay tracing, and delayed sounds from older Runs are ignored", async () => {
   const audio = deferred();

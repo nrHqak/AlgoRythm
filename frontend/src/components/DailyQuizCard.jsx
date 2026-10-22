@@ -43,7 +43,7 @@ export function DailyQuizCard({ quiz, loading, error, onAnswer, busy, copy, onOp
       {quiz.feedback ? (
         <div className={`quiz-feedback ${quiz.feedback.correct ? "is-correct" : "is-soft"}`}>
           {quiz.feedback.correct ? copy.correct : quiz.feedback.timedOut ? copy.timeout : copy.incorrect}
-          <span>{` +${quiz.feedback.xpEarned} XP`}</span>
+          <span>{copy.practiceOnly}</span>
         </div>
       ) : null}
 

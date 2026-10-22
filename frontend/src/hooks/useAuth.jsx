@@ -17,12 +17,9 @@ async function insertProfileForUser(user, username) {
   const payload = {
     id: user.id,
     username: username || makeUsername(user.email, user.user_metadata?.full_name || user.user_metadata?.name),
-    xp: 0,
-    level: 1,
-    streak: 0,
   };
 
-  const { error } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
+  const { error } = await supabase.from("profiles").upsert(payload, { onConflict: "id", ignoreDuplicates: true });
   if (error && error.code !== "23505") {
     throw error;
   }
@@ -93,7 +90,7 @@ export function AuthProvider({ children }) {
       throw error;
     }
 
-    if (data.user) {
+    if (data.user && data.session) {
       await insertProfileForUser(data.user, username);
     }
 

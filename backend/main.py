@@ -1,16 +1,19 @@
+import json
 import os
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import Any
+from uuid import UUID
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from postgrest.exceptions import APIError
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
-from supabase import Client, create_client
+from supabase import Client, ClientOptions, create_client
 from supabase_auth.errors import AuthApiError, AuthInvalidJwtError
 
 from classifier import classify_algorithm
@@ -87,27 +90,17 @@ class MentorRequest(BaseModel):
 
 
 class SessionSaveRequest(BaseModel):
-    code: str
-    array_var: str = "arr"
-    trace: list[dict[str, Any]] = Field(default_factory=list)
+    # Deprecated reward/completion fields are rejected, including extra user ids.
+    model_config = ConfigDict(extra="forbid")
+    idempotency_key: UUID
+    code: str = Field(max_length=200000)
+    array_var: str = Field(default="arr", min_length=1, max_length=128)
+    trace: list[dict[str, Any]] = Field(default_factory=list, max_length=300)
     error: dict[str, Any] | None = None
-    total_steps: int = 0
-    algorithm_type: str = "custom"
-    solved: bool = False
-    xp_earned: int = 0
-    task_id: str | None = None
-    task_completed: bool = False
-    task_attempts: int = 1
-    mentor_messages_count: int = 0
-
-
-LEVELS = [
-    {"level": 1, "min_xp": 0, "max_xp": 199},
-    {"level": 2, "min_xp": 200, "max_xp": 499},
-    {"level": 3, "min_xp": 500, "max_xp": 999},
-    {"level": 4, "min_xp": 1000, "max_xp": 1999},
-    {"level": 5, "min_xp": 2000, "max_xp": float("inf")},
-]
+    total_steps: int = Field(default=0, ge=0, le=300)
+    algorithm_type: str = Field(default="custom", max_length=128)
+    execution_succeeded: bool = False  # Unverified history/practice annotation only.
+    task_id: UUID | None = None
 
 
 def require_supabase() -> Client:
@@ -141,83 +134,6 @@ def verify_authenticated_user_id(authorization: str | None = Header(default=None
         raise HTTPException(status_code=401, detail="Invalid or expired access token.")
 
     return str(response.user.id)
-
-
-def calculate_level(xp: int) -> int:
-    for entry in LEVELS:
-        if entry["min_xp"] <= xp <= entry["max_xp"]:
-            return entry["level"]
-    return LEVELS[-1]["level"]
-
-
-def parse_iso_date(value: str | None) -> date | None:
-    if not value:
-        return None
-    try:
-        return date.fromisoformat(value)
-    except ValueError:
-        try:
-            return datetime.fromisoformat(value).date()
-        except ValueError:
-            return None
-
-
-def compute_streak(last_active_date: str | None, previous_streak: int) -> tuple[int, str]:
-    today = date.today()
-    previous = parse_iso_date(last_active_date)
-
-    if previous == today:
-        return previous_streak, today.isoformat()
-    if previous == today - timedelta(days=1):
-        return previous_streak + 1, today.isoformat()
-    return 1, today.isoformat()
-
-
-def load_user_data(client: Client, user_id: str) -> dict[str, Any]:
-    profile = client.table("profiles").select("*").eq("id", user_id).single().execute().data
-    sessions = client.table("sessions").select("*").eq("user_id", user_id).execute().data or []
-    task_progress = client.table("task_progress").select("*").eq("user_id", user_id).execute().data or []
-    achievements = client.table("achievements").select("*").execute().data or []
-    user_achievements = (
-        client.table("user_achievements").select("*").eq("user_id", user_id).execute().data or []
-    )
-    return {
-        "profile": profile,
-        "sessions": sessions,
-        "task_progress": task_progress,
-        "achievements": achievements,
-        "user_achievements": user_achievements,
-    }
-
-
-def evaluate_achievements(
-    request: SessionSaveRequest,
-    user_sessions: list[dict[str, Any]],
-    task_progress: list[dict[str, Any]],
-    current_streak: int,
-) -> set[str]:
-    completed_tasks = [row for row in task_progress if row.get("status") == "completed"]
-    error_sessions = [session for session in user_sessions if session.get("error")]
-    slugs: set[str] = set()
-
-    if len(user_sessions) == 1:
-        slugs.add("first_run")
-    if request.error and len(error_sessions) == 1:
-        slugs.add("first_error")
-    if request.task_completed and request.mentor_messages_count == 0:
-        slugs.add("no_hints")
-    if current_streak >= 3:
-        slugs.add("streak_3")
-    if current_streak >= 7:
-        slugs.add("streak_7")
-    if len(completed_tasks) >= 5:
-        slugs.add("complete_5")
-    if request.task_completed and request.task_attempts <= 3:
-        slugs.add("fast_solve")
-    if request.algorithm_type == "bubble_sort" and request.error is None:
-        slugs.add("clean_sort")
-
-    return slugs
 
 
 @app.get("/")
@@ -258,69 +174,24 @@ def mentor(request: Request, payload: MentorRequest):
 
 @app.post("/session/save")
 def save_session(request: SessionSaveRequest, user_id: str = Depends(verify_authenticated_user_id)):
-    client = require_supabase()
-
-    session_payload = {
-        "user_id": user_id,
-        "code": request.code,
-        "array_var": request.array_var,
-        "trace": request.trace,
-        "error": request.error,
-        "total_steps": request.total_steps,
-        "algorithm_type": request.algorithm_type,
-        "solved": request.solved,
-        "attempts": request.task_attempts,
-        "xp_earned": request.xp_earned,
-    }
-
-    created_session = client.table("sessions").insert(session_payload).execute().data[0]
-    user_data = load_user_data(client, user_id)
-    profile = user_data["profile"]
-    previous_streak = profile.get("streak", 0) or 0
-    current_streak, active_date = compute_streak(profile.get("last_active_date"), previous_streak)
-
-    achievements_by_slug = {item["slug"]: item for item in user_data["achievements"]}
-    eligible_slugs = evaluate_achievements(
-        request=request,
-        user_sessions=user_data["sessions"],
-        task_progress=user_data["task_progress"],
-        current_streak=current_streak,
-    )
-
-    achievements_earned = []
-    achievement_xp = 0
-    earned_ids = {item["achievement_id"] for item in user_data["user_achievements"]}
-
-    for slug in sorted(eligible_slugs):
-        achievement = achievements_by_slug.get(slug)
-        if not achievement or achievement["id"] in earned_ids:
-            continue
-
-        client.table("user_achievements").insert(
-            {
-                "user_id": user_id,
-                "achievement_id": achievement["id"],
-            }
-        ).execute()
-        achievements_earned.append(achievement)
-        achievement_xp += achievement.get("xp_reward", 0)
-
-    total_xp = (profile.get("xp", 0) or 0) + request.xp_earned + achievement_xp
-    next_level = calculate_level(total_xp)
-
-    client.table("profiles").update(
-        {
-            "xp": total_xp,
-            "level": next_level,
-            "streak": current_streak,
-            "last_active_date": active_date,
-        }
-    ).eq("id", user_id).execute()
-
-    return {
-        "session_id": created_session["id"],
-        "achievements_earned": achievements_earned,
-    }
+    # One RPC is the transaction boundary. Never fall back to separate writes.
+    payload = request.model_dump(mode="json", exclude={"idempotency_key"})
+    if len(json.dumps(payload).encode("utf-8")) > 2_000_000:
+        raise HTTPException(status_code=413, detail="Session payload is too large.")
+    try:
+        result = require_supabase().rpc("settle_activity_session", {
+            "p_user_id": user_id,
+            "p_operation_id": str(request.idempotency_key),
+            "p_payload": payload,
+        }).execute().data
+    except APIError as exc:
+        message = str(exc)
+        if "idempotency_conflict" in message:
+            raise HTTPException(status_code=409, detail="Idempotency key already used with different session data.") from exc
+        if "activity_daily_limit" in message:
+            raise HTTPException(status_code=429, detail="Daily session save limit reached.") from exc
+        raise HTTPException(status_code=503, detail="Session transaction unavailable. Retry with the same idempotency key.") from exc
+    return result
 
 
 @app.post("/auth/demo-login")
@@ -328,7 +199,7 @@ async def demo_login(request: Request):
     if not DEMO_EMAIL or not DEMO_PASSWORD:
         raise HTTPException(status_code=404, detail="Demo mode is disabled.")
 
-    client = require_supabase()
+    require_supabase()
 
     # Rate limiting logic
     ip_address = request.client.host
@@ -348,12 +219,11 @@ async def demo_login(request: Request):
     demo_login_attempts[ip_address].append(current_time)
 
     try:
-        response = client.auth.sign_in_with_password(
-            {
-                "email": DEMO_EMAIL,
-                "password": DEMO_PASSWORD,
-            }
-        )
+        # Sign-in mutates a Supabase client's Authorization header. Never run it
+        # on the shared service principal used for verified settlement RPCs.
+        with create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY,
+                           options=ClientOptions(auto_refresh_token=False, persist_session=False)).auth as auth_client:
+            response = auth_client.sign_in_with_password({"email": DEMO_EMAIL, "password": DEMO_PASSWORD})
         return {
             "access_token": response.session.access_token,
             "refresh_token": response.session.refresh_token,

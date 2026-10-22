@@ -77,9 +77,9 @@ export function ProfilePage() {
       try {
         const [achievementsRes, earnedRes, sessionsRes, progressRes] = await Promise.all([
           supabase.from("achievements").select("*").order("title"),
-          supabase.from("user_achievements").select("achievement_id").eq("user_id", user.id),
+          supabase.from("user_achievements").select("achievement_id, verified").eq("user_id", user.id),
           supabase.from("sessions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(10),
-          supabase.from("task_progress").select("*").eq("user_id", user.id),
+          supabase.from("practice_progress").select("*").eq("user_id", user.id),
         ]);
 
         if (achievementsRes.error) throw achievementsRes.error;
@@ -101,8 +101,8 @@ export function ProfilePage() {
     }
   }, [user?.id]);
 
-  const earnedSet = useMemo(() => new Set(earnedAchievements.map((item) => item.achievement_id)), [earnedAchievements]);
-  const completedTasks = taskProgress.filter((item) => item.status === "completed");
+  const earnedSet = useMemo(() => new Set(earnedAchievements.filter((item) => item.verified).map((item) => item.achievement_id)), [earnedAchievements]);
+  const completedTasks = taskProgress.filter((item) => item.reported_completed);
   const totalSessions = sessions.length;
   const mostCommonErrorType = useMemo(() => {
     const counts = {};
@@ -131,7 +131,7 @@ export function ProfilePage() {
     const diff = Date.now() - new Date(session.created_at).getTime();
     return diff <= 7 * 24 * 60 * 60 * 1000;
   }).length;
-  const averageXp = totalSessions > 0 ? Math.round((sessions.reduce((sum, session) => sum + (session.xp_earned || 0), 0) / totalSessions) * 10) / 10 : 0;
+  const averageXp = totalSessions > 0 ? Math.round((sessions.reduce((sum, session) => sum + ((session.reward_policy === "activity-v1" ? session.xp_earned : 0) || 0), 0) / totalSessions) * 10) / 10 : 0;
   const algorithmMix = useMemo(() => {
     const counts = {};
     sessions.forEach((session) => {
@@ -160,6 +160,7 @@ export function ProfilePage() {
 
   return (
     <div className="signal-page profile-page">
+      <div className="status-banner">{t("profile.rewardPolicyNotice")}</div>
       <section className="hero-banner profile-top">
         <div className="profile-top-row">
           <div className="profile-user">
@@ -362,9 +363,9 @@ export function ProfilePage() {
                     </div>
                     <div className="button-row">
                       <span className={`result-pill ${session.solved ? "is-pass" : "is-fail"}`}>
-                        {session.solved ? t("profile.pass") : t("profile.fail")}
+                        {session.solved ? t("profile.reportedPass") : t("profile.reportedFail")}
                       </span>
-                      <span className="pill">+{session.xp_earned || 0} XP</span>
+                      <span className="pill">+{(session.reward_policy === "activity-v1" ? session.xp_earned : 0) || 0} XP</span>
                     </div>
                   </div>
                 </button>

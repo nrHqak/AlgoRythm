@@ -66,9 +66,6 @@ export function ProfileProvider({ children }) {
     const payload = {
       id: userRecord.id,
       username: makeFallbackUsername(userRecord),
-      xp: 0,
-      level: 1,
-      streak: 0,
     };
 
     const { data: created, error: createError } = await supabase
@@ -99,17 +96,15 @@ export function ProfileProvider({ children }) {
     try {
       const nextProfile = await ensureProfile(user);
       if (!mayCommit()) return null;
-      const levelMeta = getLevelMeta(nextProfile?.xp || 0);
-      if (nextProfile && nextProfile.level !== levelMeta.level) {
-        const { data: syncedProfile, error: syncError } = await supabase
-          .from("profiles").update({ level: levelMeta.level }).eq("id", owner).select("*").single();
-        if (syncError) throw syncError;
-        const synced = syncedProfile || { ...nextProfile, level: levelMeta.level };
-        if (mayCommit()) setProfile(synced);
-        return mayCommit() ? synced : null;
-      }
-      setProfile(nextProfile);
-      return nextProfile;
+      const { data: rewards, error: rewardError } = await supabase
+        .from("reward_accounts").select("*").eq("user_id", owner).maybeSingle();
+      if (rewardError) throw rewardError;
+      if (!mayCommit()) return null;
+      // Legacy profile balances are unverified; never import them as rewards.
+      const authoritative = { ...nextProfile, xp: rewards?.xp || 0, level: rewards?.level || 1,
+        streak: rewards?.streak || 0, last_active_date: rewards?.last_active_date || null };
+      setProfile(authoritative);
+      return authoritative;
     } catch (profileError) {
       if (mayCommit()) setError(profileError.message || "Unable to load profile.");
       return null;
@@ -123,9 +118,10 @@ export function ProfileProvider({ children }) {
       return null;
     }
 
-    const { data, error: updateError } = await supabase
+    if (Object.keys(patch).some((key) => key !== "username")) throw new Error("Only username is editable.");
+    const { error: updateError } = await supabase
       .from("profiles")
-      .update(patch)
+      .update({ username: patch.username })
       .eq("id", user.id)
       .select("*")
       .single();
@@ -134,8 +130,7 @@ export function ProfileProvider({ children }) {
       throw updateError;
     }
 
-    setProfile(data);
-    return data;
+    return refreshProfile();
   }
 
   useEffect(() => {
