@@ -1,5 +1,12 @@
 # Deploy
 
+Reward-integrity rollout is blocked until canonical-schema review, disposable
+staging acceptance and coordinated release approval are complete. Follow the
+[schema preflight and rollout plan](docs/verification/supabase-schema-preflight.md)
+before executing database or deployment steps below. The legacy manual SQL and
+demo seed notes do not establish a canonical database baseline or authorize a
+reward migration.
+
 ## Findings Before Deploy
 
 - Backend imports are flat (`from classifier import ...`), so the service must run with `backend/` as the working directory.

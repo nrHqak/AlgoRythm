@@ -120,3 +120,9 @@ balance, then coordinate migration, backend and frontend in a separately approve
 rollout. Old clients sending reward fields receive 422. A backend deployed before
 its RPC exists must fail settlement; it must never use the old separate writes.
 No live application is part of the local verification command.
+
+Use the [schema preflight](../verification/supabase-schema-preflight.md) for the
+object/policy inventory, local compatibility counterexamples, staging acceptance
+matrix and recovery gates. Connected project inventory alone does not identify
+authorized disposable staging. Remote metadata review and remote writes require
+their respective approved scope; local fixture tests certify neither.

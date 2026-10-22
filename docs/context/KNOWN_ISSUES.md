@@ -57,3 +57,6 @@ trusted verifier. Practice annotations remain explicitly unverified. Legacy XP,
 progress and achievement claims are preserved as history and are not imported
 into authoritative reward accounts. See
 [reward integrity](../verification/reward-integrity.md) for policy and evidence.
+The [schema preflight](../verification/supabase-schema-preflight.md) documents
+the remaining canonical-schema and staging gates, including policy replacement
+and indirect reward writers that fixture-only tests cannot rule out.
