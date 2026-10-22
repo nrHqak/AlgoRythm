@@ -14,14 +14,14 @@
 - `Makefile`: 1 mapped file(s)
 - `README.md`: 1 mapped file(s)
 - `TECHNICAL_ARCHITECTURE.md`: 1 mapped file(s)
-- `backend/`: 17 mapped file(s)
-- `docs/`: 14 mapped file(s)
-- `frontend/`: 68 mapped file(s)
+- `backend/`: 18 mapped file(s)
+- `docs/`: 16 mapped file(s)
+- `frontend/`: 71 mapped file(s)
 - `pyproject.toml`: 1 mapped file(s)
 - `render.yaml`: 1 mapped file(s)
 - `scripts/`: 2 mapped file(s)
-- `supabase/`: 4 mapped file(s)
-- `tests/`: 6 mapped file(s)
+- `supabase/`: 5 mapped file(s)
+- `tests/`: 8 mapped file(s)
 
 ## Entrypoints
 
@@ -51,7 +51,7 @@
 
 - `ClassifyRequest`: `code`
 - `MentorRequest`: `code`, `error`, `error_line`, `trace_context`, `user_question`, `mode`, `user_history`
-- `SessionSaveRequest`: `code`, `array_var`, `trace`, `error`, `total_steps`, `algorithm_type`, `solved`, `xp_earned`, `task_id`, `task_completed`, `task_attempts`, `mentor_messages_count`
+- `SessionSaveRequest`: `idempotency_key`, `code`, `array_var`, `trace`, `error`, `total_steps`, `algorithm_type`, `execution_succeeded`, `task_id`
 
 ## Frontend surface
 
@@ -115,6 +115,7 @@
 
 - `supabase/migrations/20260808183440_add_task_pattern.sql`: `tasks`
 - `supabase/migrations/20260808213028_secure_public_tables_with_rls.sql`: `achievements`, `mentor_messages`, `pet_profiles`, `profiles`, `quiz_attempts`, `sessions`, `task_progress`, `tasks`, `user_achievements`
+- `supabase/migrations/20261022113757_reward_integrity.sql`: `practice_progress`, `profiles`, `quiz_attempts`, `reward_accounts`, `sessions`, `settle_activity_session`, `tasks`, `user_achievements`
 - `supabase/pet_quiz_schema.sql`: `pet_profiles`, `profiles`, `quiz_attempts`
 
 ## Environment variable names
@@ -123,6 +124,7 @@
 
 - Backend: `ALLOWED_ORIGINS`, `DEMO_EMAIL`, `DEMO_PASSWORD`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `SEED_USER_PASSWORD`, `SUPABASE_SERVICE_KEY`, `SUPABASE_URL`
 - Frontend: `VITE_API_URL`, `VITE_DEMO_EMAIL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SUPABASE_URL`
+- Other: `REWARD_DATABASE_REQUIRED`, `REWARD_POSTGRES_BIN`
 
 ## Commands
 

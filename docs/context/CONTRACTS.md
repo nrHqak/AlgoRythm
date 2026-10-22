@@ -10,7 +10,7 @@ This document records integration boundaries, not every internal helper. Update 
 | `GET /curriculum` | none at FastAPI layer | none | `{tasks}` loaded with the service client |
 | `POST /classify` | none; 20/minute | `ClassifyRequest` | `{algorithm_type, algorithm_confidence}` from the existing classifier; never executes source |
 | `POST /mentor` | none | `MentorRequest` | Mentor message or deterministic fallback |
-| `POST /session/save` | Supabase bearer token | `SessionSaveRequest` | Session id and newly earned achievements |
+| `POST /session/save` | Supabase bearer token | `SessionSaveRequest` | Atomic activity receipt, session id and provisional practice state |
 | `POST /auth/demo-login` | none; IP-limited | none | Supabase access/refresh tokens when demo mode is enabled |
 
 The canonical execution shape and existing snapshot/error semantics are defined in
@@ -23,7 +23,14 @@ persistence stores it with browser-generated traces.
 
 - `ClassifyRequest`: non-empty `code`. A missing model returns `unknown` with confidence `0.0`; syntax errors retain the existing zero-feature model input. HTTP/network failures are handled as unknown by the browser.
 - `MentorRequest`: code/error/error line, compressed trace context, optional question/history, and a mode defaulting to `free_chat`.
-- `SessionSaveRequest`: source, trace result, algorithm metadata, solve/task state, XP, attempts, and mentor-message count. The authenticated user id is never accepted from the body.
+- `SessionSaveRequest`: required UUID `idempotency_key` and source `code`; `array_var`, browser `trace`, `error`, `total_steps`, `algorithm_type`, `execution_succeeded`, optional UUID `task_id`. These are history/practice annotations, not proof of execution or a solution. Source is limited to 200,000 characters, trace to 300 entries, steps to 0–300, array/algorithm names to 128 characters, and serialized payload to 2 MB.
+- Deprecated `xp_earned`, `solved`, `task_completed`, `task_attempts`, `mentor_messages_count`, supplied user ids and all other extra fields are **rejected with 422**, not silently interpreted. Frontend/backend/migration must roll out together.
+- The API verifies the Supabase bearer user and makes exactly one service-role `settle_activity_session` RPC. It has no separate-write fallback.
+- Response: `session_id`, `xp_awarded`, `reward_status` (`awarded`, `daily_limit`, `balance_limit`), `replayed`, `completion_verified: false`, `achievements_earned: []`, nullable `practice_progress`, and a `profile` reward snapshot. The frontend refreshes current global state separately; a replayed receipt can predate newer saves.
+- A repeated owner/key with identical normalized payload returns the original receipt with `replayed: true`. Its `xp_awarded` describes the original award, not another increment. Different data under that key returns 409. At 100 new saves per owner/UTC day, saving returns 429. Database settlement failure returns 503 and must be retried with the same key.
+
+Demo login uses a separate non-persistent, non-refreshing auth client so sign-in
+cannot replace the shared backend service principal. Its public response is unchanged.
 
 The generated repository map lists exact Pydantic field names. Source models remain the executable source of truth.
 
@@ -51,16 +58,14 @@ is aborted on reset/unmount/new execution, bounded to ten seconds, and uses
 unknown/0 on failure. Run IDs prevent late results overwriting newer metadata.
 
 Post-run persistence starts from a React effect after trace commit. Run resolves
-without awaiting optional audio readiness, task progress, session saving, profile
-or mentor work. Audio failure is intentionally silent and cannot prevent tracing;
-delayed sounds are checked against the same execution generation. The Run
-captures source, array variable, task, bearer token, mentor count and trace;
-later editor changes do not change historical save payloads. Independent task
-progress advances alongside classification; `/session/save` waits for both in
-background work. Its existing algorithm_type field is preserved; confidence
-remains frontend-only. Local progress/session promise tails preserve attempts,
-first-solve rewards and XP ordering for consecutive Runs on this mounted page.
-This does not provide a database transaction or cross-tab concurrency guarantee.
+without waiting for classification, persistence, profile, Mentor or optional
+audio readiness. A UUID is captured once for that Run; the source, array variable,
+task and bearer token are captured with the Run as well. Session saving waits for
+bounded classification enrichment in the background. It submits no XP, bonus,
+attempt, hint-count or verified-completion claims. A page-local session tail keeps
+feedback ordered; database locks/uniqueness provide cross-client correctness.
+The UI displays only `xp_awarded` from the receipt, distinguishes saved/no eligible
+reward/failure, and never labels browser success as verified completion.
 
 Historical saves can complete, but `useTracer.captureExecution()` reuses the
 existing run generation and engine identity to suppress stale save/error/loading,
@@ -103,11 +108,51 @@ and conversation storage failures have distinct secondary feedback.
 | Table | Browser access | Privileged/backend access |
 | --- | --- | --- |
 | `tasks`, `achievements` | authenticated select | catalog administration/seeding |
-| `profiles` | owner select/insert/update | session reward updates |
-| `task_progress` | owner select/insert/update | seed/admin workflows |
+| `profiles` | owner select; insert only `id,username`; update only `username` | compatibility reward mirror; no balance is imported as authority |
+| `reward_accounts` | owner select only | authoritative activity XP/level/streak and daily accepted-save counter |
+| `practice_progress` | owner select only | provisional reported completion, server-counted accepted attempts, reported best steps |
+| `task_progress` | owner select only; legacy unverified history | admin workflows only; never reward eligibility |
 | `mentor_messages` | owner select/insert/update with session ownership check | seed/admin workflows |
-| `pet_profiles`, `quiz_attempts` | owner select/insert/update | seed/admin workflows |
-| `sessions`, `user_achievements` | owner select | service-role insert |
+| `pet_profiles` | owner select/insert/update | cosmetic user-owned state, never authoritative XP/eligibility |
+| `quiz_attempts` | owner select; insert only practice fields, excluding XP | no client-evaluated quiz XP or verified achievement |
+| `sessions`, `user_achievements` | owner select only | transactional session insert; no automatic achievement grants under current policy |
+| `reward_private.session_settlements` | no schema/table access | service-only immutable idempotency receipts; no external schema exposure |
+
+### Reward policy and database settlement
+
+Browser traces, classifications, successful execution flags, task identifiers,
+step counts, attempt/hint counts and operation UUIDs are all forgeable. A UUID
+prevents duplicate settlement; it does not establish activity legitimacy.
+`activity-v1` rewards the server-observed acceptance of an authenticated session
+save: **5 XP once per UTC day per account**, even for reported errors. Fresh
+identifiers cannot bypass that cap or the 100-save/day database limit. UTC dates
+come from the database clock after acquiring the per-owner lock. No success,
+solution, first-solve, no-hint, fast-solve, algorithm or completion achievements
+are issued. All tasks are available for practice independently of completions.
+
+`reward_accounts` starts at zero and is the authority. Old `profiles` balances
+are archived in `legacy_reward_snapshot`, never imported. The RPC mirrors current
+account values back to profiles for compatibility. Existing sessions default to
+`reward_policy=legacy_unverified`; new sessions store `solved` only as a reported
+execution outcome and set `completion_verified=false`. Existing achievement grants
+are marked `verified=false` and remain historical, not certified benefits.
+
+The forward-only reward migration adds a service-only **security invoker** RPC
+with empty `search_path`, fully qualified relations, explicit service principal
+check and grants only to `service_role`. It locks the owner's account, checks an
+owner/key primary key plus exact payload equality, then inserts the session,
+updates provisional practice, account and profile mirror, and records the receipt
+in one transaction. A partial unique owner/day index independently prevents two
+positive daily awards; account locking prevents lost updates and counter races.
+Achievement owner/id uniqueness is enforced even though no new grants are issued.
+All numeric counters saturate or reject before database overflow.
+
+Migration grants remove both table and previous column privileges from PUBLIC,
+anon and authenticated, replace permissive policies with owner policies, and use
+safe profile defaults. It is validated against an explicit disposable fixture,
+**not a claimed production schema baseline**. Existing schema types, constraints,
+triggers, role inheritance, views and executable RPCs must be reviewed before
+staging/application. No live migration is authorized by these code changes.
 
 ## Environment variables
 

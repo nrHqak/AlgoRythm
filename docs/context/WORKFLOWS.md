@@ -100,3 +100,23 @@ Playwright must be resolvable, or `PLAYWRIGHT_MODULE` must name its absolute
 `AUDIT_BROWSER_CHANNEL`, and `AUDIT_OUTPUT` override its defaults. The report
 records exact prerequisites, supported measurement boundaries and external checks
 that remain unverified.
+
+## Reward database verification and rollout
+
+`make test`/`make check` include `tests/database`: when local PostgreSQL binaries
+are available, tests create a private temporary cluster with a UNIX socket and
+no TCP listener, apply a documented fixture plus migrations, and destroy that
+cluster after testing. They never accept a database URL or developer connection
+configuration. Without binaries the tests explicitly report NOT VERIFIED/skipped;
+set `REWARD_DATABASE_REQUIRED=1` to fail instead. CI requires real PostgreSQL 16
+binaries. `REWARD_POSTGRES_BIN` can select the test binary directory.
+
+Before applying the reward migration, review the actual canonical core schema,
+legacy duplicates, triggers, views, RPC grants and role inheritance. The migration
+is forward-only, transactional and intentionally fails on incompatible schema or
+duplicate achievement owners; do not silently discard history to make it pass.
+Archive legacy data, confirm the activity policy/zero initial authoritative
+balance, then coordinate migration, backend and frontend in a separately approved
+rollout. Old clients sending reward fields receive 422. A backend deployed before
+its RPC exists must fail settlement; it must never use the old separate writes.
+No live application is part of the local verification command.

@@ -23,14 +23,13 @@ export function TaskCard({ task, status, userProgress, onOpen }) {
 
       <div className="task-meta">
         <div>
-          {t("taskCard.maxXp")}: {task.max_xp}
+          {t("taskCard.practiceOnly")}
         </div>
         {isCompleted ? (
           <div>
             {t("taskCard.best")}: {userProgress?.best_steps || "—"} {t("taskCard.steps")}
           </div>
         ) : null}
-        {isCompleted ? <div>{t("taskCard.xpEarned")}: {userProgress?.xp_earned || 0}</div> : null}
         {isLocked ? <div>{t("taskCard.unlockHint")}</div> : null}
       </div>
 

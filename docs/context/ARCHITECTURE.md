@@ -42,24 +42,22 @@ leaves Run unavailable and shows Retry, which initializes a fresh worker through
 the existing manager. No backend execution fallback exists. A committed browser trace
 starts asynchronous `/classify` enrichment, independent of visualization and
 playback. Optional audio starts under the Run gesture without awaiting readiness;
-late sounds use the same execution generation. Post-run progress and classification
-start after the trace commit, independently of execution/playback. Session saving awaits enrichment (bounded to ten seconds,
-then unknown) and task progress inside background work. Mount-local promise tails
-serialize progress read/modify/write and session XP updates across rapid Runs;
-failed jobs release their slots without bypassing an older save. A successful
-current save publishes Run-specific XP/achievements. Each successful historical
-or current save performs one fresh global profile read, guarded by the execution
-generation current when that read starts and the provider's latest-read identity.
-There were no duplicate post-run profile reads to remove. Historical saves may finish,
-but the same `useTracer` generation guards save feedback, XP, achievements,
-mentor replies and profile commits. Reactive mentor requests start directly from
-the committed error, independent of saving; conversation inserts await that Run's
-session ID (or null on save failure). Runtime, execution, classification,
-persistence, mentor and explicit complexity each have independent status.
-Normal Run performs one main Python execution and no complexity work. Analyze
-Complexity is explicit, reuses the prewarmed worker in count mode, and caches up
-to 20 results by code/array variable/sampling parameters. Cancellation, failure,
-and recovery leave visible trace/player/editor state intact.
+late sounds use the same execution generation. Session saving starts after trace
+commit and waits for classification in background work. A stable operation UUID
+and the verified bearer principal reach one transactional database RPC. The
+service defines bounded activity rewards independently of every browser success
+claim. The response supplies actual awarded XP; the frontend never calculates
+confirmed bonuses. Profile refresh reads `reward_accounts`, rather than trusting
+legacy profile balances. Cross-tab correctness comes from database locks and
+uniqueness, with generation guards still protecting current UI feedback.
+Task progress is provisional practice, recorded in the same transaction; all
+practice tasks are available without completion-based unlocks. Quiz answers and
+pet state are user-owned practice/cosmetics and cannot authorize XP or verified
+achievements. No trusted solution verifier exists, so solution-dependent rewards
+are unavailable. Reactive Mentor still starts directly from committed errors;
+storage waits for the matching session or null. Execution, classification,
+persistence, Mentor and explicit complexity retain independent status. Normal
+Run performs one browser execution and no automatic complexity sampling.
 The worker emits Trace Protocol v1, using the single canonical
 `frontend/src/runtime/tracer.py` AlgorithmTracer source. A reusable manager
 owns lifecycle and hard timeout recovery; navigation away terminates the worker. See [Browser Python runtime](PYTHON_RUNTIME.md)
@@ -67,7 +65,7 @@ for the message contract and current limitations.
 
 ## Backend
 
-`backend/main.py` defines the FastAPI application, request models, rate limits, authentication verification, achievement evaluation, and persistence orchestration.
+`backend/main.py` defines the FastAPI application, request models, rate limits, authentication verification and a single transactional persistence RPC.
 
 **The backend does not execute user Python code.** `/classify` receives source,
 extracts AST features, and uses the existing model for algorithm type/confidence.
@@ -81,9 +79,11 @@ The mentor builds context in `backend/mentor.py`, calls Gemini when configured, 
 ## Data flow and ownership
 
 - Supabase Auth owns user identity and browser sessions.
-- Browser writes to `profiles`, `task_progress`, `mentor_messages`, `pet_profiles`, and `quiz_attempts` are constrained by RLS.
-- Browser reads user-owned `sessions` and `user_achievements`; those rows are written by the backend service role.
-- `/session/save` derives the user id from a verified bearer token, inserts the session, evaluates achievements, and updates XP/level/streak.
-- `tasks` and `achievements` are authenticated read-only catalogs.
+- Browser profile creation/editing is limited to safe identity/username fields.
+- `reward_accounts` is authoritative for XP/level/streak; browsers can only read their own rows.
+- `/session/save` verifies identity, then invokes one service-only database transaction for history, bounded activity rewards, provisional practice and idempotency.
+- Browser claims cannot authorize verified solutions, achievements or reward bonuses.
+- Browser-owned quiz/pet/Mentor state remains constrained by ownership RLS; quiz correctness and pet evolution do not grant authoritative XP.
+- `tasks` and `achievements` remain read-only catalogs. Legacy reward/task/session/achievement data is explicitly unverified.
 
 The repository contains policies and incremental migrations, but not a complete reproducible baseline for every core table. Treat live schema shape as external state until that gap is closed.

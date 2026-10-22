@@ -135,7 +135,6 @@ export function PlaygroundPage({ achievementUi }) {
   const [mentorError, setMentorError] = useState("");
   const [persistenceLoading, setPersistenceLoading] = useState(false);
   const [postExecutionJob, setPostExecutionJob] = useState(null);
-  const progressTail = useRef(Promise.resolve());
   const sessionTail = useRef(Promise.resolve());
   const activeMentor = useRef(null);
   const preparingRun = useRef(false);
@@ -144,7 +143,6 @@ export function PlaygroundPage({ achievementUi }) {
   const [xpNotice, setXpNotice] = useState("");
   const savedRunSession = useRef(Promise.resolve(null));
   const [proactiveTriggered, setProactiveTriggered] = useState(false);
-  const [mentorMessageCount, setMentorMessageCount] = useState(0);
   const { complexityData, complexityLoading, complexityError, complexityRuntimeStatus, analyzeComplexity, cancelComplexity } = useComplexity(runtimeRef);
   const canStartRun = canRun || (complexityLoading && runtimeStatus === "running");
   const currentTraceStep =
@@ -185,7 +183,6 @@ export function PlaygroundPage({ achievementUi }) {
       clearSecondaryState();
       cancelComplexity();
       setMentorMessages([]);
-      setMentorMessageCount(0);
       setProactiveTriggered(false);
     }
   }, [task?.id]);
@@ -199,7 +196,6 @@ export function PlaygroundPage({ achievementUi }) {
       clearSecondaryState();
       cancelComplexity();
       setMentorMessages([]);
-      setMentorMessageCount(0);
       setProactiveTriggered(false);
     }
   }, [selectedExample]);
@@ -296,7 +292,6 @@ export function PlaygroundPage({ achievementUi }) {
     try {
       if (!suppressUserMessage && trimmedQuestion) {
         setMentorMessages((previous) => [...previous.slice(-9), { role: "user", message: trimmedQuestion }]);
-        setMentorMessageCount((previous) => previous + 1);
         records.push({ role: "user", message: trimmedQuestion });
       }
       const result = context.result;
@@ -315,7 +310,6 @@ export function PlaygroundPage({ achievementUi }) {
       records.push({ role: "mentor", message: data.message });
       if (current()) {
         setMentorMessages((previous) => [...previous.slice(-9), { role: "mentor", message: data.message }]);
-        setMentorMessageCount((previous) => previous + 1);
       }
     } catch (error) {
       if (current()) setMentorError(error.message || "Mentor request failed.");
@@ -332,78 +326,7 @@ export function PlaygroundPage({ achievementUi }) {
     }
   }
 
-  async function getTaskProgressContext() {
-    if (!task || !user?.id) {
-      return { existing: null, completedFirstTime: false, attempts: 1 };
-    }
-
-    const { data: existing, error } = await supabase
-      .from("task_progress")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("task_id", task.id)
-      .maybeSingle();
-
-    if (error) throw error;
-    const attempts = (existing?.attempts || 0) + 1;
-    return {
-      existing: existing || null,
-      completedFirstTime: existing?.status !== "completed",
-      attempts,
-    };
-  }
-
-  async function saveTaskProgress({ solved, steps, xpEarned, context }) {
-    if (!task || !user?.id) {
-      return { completedFirstTime: false, attempts: 1 };
-    }
-
-    const existing = context.existing;
-    const attempts = (existing?.attempts || 0) + 1;
-    const completedFirstTime = solved && existing?.status !== "completed";
-    const payload = {
-      user_id: user.id,
-      task_id: task.id,
-      status: solved ? "completed" : existing?.status || (task.order_index === 1 ? "unlocked" : "locked"),
-      attempts,
-      best_steps: solved ? Math.min(existing?.best_steps || steps, steps) : existing?.best_steps || null,
-      xp_earned: (existing?.xp_earned || 0) + (solved ? xpEarned : 0),
-      completed_at: solved ? new Date().toISOString() : existing?.completed_at || null,
-    };
-
-    const { error } = await supabase.from("task_progress").upsert(payload, {
-      onConflict: "user_id,task_id",
-    });
-
-    if (error) {
-      throw error;
-    }
-
-    if (solved) {
-      const { data: nextTask, error: nextError } = await supabase
-        .from("tasks")
-        .select("*")
-        .eq("order_index", task.order_index + 1)
-        .maybeSingle();
-
-      if (nextError) throw nextError;
-      if (nextTask) {
-        const { error: unlockError } = await supabase.from("task_progress").upsert(
-          {
-            user_id: user.id,
-            task_id: nextTask.id,
-            status: "unlocked",
-          },
-          { onConflict: "user_id,task_id" }
-        );
-        if (unlockError) throw unlockError;
-      }
-    }
-
-    return { completedFirstTime, attempts };
-  }
-
-  async function saveSession(result, xpEarned, taskContext) {
+  async function saveSession(result, idempotencyKey) {
     const accessToken = session?.access_token;
     if (!accessToken) {
       throw new Error("You must be signed in to save a session.");
@@ -416,18 +339,15 @@ export function PlaygroundPage({ achievementUi }) {
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
+        idempotency_key: idempotencyKey,
         code,
         array_var: arrayVar,
         trace: result.steps,
         error: result.error,
         total_steps: result.total_steps,
         algorithm_type: result.algorithm_type || task?.expected_algorithm || "custom",
-        solved: !result.error,
-        xp_earned: xpEarned,
+        execution_succeeded: !result.error,
         task_id: task?.id || null,
-        task_completed: taskContext.completedFirstTime,
-        task_attempts: taskContext.attempts,
-        mentor_messages_count: mentorMessageCount,
       }),
     });
 
@@ -470,33 +390,19 @@ export function PlaygroundPage({ achievementUi }) {
       const result = await analyzeCode(code, arrayVar);
       if (!result) return;
       const isCurrent = captureExecution(result);
+      const idempotencyKey = crypto.randomUUID();
       setPostExecutionJob({ started: false, start() {
         if (!isCurrent()) return;
         setPersistenceLoading(true);
-        const solved = !result.error;
-        // Serialize read/modify/write progress to preserve attempts and first-solve
-        // rewards across rapid Runs. Classification runs independently in parallel.
-        const progressWork = progressTail.current.then(async () => {
-          const taskContext = await getTaskProgressContext();
-          let xpEarned = solved ? 30 : 10;
-          if (solved && task && taskContext.completedFirstTime) {
-            xpEarned += task.max_xp || 0;
-            if (mentorMessageCount === 0) xpEarned += 50;
-            if (taskContext.attempts <= 3) xpEarned += 30;
-          }
-          await saveTaskProgress({ solved, steps: result.total_steps || 0, xpEarned, context: taskContext });
-          return { taskContext, xpEarned };
-        });
-        progressTail.current = progressWork.catch(() => {});
-        // Session saves update XP with a backend read/modify/write. Preserve Run
-        // order locally instead of allowing this page's saves to race each other.
         const previousSession = sessionTail.current;
-        const sessionWork = Promise.all([progressWork, waitForClassification(result), previousSession])
-          .then(async ([{ taskContext, xpEarned }, enrichedResult]) => {
-            const payload = await saveSession(enrichedResult, xpEarned, taskContext);
+        const sessionWork = Promise.all([waitForClassification(result), previousSession])
+          .then(async ([enrichedResult]) => {
+            const payload = await saveSession(enrichedResult, idempotencyKey);
             if (isCurrent()) {
-              setSaveFeedback(solved ? t("playground.sessionSaved") : t("playground.errorSaved"));
-              setXpNotice(`+${xpEarned} XP earned!`);
+              setSaveFeedback(t("playground.sessionSaved"));
+              setXpNotice(payload.xp_awarded > 0
+                ? t("playground.activityAward").replace("{xp}", String(payload.xp_awarded))
+                : t("playground.noActivityAward"));
               achievementUi.pushAchievements(payload.achievements_earned || []);
             }
             return payload;

@@ -41,16 +41,19 @@ The current online `npm audit` reports four advisories across the Vite 5/esbuild
 
 Deployment status, live Supabase schema, secrets, provider dashboards, and production data are not inferable from the repository. Use an authorized live connector or ask the system owner when those facts are required.
 
-## Reward integrity and persistence atomicity
+## Reward security rollout and solution verification
 
-`/session/save` authenticates the owner but trusts client-supplied XP, solved and
-completion-related claims when updating rewards through the service client.
-Authentication does not make those claims authoritative. An in-memory audit
-reproduced an arbitrary large XP award; see
-[production-readiness audit](../verification/production-readiness-audit.md).
-Treat this as a production release blocker pending a separate reward authorization
-review, including browser-owned profile/progress writes. Do not add backend
-Python execution as a reward-validation workaround.
+The reward-integrity branch replaces client-authorized rewards with transactional
+`activity-v1` settlement and removes browser reward-column writes. The forward
+migration has real disposable PostgreSQL coverage, but the missing live baseline
+still requires schema/grant/trigger/view/RPC review and disposable staging
+acceptance. Until that coordinated migration/backend/frontend rollout is approved
+and verified, production remains blocked. Do not deploy the old save endpoint
+alongside the new policy.
 
-Session, achievement and profile writes are not one transaction. Page-local save
-ordering does not provide cross-tab idempotency or rollback after a partial save.
+Browser execution cannot prove a task was solved. Solution bonuses, verified
+completion/achievements and completion-gated unlocks remain unavailable pending a
+trusted verifier. Practice annotations remain explicitly unverified. Legacy XP,
+progress and achievement claims are preserved as history and are not imported
+into authoritative reward accounts. See
+[reward integrity](../verification/reward-integrity.md) for policy and evidence.
