@@ -121,7 +121,7 @@ export function PlaygroundPage({ achievementUi }) {
   const { refreshProfile } = useProfile();
   const { traceData, isLoading, requestError, analyzeCode, resetTrace, waitForClassification, captureExecution, invalidateExecution,
     runtimeStatus, retryRuntime, classificationStatus, canRun } = useTracer({ runtimeRef });
-  const { currentStep, isPlaying, play, pause, next, prev, progress } = usePlayer(traceData.total_steps);
+  const { currentStep, isPlaying, play, pause, next, prev, progress } = usePlayer(traceData.total_steps, traceData.steps);
   const { muted, toggleMute, unlockAudio, playSound } = useAudio();
 
   const [task, setTask] = useState(location.state?.task || null);
@@ -573,8 +573,9 @@ export function PlaygroundPage({ achievementUi }) {
           {`${formatAlgorithmLabel(traceData.algorithm_type)} detected`}
         </div>
       ) : null}
-      {traceData.error?.type === "timeout" ? (
-        <div className="status-banner is-error">{traceData.error.message}</div>
+      {traceData.error ? (
+        <div className="status-banner is-error">{traceData.error.type === "timeout"
+          ? traceData.error.message : `${traceData.error.type}: ${traceData.error.message}`}</div>
       ) : null}
       {xpNotice ? <div className="xp-notice inline-success">{xpNotice}</div> : null}
 

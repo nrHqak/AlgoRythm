@@ -81,3 +81,22 @@ The generator reads the Git index plus non-ignored working-tree files. It does n
 ## Deployment
 
 Provider-specific steps remain in `DEPLOY.md`. Before deployment, run `make check`, apply required migrations in order, verify deployment secrets, and smoke-test health, authentication, browser tracing/classify, runtime Retry, mentor fallback, and session saving.
+
+## Repeatable production-readiness browser audit
+
+`scripts/browser_audit.mjs` drives the existing development helper and the actual
+optimized Playground using optional Playwright and installed Chrome. Python runs
+in real Pyodide workers; cloud responses use disposable synthetic fixtures. Start
+the secret-free development, preview and backend servers described in
+[the audit report](../verification/production-readiness-audit.md), then run:
+
+```bash
+node scripts/browser_audit.mjs
+```
+
+Playwright must be resolvable, or `PLAYWRIGHT_MODULE` must name its absolute
+`index.mjs`. This optional network/browser check is separate from credential-free
+`make check`; it requires jsDelivr access. `AUDIT_DEV_URL`, `AUDIT_PREVIEW_URL`,
+`AUDIT_BROWSER_CHANNEL`, and `AUDIT_OUTPUT` override its defaults. The report
+records exact prerequisites, supported measurement boundaries and external checks
+that remain unverified.

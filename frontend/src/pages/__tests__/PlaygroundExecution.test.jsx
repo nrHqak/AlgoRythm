@@ -82,6 +82,7 @@ it("keeps editor, visualization, playback and audio usable before enrichment, th
   const [, request] = fetchMock.mock.calls.find(([url]) => url.endsWith("/session/save"));
   expect(JSON.parse(request.body)).toMatchObject({ algorithm_type: "bubble_sort", total_steps: 2 });
   expect(request.headers.Authorization).toBe("Bearer synthetic-token");
+  expect(screen.getByRole("img", { name: "swap event at step 2 of 2" })).toBeTruthy();
   fireEvent.change(screen.getByLabelText("Load example"), { target: { value: "binary_search" } });
   expect(container.querySelector("textarea.code-textarea").value).toContain("left = 0");
   expect(screen.queryByText("Bubble Sort detected")).toBeNull();
@@ -578,4 +579,24 @@ it("shows Retry for runtime failure, blocks Run, and executes locally after retr
   expect(screen.getByRole("button", { name: "Run" }).disabled).toBe(false);
   expect(fetchMock.mock.calls.map(([url]) => url)).toEqual(["/classify"]);
   expect(screen.queryByRole("button", { name: "Retry", exact: true })).toBeNull();
+});
+
+it("starts a new equal-length trace at the first step and stops old playback", async () => {
+  mount(); await ready(); await runTrace();
+  fireEvent.click(screen.getByRole("button", { name: "Next" }));
+  expect(screen.getByRole("img", { name: "swap event at step 2 of 2" })).toBeTruthy();
+  await runTrace();
+  expect(screen.getByRole("img", { name: "compare event at step 1 of 2" })).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Play" }));
+  await runTrace();
+  expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+});
+
+it("displays the Python error message even when Mentor is unavailable", async () => {
+  fetchMock.mockImplementation((url) => Promise.resolve(url.endsWith("/classify") ? metadataResponse("unknown")
+    : { ok: false, status: 503 }));
+  mount(); await ready();
+  await runTrace({ type: "SyntaxError", message: "invalid syntax", line: 2 });
+  expect(screen.getByText("SyntaxError: invalid syntax")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Run" }).disabled).toBe(false);
 });

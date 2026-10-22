@@ -40,3 +40,17 @@ The current online `npm audit` reports four advisories across the Vite 5/esbuild
 ## External/live facts
 
 Deployment status, live Supabase schema, secrets, provider dashboards, and production data are not inferable from the repository. Use an authorized live connector or ask the system owner when those facts are required.
+
+## Reward integrity and persistence atomicity
+
+`/session/save` authenticates the owner but trusts client-supplied XP, solved and
+completion-related claims when updating rewards through the service client.
+Authentication does not make those claims authoritative. An in-memory audit
+reproduced an arbitrary large XP award; see
+[production-readiness audit](../verification/production-readiness-audit.md).
+Treat this as a production release blocker pending a separate reward authorization
+review, including browser-owned profile/progress writes. Do not add backend
+Python execution as a reward-validation workaround.
+
+Session, achievement and profile writes are not one transaction. Page-local save
+ordering does not provide cross-tab idempotency or rollback after a partial save.

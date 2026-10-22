@@ -198,3 +198,8 @@ until the browser is ready.
 
 Measurements and product checks for count mode are in
 [Browser complexity verification](../verification/browser-complexity.md).
+
+Playback resets for each new steps array, including equal-length consecutive
+traces; classification metadata updates retain the same steps array and do not
+reset playback. Python errors are displayed directly in the Playground status
+banner independently of Mentor availability.
