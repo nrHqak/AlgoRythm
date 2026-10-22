@@ -126,3 +126,13 @@ object/policy inventory, local compatibility counterexamples, staging acceptance
 matrix and recovery gates. Connected project inventory alone does not identify
 authorized disposable staging. Remote metadata review and remote writes require
 their respective approved scope; local fixture tests certify neither.
+
+The source-verified recovery candidate in `supabase/recovery/` has separate local
+integration tests against its actual captured metadata. Run
+`python scripts/schema_recovery.py --check` to verify deterministic offline output;
+`--write` regenerates it only after evidence review and contacts no database.
+Use local PostgreSQL 17 via REWARD_POSTGRES_BIN for the full native ACL comparison,
+including MAINTAIN. The [recovery report](../verification/canonical-schema-recovery.md)
+defines represented migration versions and the outstanding initialization gates.
+Never treat the candidate as a new automatic CLI migration or restore managed
+platform DDL/users/history from production.

@@ -1,8 +1,16 @@
 # Known issues and context boundaries
 
-## Missing canonical database baseline
+## Recovered database baseline requires initialization review
 
-The repository does not contain `CREATE TABLE` definitions for all core tables described by the application. Existing SQL includes incremental changes, RLS policies, and pet/quiz table creation. Do not fabricate columns or claim a clean database can be built solely from these files. Exporting and reviewing a canonical baseline is a separate database project.
+An authorized metadata recovery now provides a source-verified application schema
+candidate under `supabase/recovery/`, with full core table DDL and provenance.
+It represents the task-pattern and old RLS increments already present in the
+source, and preserves legacy permissions for review. It is not a release-approved
+initializer or permission to access/write a live project. Do not replay represented
+migrations, recreate managed Supabase schemas, or activate the legacy snapshot
+alone. Bootstrap/history reconciliation and coordinated reward migration still
+require review and separate authorization. See
+[canonical schema recovery](../verification/canonical-schema-recovery.md).
 
 ## Deprecated Gemini SDK
 

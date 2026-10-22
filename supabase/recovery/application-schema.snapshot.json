@@ -1,0 +1,2552 @@
+{
+  "format_version": 1,
+  "status": "source-verified recovery candidate; not release-approved",
+  "source": {
+    "project": "AlgoRythm",
+    "project_ref": "hfwrglctkzagstzretjy",
+    "reported_version": "17.6.1.155",
+    "catalog_server_version": "17.6",
+    "captured_on": "2026-10-22",
+    "authorization": "Separate explicit user approval for bounded read-only production schema metadata",
+    "scope": "Application schema metadata only; no application rows or stored migration statement bodies",
+    "base_commit": "fdaef717700de26f2c7e76309b73f4eee8af4a99"
+  },
+  "represented_migrations": [
+    {
+      "name": "add_task_pattern",
+      "version": "20260808183440"
+    },
+    {
+      "name": "secure_public_tables_with_rls",
+      "version": "20260808213028"
+    }
+  ],
+  "pending_migrations": [
+    {
+      "version": "20261022113757",
+      "name": "reward_integrity"
+    }
+  ],
+  "application": {
+    "tables": [
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "achievements",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "mentor_messages",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "pet_profiles",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "profiles",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "quiz_attempts",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "sessions",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "task_progress",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "tasks",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "name": "user_achievements",
+        "owner": "postgres",
+        "force_rls": false,
+        "schema_name": "public",
+        "partition": false,
+        "has_options": false,
+        "persistence": "p",
+        "access_method": "heap",
+        "replica_identity": "d"
+      }
+    ],
+    "columns": [
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "icon",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "xp_reward",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "50"
+      },
+      {
+        "name": "condition_type",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "session_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "role",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "message",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "trigger_type",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": false,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "mentor_messages",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "pet_name",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": "'Byte'::text"
+      },
+      {
+        "name": "hunger",
+        "type": "integer",
+        "identity": "",
+        "not_null": true,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "42"
+      },
+      {
+        "name": "mood",
+        "type": "integer",
+        "identity": "",
+        "not_null": true,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "68"
+      },
+      {
+        "name": "energy",
+        "type": "integer",
+        "identity": "",
+        "not_null": true,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "74"
+      },
+      {
+        "name": "evolution_points",
+        "type": "integer",
+        "identity": "",
+        "not_null": true,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "last_fed_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": false,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": true,
+        "position": 8,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": true,
+        "position": 9,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "pet_profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "username",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "xp",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "level",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "1"
+      },
+      {
+        "name": "streak",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "last_active_date",
+        "type": "date",
+        "identity": "",
+        "not_null": false,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": false,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "profiles",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "quiz_day",
+        "type": "date",
+        "identity": "",
+        "not_null": true,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "question_key",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "prompt",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "correct",
+        "type": "boolean",
+        "identity": "",
+        "not_null": true,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "false"
+      },
+      {
+        "name": "xp_earned",
+        "type": "integer",
+        "identity": "",
+        "not_null": true,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "response_ms",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 8,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": true,
+        "position": 9,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "quiz_attempts",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "array_var",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": "'arr'::text"
+      },
+      {
+        "name": "trace",
+        "type": "jsonb",
+        "identity": "",
+        "not_null": false,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "error",
+        "type": "jsonb",
+        "identity": "",
+        "not_null": false,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "total_steps",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "algorithm_type",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 8,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "solved",
+        "type": "boolean",
+        "identity": "",
+        "not_null": false,
+        "position": 9,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "false"
+      },
+      {
+        "name": "attempts",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 10,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "1"
+      },
+      {
+        "name": "xp_earned",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 11,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": false,
+        "position": 12,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "sessions",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "task_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": "'locked'::text"
+      },
+      {
+        "name": "attempts",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "best_steps",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "xp_earned",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "0"
+      },
+      {
+        "name": "completed_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": false,
+        "position": 8,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "task_progress",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "difficulty",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "order_index",
+        "type": "integer",
+        "identity": "",
+        "not_null": true,
+        "position": 5,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "starter_code",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 6,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "solution_hint",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 7,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "expected_algorithm",
+        "type": "text",
+        "identity": "",
+        "not_null": false,
+        "position": 8,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "max_xp",
+        "type": "integer",
+        "identity": "",
+        "not_null": false,
+        "position": 9,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "100"
+      },
+      {
+        "name": "pattern",
+        "type": "text",
+        "identity": "",
+        "not_null": true,
+        "position": 10,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "tasks",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": "\"default\"",
+        "default_withheld": false,
+        "default_expression": "'uncategorized'::text"
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": true,
+        "position": 1,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "user_achievements",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "gen_random_uuid()"
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 2,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "user_achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "achievement_id",
+        "type": "uuid",
+        "identity": "",
+        "not_null": false,
+        "position": 3,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "user_achievements",
+        "has_default": false,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": null
+      },
+      {
+        "name": "earned_at",
+        "type": "timestamp with time zone",
+        "identity": "",
+        "not_null": false,
+        "position": 4,
+        "generated": "",
+        "dimensions": 0,
+        "table_name": "user_achievements",
+        "has_default": true,
+        "schema_name": "public",
+        "column_collation": null,
+        "default_withheld": false,
+        "default_expression": "now()"
+      }
+    ],
+    "constraints": [
+      {
+        "name": "achievements_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "achievements",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "achievements_slug_key",
+        "type": "u",
+        "validated": true,
+        "definition": "UNIQUE (slug)",
+        "table_name": "achievements",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "mentor_messages_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "mentor_messages",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "mentor_messages_session_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id)",
+        "table_name": "mentor_messages",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "mentor_messages_user_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "table_name": "mentor_messages",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "pet_profiles_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (user_id)",
+        "table_name": "pet_profiles",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "pet_profiles_user_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "table_name": "pet_profiles",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "profiles_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (id) REFERENCES auth.users(id)",
+        "table_name": "profiles",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "profiles_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "profiles",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "profiles_username_key",
+        "type": "u",
+        "validated": true,
+        "definition": "UNIQUE (username)",
+        "table_name": "profiles",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "quiz_attempts_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "quiz_attempts",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "quiz_attempts_user_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "table_name": "quiz_attempts",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "quiz_attempts_user_id_quiz_day_question_key_key",
+        "type": "u",
+        "validated": true,
+        "definition": "UNIQUE (user_id, quiz_day, question_key)",
+        "table_name": "quiz_attempts",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "sessions_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "sessions",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "sessions_user_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "table_name": "sessions",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "task_progress_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "task_progress",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "task_progress_task_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (task_id) REFERENCES tasks(id)",
+        "table_name": "task_progress",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "task_progress_user_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "table_name": "task_progress",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "task_progress_user_id_task_id_key",
+        "type": "u",
+        "validated": true,
+        "definition": "UNIQUE (user_id, task_id)",
+        "table_name": "task_progress",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "tasks_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "tasks",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "user_achievements_achievement_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (achievement_id) REFERENCES achievements(id)",
+        "table_name": "user_achievements",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "user_achievements_pkey",
+        "type": "p",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)",
+        "table_name": "user_achievements",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "user_achievements_user_id_achievement_id_key",
+        "type": "u",
+        "validated": true,
+        "definition": "UNIQUE (user_id, achievement_id)",
+        "table_name": "user_achievements",
+        "is_deferrable": false,
+        "initially_deferred": false
+      },
+      {
+        "name": "user_achievements_user_id_fkey",
+        "type": "f",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "table_name": "user_achievements",
+        "is_deferrable": false,
+        "initially_deferred": false
+      }
+    ],
+    "indexes": [
+      {
+        "name": "achievements_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX achievements_pkey ON public.achievements USING btree (id)",
+        "table_name": "achievements",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "achievements_slug_key",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX achievements_slug_key ON public.achievements USING btree (slug)",
+        "table_name": "achievements",
+        "primary_key": false,
+        "constraint_backed": true
+      },
+      {
+        "name": "mentor_messages_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX mentor_messages_pkey ON public.mentor_messages USING btree (id)",
+        "table_name": "mentor_messages",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "pet_profiles_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX pet_profiles_pkey ON public.pet_profiles USING btree (user_id)",
+        "table_name": "pet_profiles",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "profiles_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)",
+        "table_name": "profiles",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "profiles_username_key",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX profiles_username_key ON public.profiles USING btree (username)",
+        "table_name": "profiles",
+        "primary_key": false,
+        "constraint_backed": true
+      },
+      {
+        "name": "idx_quiz_attempts_user_day",
+        "valid": true,
+        "is_unique": false,
+        "definition": "CREATE INDEX idx_quiz_attempts_user_day ON public.quiz_attempts USING btree (user_id, quiz_day DESC)",
+        "table_name": "quiz_attempts",
+        "primary_key": false,
+        "constraint_backed": false
+      },
+      {
+        "name": "quiz_attempts_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX quiz_attempts_pkey ON public.quiz_attempts USING btree (id)",
+        "table_name": "quiz_attempts",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "quiz_attempts_user_id_quiz_day_question_key_key",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX quiz_attempts_user_id_quiz_day_question_key_key ON public.quiz_attempts USING btree (user_id, quiz_day, question_key)",
+        "table_name": "quiz_attempts",
+        "primary_key": false,
+        "constraint_backed": true
+      },
+      {
+        "name": "sessions_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX sessions_pkey ON public.sessions USING btree (id)",
+        "table_name": "sessions",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "task_progress_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX task_progress_pkey ON public.task_progress USING btree (id)",
+        "table_name": "task_progress",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "task_progress_user_id_task_id_key",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX task_progress_user_id_task_id_key ON public.task_progress USING btree (user_id, task_id)",
+        "table_name": "task_progress",
+        "primary_key": false,
+        "constraint_backed": true
+      },
+      {
+        "name": "tasks_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX tasks_pkey ON public.tasks USING btree (id)",
+        "table_name": "tasks",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "user_achievements_pkey",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX user_achievements_pkey ON public.user_achievements USING btree (id)",
+        "table_name": "user_achievements",
+        "primary_key": true,
+        "constraint_backed": true
+      },
+      {
+        "name": "user_achievements_user_id_achievement_id_key",
+        "valid": true,
+        "is_unique": true,
+        "definition": "CREATE UNIQUE INDEX user_achievements_user_id_achievement_id_key ON public.user_achievements USING btree (user_id, achievement_id)",
+        "table_name": "user_achievements",
+        "primary_key": false,
+        "constraint_backed": true
+      }
+    ],
+    "policies": [
+      {
+        "cmd": "SELECT",
+        "qual": "true",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "achievements",
+        "permissive": "PERMISSIVE",
+        "policyname": "achievements_authenticated_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "mentor_messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "mentor_messages_owner_insert",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "mentor_messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "mentor_messages_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "mentor_messages",
+        "permissive": "PERMISSIVE",
+        "policyname": "mentor_messages_owner_update",
+        "schemaname": "public",
+        "with_check": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "pet_profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "pet_profiles_owner_insert",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = user_id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "pet_profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "pet_profiles_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "pet_profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "pet_profiles_owner_update",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = user_id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_owner_insert",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT auth.uid() AS uid) = id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(( SELECT auth.uid() AS uid) = id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "profiles",
+        "permissive": "PERMISSIVE",
+        "policyname": "profiles_owner_update",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "quiz_attempts",
+        "permissive": "PERMISSIVE",
+        "policyname": "quiz_attempts_owner_insert",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = user_id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "quiz_attempts",
+        "permissive": "PERMISSIVE",
+        "policyname": "quiz_attempts_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "quiz_attempts",
+        "permissive": "PERMISSIVE",
+        "policyname": "quiz_attempts_owner_update",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = user_id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "sessions",
+        "permissive": "PERMISSIVE",
+        "policyname": "sessions_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "INSERT",
+        "qual": null,
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "task_progress",
+        "permissive": "PERMISSIVE",
+        "policyname": "task_progress_owner_insert",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = user_id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "task_progress",
+        "permissive": "PERMISSIVE",
+        "policyname": "task_progress_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "UPDATE",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "task_progress",
+        "permissive": "PERMISSIVE",
+        "policyname": "task_progress_owner_update",
+        "schemaname": "public",
+        "with_check": "(( SELECT auth.uid() AS uid) = user_id)",
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "true",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "tasks",
+        "permissive": "PERMISSIVE",
+        "policyname": "tasks_authenticated_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      },
+      {
+        "cmd": "SELECT",
+        "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+        "roles": [
+          "authenticated"
+        ],
+        "tablename": "user_achievements",
+        "permissive": "PERMISSIVE",
+        "policyname": "user_achievements_owner_select",
+        "schemaname": "public",
+        "with_check": null,
+        "expression_withheld": false
+      }
+    ],
+    "table_grants": [
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "SELECT"
+        ],
+        "table_name": "achievements",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "achievements",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "achievements",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "table_name": "mentor_messages",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "mentor_messages",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "mentor_messages",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "table_name": "pet_profiles",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "pet_profiles",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "pet_profiles",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "table_name": "profiles",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "profiles",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "profiles",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "table_name": "quiz_attempts",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "quiz_attempts",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "quiz_attempts",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "SELECT"
+        ],
+        "table_name": "sessions",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "sessions",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "sessions",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "INSERT",
+          "SELECT",
+          "UPDATE"
+        ],
+        "table_name": "task_progress",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "task_progress",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "task_progress",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "SELECT"
+        ],
+        "table_name": "tasks",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "tasks",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "tasks",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "authenticated",
+        "grantor": "postgres",
+        "privileges": [
+          "SELECT"
+        ],
+        "table_name": "user_achievements",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "postgres",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "user_achievements",
+        "schema_name": "public",
+        "is_grantable": false
+      },
+      {
+        "grantee": "service_role",
+        "grantor": "postgres",
+        "privileges": [
+          "DELETE",
+          "INSERT",
+          "MAINTAIN",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "table_name": "user_achievements",
+        "schema_name": "public",
+        "is_grantable": false
+      }
+    ],
+    "column_grants": [],
+    "routines": [],
+    "triggers": [],
+    "views": [],
+    "sequences": [],
+    "rules": [],
+    "enum_domains": []
+  },
+  "platform_dependencies": {
+    "source_database_locale": {
+      "encoding": "UTF8",
+      "locale_provider": "i",
+      "collation": "en_US.UTF-8",
+      "character_classification": "en_US.UTF-8",
+      "collation_version": "153.121"
+    },
+    "capabilities": {
+      "postgres_auth_users_references": true,
+      "postgres_public_create": true,
+      "postgres_auth_usage": true,
+      "authenticated_auth_uid_execute": true,
+      "service_auth_uid_execute": true
+    },
+    "read_only": "on",
+    "server_version": "17.6",
+    "auth_uid_return": "uuid",
+    "auth_users_id_type": "uuid",
+    "core_uuid_generator": true,
+    "schema_grants": [
+      {
+        "acl": "{supabase_admin=UC/supabase_admin,anon=U/supabase_admin,authenticated=U/supabase_admin,service_role=U/supabase_admin,supabase_auth_admin=UC/supabase_admin,dashboard_user=UC/supabase_admin,postgres=U/supabase_admin}",
+        "owner": "supabase_admin",
+        "schema": "auth"
+      },
+      {
+        "acl": "{pg_database_owner=UC/pg_database_owner,=U/pg_database_owner,postgres=U/pg_database_owner,anon=U/pg_database_owner,authenticated=U/pg_database_owner,service_role=U/pg_database_owner}",
+        "owner": "pg_database_owner",
+        "schema": "public"
+      }
+    ],
+    "roles": [
+      {
+        "rolname": "anon",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": false,
+        "rolcreatedb": false,
+        "rolbypassrls": false,
+        "rolcreaterole": false
+      },
+      {
+        "rolname": "authenticated",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": false,
+        "rolcreatedb": false,
+        "rolbypassrls": false,
+        "rolcreaterole": false
+      },
+      {
+        "rolname": "authenticator",
+        "rolsuper": false,
+        "rolinherit": false,
+        "rolcanlogin": true,
+        "rolcreatedb": false,
+        "rolbypassrls": false,
+        "rolcreaterole": false
+      },
+      {
+        "rolname": "postgres",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": true,
+        "rolcreatedb": true,
+        "rolbypassrls": true,
+        "rolcreaterole": true
+      },
+      {
+        "rolname": "service_role",
+        "rolsuper": false,
+        "rolinherit": true,
+        "rolcanlogin": false,
+        "rolcreatedb": false,
+        "rolbypassrls": true,
+        "rolcreaterole": false
+      }
+    ],
+    "memberships": [
+      {
+        "member": "authenticator",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "anon",
+        "inherit_option": false
+      },
+      {
+        "member": "authenticator",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "authenticated",
+        "inherit_option": false
+      },
+      {
+        "member": "authenticator",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "service_role",
+        "inherit_option": false
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "anon",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "authenticated",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "authenticator",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "pg_create_subscription",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "pg_monitor",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "pg_read_all_data",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "pg_signal_backend",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": true,
+        "granted_role": "service_role",
+        "inherit_option": true
+      },
+      {
+        "member": "postgres",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "supabase_privileged_role",
+        "inherit_option": true
+      }
+    ],
+    "public_default_acls": [
+      {
+        "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+        "kind": "S",
+        "owner": "postgres",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+        "kind": "f",
+        "owner": "postgres",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+        "kind": "r",
+        "owner": "postgres",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+        "kind": "S",
+        "owner": "supabase_admin",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "kind": "f",
+        "owner": "supabase_admin",
+        "schema_name": "public"
+      },
+      {
+        "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+        "kind": "r",
+        "owner": "supabase_admin",
+        "schema_name": "public"
+      }
+    ],
+    "event_triggers": [
+      {
+        "name": "graphql_watch_ddl",
+        "event": "ddl_command_end",
+        "evttags": null,
+        "evtenabled": "O",
+        "function_name": "increment_schema_version",
+        "function_schema": "graphql"
+      },
+      {
+        "name": "graphql_watch_drop",
+        "event": "sql_drop",
+        "evttags": null,
+        "evtenabled": "O",
+        "function_name": "increment_schema_version",
+        "function_schema": "graphql"
+      },
+      {
+        "name": "issue_graphql_placeholder",
+        "event": "sql_drop",
+        "evttags": [
+          "DROP EXTENSION"
+        ],
+        "evtenabled": "O",
+        "function_name": "set_graphql_placeholder",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "issue_pg_cron_access",
+        "event": "ddl_command_end",
+        "evttags": [
+          "CREATE EXTENSION"
+        ],
+        "evtenabled": "O",
+        "function_name": "grant_pg_cron_access",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "issue_pg_graphql_access",
+        "event": "ddl_command_end",
+        "evttags": [
+          "CREATE FUNCTION"
+        ],
+        "evtenabled": "O",
+        "function_name": "grant_pg_graphql_access",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "issue_pg_net_access",
+        "event": "ddl_command_end",
+        "evttags": [
+          "CREATE EXTENSION"
+        ],
+        "evtenabled": "O",
+        "function_name": "grant_pg_net_access",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "pgrst_ddl_watch",
+        "event": "ddl_command_end",
+        "evttags": null,
+        "evtenabled": "O",
+        "function_name": "pgrst_ddl_watch",
+        "function_schema": "extensions"
+      },
+      {
+        "name": "pgrst_drop_watch",
+        "event": "sql_drop",
+        "evttags": null,
+        "evtenabled": "O",
+        "function_name": "pgrst_drop_watch",
+        "function_schema": "extensions"
+      }
+    ],
+    "replay_policy": "Observe only. Do not recreate managed schemas, roles, membership, default ACLs, event triggers, Auth data or platform internals."
+  },
+  "unverified": [
+    "Managed platform routine implementations and Auth/PostgREST behavior",
+    "Actual staging execution after future explicit write approval",
+    "Production row contents, null-owner rows, duplicate/null data counts and historic reward legitimacy (not read)",
+    "Snapshot change after capture; repeat preflight before an approved initialization"
+  ]
+}
