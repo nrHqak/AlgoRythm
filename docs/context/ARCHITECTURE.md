@@ -86,4 +86,9 @@ The mentor builds context in `backend/mentor.py`, calls Gemini when configured, 
 - Browser-owned quiz/pet/Mentor state remains constrained by ownership RLS; quiz correctness and pet evolution do not grant authoritative XP.
 - `tasks` and `achievements` remain read-only catalogs. Legacy reward/task/session/achievement data is explicitly unverified.
 
-The repository contains policies and incremental migrations, but not a complete reproducible baseline for every core table. Treat live schema shape as external state until that gap is closed.
+The repository includes a source-verified application schema recovery candidate
+under `supabase/recovery/`, alongside incremental migrations. It already represents
+two earlier increments and is not an approved initializer. Managed Supabase
+objects remain external dependencies; live drift, bootstrap/history reconciliation
+and coordinated reward rollout require separate review and authorization. See
+[schema recovery](../verification/canonical-schema-recovery.md).

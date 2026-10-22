@@ -15,13 +15,13 @@
 - `README.md`: 1 mapped file(s)
 - `TECHNICAL_ARCHITECTURE.md`: 1 mapped file(s)
 - `backend/`: 18 mapped file(s)
-- `docs/`: 18 mapped file(s)
+- `docs/`: 19 mapped file(s)
 - `frontend/`: 71 mapped file(s)
 - `pyproject.toml`: 1 mapped file(s)
 - `render.yaml`: 1 mapped file(s)
-- `scripts/`: 2 mapped file(s)
-- `supabase/`: 5 mapped file(s)
-- `tests/`: 9 mapped file(s)
+- `scripts/`: 3 mapped file(s)
+- `supabase/`: 8 mapped file(s)
+- `tests/`: 10 mapped file(s)
 
 ## Entrypoints
 
@@ -117,6 +117,7 @@
 - `supabase/migrations/20260808213028_secure_public_tables_with_rls.sql`: `achievements`, `mentor_messages`, `pet_profiles`, `profiles`, `quiz_attempts`, `sessions`, `task_progress`, `tasks`, `user_achievements`
 - `supabase/migrations/20261022113757_reward_integrity.sql`: `practice_progress`, `profiles`, `quiz_attempts`, `reward_accounts`, `sessions`, `settle_activity_session`, `tasks`, `user_achievements`
 - `supabase/pet_quiz_schema.sql`: `pet_profiles`, `profiles`, `quiz_attempts`
+- `supabase/recovery/application-schema.candidate.sql`: `achievements`, `profiles`, `quiz_attempts`, `sessions`, `tasks`
 
 ## Environment variable names
 
