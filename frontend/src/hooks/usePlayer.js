@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-export function usePlayer(totalSteps) {
+export function usePlayer(totalSteps, traceIdentity = totalSteps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     setCurrentStep(0);
     setIsPlaying(false);
-  }, [totalSteps]);
+  }, [totalSteps, traceIdentity]);
 
   useEffect(() => {
     if (!isPlaying || totalSteps <= 1) {

@@ -15,11 +15,11 @@
 - `README.md`: 1 mapped file(s)
 - `TECHNICAL_ARCHITECTURE.md`: 1 mapped file(s)
 - `backend/`: 17 mapped file(s)
-- `docs/`: 12 mapped file(s)
+- `docs/`: 14 mapped file(s)
 - `frontend/`: 68 mapped file(s)
 - `pyproject.toml`: 1 mapped file(s)
 - `render.yaml`: 1 mapped file(s)
-- `scripts/`: 1 mapped file(s)
+- `scripts/`: 2 mapped file(s)
 - `supabase/`: 4 mapped file(s)
 - `tests/`: 6 mapped file(s)
 
