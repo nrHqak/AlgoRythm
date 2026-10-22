@@ -5,7 +5,8 @@
 **Remote compatibility and staging acceptance: NOT VERIFIED. Release blocked.**
 The repository/local preflight is complete; it does not certify the actual
 Supabase schema or make the reward migration safe to apply to an unknown schema.
-No remote SQL, migration, schema change, data copy, deployment or merge was run.
+No remote SQL, migration, schema change, data copy, deployment command or merge
+was run.
 
 Base: `security/reward-integrity` at
 `8cc322b8f19da312e5d22cd843757d81517dc3c8`, parent
@@ -417,6 +418,9 @@ Reviewed current official guidance on 2026-10-22:
   regenerating the repository map with `make context`.
 - No new live-browser run or hosted acceptance was performed. Prior Prompt9
   browser evidence is historical and uses synthetic cloud responses.
+- The authorized Git push/PR triggered the repository's existing integration
+  checks, including a successful Vercel preview status. This is not staging
+  acceptance or a production release; no deployment command was issued.
 
 Unknown and blocking: actual canonical DDL, applied migration versions, duplicate
 counts, complete policy purposes, effective inherited/default privileges,
