@@ -12,6 +12,13 @@ alone. Bootstrap/history reconciliation and coordinated reward migration still
 require review and separate authorization. See
 [canonical schema recovery](../verification/canonical-schema-recovery.md).
 
+A locally verified fail-closed procedure is now available in the
+[staging bootstrap runbook](../verification/staging-bootstrap.md). Its offline
+composer and generated SQL intentionally refuse hosted execution. Actual managed
+event-handler behavior, fresh platform grants and containment effects require
+review before a separately approved hosted initializer can be prepared/executed.
+Local Auth/event fixtures are not evidence of Supabase-hosted equivalence.
+
 ## Deprecated Gemini SDK
 
 The backend still uses `google-generativeai`. It is intentionally unchanged in this infrastructure task. Provider migration requires separate behavior and regression review.
