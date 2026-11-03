@@ -136,3 +136,22 @@ including MAINTAIN. The [recovery report](../verification/canonical-schema-recov
 defines represented migration versions and the outstanding initialization gates.
 Never treat the candidate as a new automatic CLI migration or restore managed
 platform DDL/users/history from production.
+
+## Fail-closed bootstrap preparation
+
+`python scripts/staging_bootstrap.py --check` verifies the pinned recovery,
+migration and locally derived final-schema reference without contacting a
+database. `--emit-local NEW_DIRECTORY` creates three SQL review files; both the
+composer and generated SQL deliberately lack a hosted execution mode. Do not
+remove local guards to initialize a project. The
+[staging bootstrap runbook](../verification/staging-bootstrap.md) defines the
+quarantined baseline → supported CLI history repair → reward → final-history
+repair → conditional release sequence and the required hosted review/approval.
+
+The new bootstrap tests require native PostgreSQL17 and pinned Supabase CLI3.0.0
+for history operations. Set `BOOTSTRAP_PG17_REQUIRED=1`,
+`BOOTSTRAP_CLI_REQUIRED=1`, `BOOTSTRAP_SUPABASE_CLI=/path/to/supabase` and
+`REWARD_POSTGRES_BIN=/path/to/pg17/bin` to require all relevant local checks.
+The CLI connects only to owned socket-only test databases, with isolated config;
+tests never accept an external DSN. Other environments explicitly skip unavailable
+bootstrap integration coverage. The incompatible-major check is run on PG16.

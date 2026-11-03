@@ -15,13 +15,13 @@
 - `README.md`: 1 mapped file(s)
 - `TECHNICAL_ARCHITECTURE.md`: 1 mapped file(s)
 - `backend/`: 18 mapped file(s)
-- `docs/`: 19 mapped file(s)
+- `docs/`: 20 mapped file(s)
 - `frontend/`: 71 mapped file(s)
 - `pyproject.toml`: 1 mapped file(s)
 - `render.yaml`: 1 mapped file(s)
-- `scripts/`: 3 mapped file(s)
-- `supabase/`: 8 mapped file(s)
-- `tests/`: 10 mapped file(s)
+- `scripts/`: 4 mapped file(s)
+- `supabase/`: 10 mapped file(s)
+- `tests/`: 11 mapped file(s)
 
 ## Entrypoints
 
@@ -125,7 +125,7 @@
 
 - Backend: `ALLOWED_ORIGINS`, `DEMO_EMAIL`, `DEMO_PASSWORD`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `SEED_USER_PASSWORD`, `SUPABASE_SERVICE_KEY`, `SUPABASE_URL`
 - Frontend: `VITE_API_URL`, `VITE_DEMO_EMAIL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SUPABASE_URL`
-- Other: `REWARD_DATABASE_REQUIRED`, `REWARD_POSTGRES_BIN`
+- Other: `BOOTSTRAP_CLI_REQUIRED`, `BOOTSTRAP_PG17_REQUIRED`, `BOOTSTRAP_SUPABASE_CLI`, `REWARD_DATABASE_REQUIRED`, `REWARD_POSTGRES_BIN`
 
 ## Commands
 
