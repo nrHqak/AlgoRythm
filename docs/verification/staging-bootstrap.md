@@ -278,6 +278,9 @@ an external npm wrapper adding `--mode test`, preserving Vite's existing test
 envDir. Runtime versions were Python3.14.3 / Node24.22.1. No real .env was read.
 The existing CI database job remains PG16 and explicitly cannot certify PG17
 bootstrap success; it runs source/guard checks and reports the other cases skipped.
+Its runner is pinned to Ubuntu24.04, whose official repository supplies PG16.
+The initial Ubuntu26.04 run failed before tests because that native package was
+absent; no database checks were relaxed to address the runner-image change.
 
 ## Remaining hosted blockers and next authorization
 
