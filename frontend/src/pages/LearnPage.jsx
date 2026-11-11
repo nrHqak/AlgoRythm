@@ -60,8 +60,9 @@ export function LearnPage() {
   const [error, setError] = useState("");
   const [ritualNotice, setRitualNotice] = useState("");
   const [feedBusy, setFeedBusy] = useState(false);
-  const { pet, loading: petLoading, error: petError, feedPet, addPetProgress } = usePet(user?.id, profile?.xp || 0);
-  const quiz = useDailyQuiz(user?.id, locale, async (reward) => {
+  const profileUserId = profile?.id === user?.id ? user?.id : null;
+  const { pet, loading: petLoading, error: petError, feedPet, addPetProgress } = usePet(profileUserId, profile?.xp || 0);
+  const quiz = useDailyQuiz(profileUserId, locale, async (reward) => {
     await addPetProgress(reward.correct ? 12 : 4, reward.correct ? 8 : 2, reward.correct ? 4 : 1);
     setRitualNotice(
       t("learn.quizReward")

@@ -1,6 +1,12 @@
 # AlgoRythm v1.0 release candidate — 2026-11-09
 
-**Release is blocked.** Supabase reports `AlgoRythm-staging`
+**Current status, 2026-11-12.** Staging initialization succeeded and synthetic
+integration acceptance exercised real hosted Auth, persistence, rewards and RLS.
+The confirmed first login Pet initialization race is fixed. Public signup still
+returns HTTP 429/email-send quota, so email confirmation remains unverified and
+release approval is blocked. See the [acceptance results](staging-acceptance.md).
+
+The original November 9 probe reported `AlgoRythm-staging`
 (`aexhskdofnpqqraapigk`, ap-northeast-1) as `INACTIVE`. A bounded read-only
 connection probe returned “Database is possibly not accessible at the moment.”
 The October 22 catalogue is historical evidence, not a current schema check.
@@ -51,8 +57,8 @@ the browser worker and fallback worked in this run.
 
 ## Release gate
 
-Restore the [exact staging project](https://supabase.com/dashboard/project/aexhskdofnpqqraapigk)
-to active. Then resume the read-only checks in the
-[existing bootstrap runbook](staging-bootstrap.md). Any hosted bootstrap and
-synthetic acceptance need separate approval. Release approval, merge, coordinated
-production rollout and smoke testing remain gated by staging acceptance.
+The [exact staging project](https://supabase.com/dashboard/project/aexhskdofnpqqraapigk)
+is active and initialized. Complete public signup and operator email confirmation
+after the mail quota permits it, then repeat the final browser login checkpoint
+in the [acceptance report](staging-acceptance.md). Release approval, merge,
+coordinated production rollout and smoke testing remain separately gated.
