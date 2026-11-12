@@ -4,10 +4,16 @@ Verified on 2026-11-12 in Asia/Atyrau against AlgoRythm-staging
 (`aexhskdofnpqqraapigk`, ACTIVE_HEALTHY, PostgreSQL 17.11.0.003). Reward tests
 used the database's 2026-11-11 UTC day.
 
-**PR #9 remains blocked by public signup/email confirmation.** Supabase returned
-HTTP 429 with `over_email_send_rate_limit` on both attempts using the approved
-controlled inbox. Neither attempt created an account or sent a confirmation
-email. Confirmation delivery and completion remain NOT VERIFIED.
+**Staging functional acceptance passed.** The four remaining Auth checks passed
+on 2026-11-12 after the operator configured custom SMTP and authorized the inbox
+associated with the Resend account. The earlier PASS results are retained.
+PR #9 is ready for final review and merge approval. Production rollout remains
+separately gated.
+
+The initial signup attempts returned HTTP 429 with
+`over_email_send_rate_limit`. The first custom SMTP attempt returned Resend
+SMTP 550 because its test sender restricted delivery to a different account
+email. Using the operator-authorized matching inbox resolved delivery.
 
 The optimized local frontend and actual local FastAPI service connected to
 hosted staging Auth, PostgREST and PostgreSQL. Chrome 157.0.8103.39 ran real
@@ -24,7 +30,7 @@ The initialization manifest remained
 
 | Requested user flow | Status | Actual evidence |
 | --- | --- | --- |
-| 1. Signup, login, logout and session persistence | FAIL | Public signup returned 429/email-send quota twice. With two administratively confirmed synthetic fixtures, browser login returned 200, logout returned 204, local session storage cleared, protected routes redirected, reload restored the authenticated workspace, and a real Auth token refresh rotated the token. Email confirmation remains NOT VERIFIED. |
+| 1. Signup, login, logout and session persistence | PASS | Public signup returned 200 and sent confirmation without issuing a session. The operator confirmed the received email, and Auth recorded email_confirmed_at. Browser login with the original signup password returned 200 and the actual Profile UI displayed the new owner profile. Earlier logout, local storage clearing, protected-route redirects, reload persistence and token rotation PASS results are retained. |
 | 2. Profile initialization and updates | PASS | The application created each owner's profile. A safe username update through the existing owner REST contract persisted and appeared in the actual Profile UI after refresh. Reward columns rejected browser updates. No profile-editing feature was added. |
 | 3. Playground execution | PASS | Bubble, selection and insertion sort, binary search and linear search matched every field of their frozen Trace Protocol v1 fixtures in real optimized workers. Step counts were 38, 47, 40, 15 and 13. Next/Prev playback rendered the expected steps. |
 | 4. Session saving and history | PASS | Actual browser POST /session/save returned 200 and hosted owner reads returned the same source, session ID, trace count and activity policy. The Profile UI rendered nine history cards at its checkpoint and expanded stored source. Later saves also succeeded. |
@@ -35,11 +41,37 @@ The initialization manifest remained
 | 9. Classification and Mentor fallback | PASS | Actual classification returned bubble_sort with confidence 1.0. A real IndexError triggered the backend fallback, displayed it in the Playground, and stored an owner Mentor message linked to the matching hosted session. Live Gemini generation was not tested. |
 | 10. Refresh, navigation and error recovery | PASS | Authenticated navigation and reload preserved identity, profile XP, quiz, pet state and history. A real infinite loop hit the worker deadline, saved its timeout annotation, and a subsequent valid Run succeeded. Deliberately blocking CDN requests disabled Run and exposed Retry. Restoring requests recovered real Python and a hosted save returned 200. |
 
-Two confirmed synthetic Auth accounts and one synthetic task were sufficient.
+The core run used two confirmed synthetic Auth accounts and one synthetic task.
 The second fixture's application rows were removed and recreated to repeat a
 first login with a new profile after the fix. Its earlier concurrency evidence was captured
 before that administrative fixture cleanup. Account data was never taken from
 existing users.
+
+**Remaining Auth checks, 2026-11-12.** Only public signup, email confirmation,
+login after confirmation and profile initialization were repeated. Application
+source remained at `484a7ca0bf2925a4b38e84a3ab43f1967d985bee`.
+
+| Final check | Status | Evidence |
+| --- | --- | --- |
+| Public signup | PASS | Actual UI POST /auth/v1/signup returned 200. confirmation_sent_at was present and no session was issued before confirmation. |
+| Email confirmation | PASS | The operator confirmed delivery and clicked the email button. Auth recorded confirmation at 2026-11-12T17:52:09.875986Z. No administrative confirmation was performed. |
+| Login after confirmation | PASS | Actual UI password login returned 200 for the new signup identity and opened /learn. The original signup password was used. |
+| Profile initialization | PASS | The application created the correct owner's profile and rendered its username on /profile, with 0 XP, level 1 and streak 0. No administrative profile insertion was used. |
+
+The final disposable identity was
+`73280134-2629-4ffb-b770-8a8e46167c79`. Cleanup removed its profile and automatic
+Pet record, then the Auth account. Auth lookup returned 404, and bounded counts
+for that ID across Auth and all application tables returned zero. No test
+Auth account or application row was retained. Managed Auth/SMTP logs and the
+operator's mailbox are outside application-data cleanup. The local browser and services were
+stopped, and temporary in-memory credentials were cleared. Sanitized final
+receipts remain under /tmp/algorythm-smtp-acceptance-final for the operator.
+
+The selected Resend test sender delivers only to the Resend account's email.
+This verifies the approved controlled-inbox staging flow. Delivery to arbitrary
+recipients requires a verified sender domain or an appropriately configured
+production mail service before public deployment.
+[Resend test-sender restriction](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain)
 
 **Confirmed P1 application defect, fixed.** On the original
 candidate, Pet initialization raced ProfileProvider's profile insertion. The
@@ -98,8 +130,44 @@ key, passwords, session tokens or confirmation links. The supplied credential
 files remain outside the repository. Test browsers and local servers were
 stopped.
 
-No P0 application defect was confirmed. The first login P1 is fixed. The
-remaining release acceptance blocker is a successful public signup followed
-by the operator's email confirmation and a normal browser login. PR #9 must
-remain draft until that flow passes and final release approval is granted.
-Production, merge and deployment were outside the authorized execution.
+No remaining P0/P1 application defect was confirmed in the tested flows. The
+first login P1 is fixed and the final signup blocker is resolved for the
+authorized staging inbox. Deployed Vercel/Render behavior, production database
+compatibility and production SMTP remain outside this acceptance scope.
+
+**Manual merge procedure.** Separate final approval is required by DEPLOY.md
+and the operator's release instructions. These steps have been prepared only.
+
+1. Review the latest PR #9 diff and this report. Pin its full head SHA and verify
+   all three GitHub CI checks pass on that exact SHA.
+2. Have the hosting operator confirm production automatic deployments are held
+   before merging when deployment is deferred. The current Vercel file disables
+   Git deployment only for the candidate/bootstrap branches. Unspecified branches
+   such as main default to enabled. For Render, set the linked service's
+   Auto-Deploy behavior to Off. Any repository change used to establish a hold
+   requires a new reviewed head and fresh CI.
+3. Mark PR #9 ready for review after those gates. Confirm its base is main, its
+   head is codex/algorythm-v1.0-rc and it remains mergeable. Obtain required
+   reviewer approvals and explicit final approval to merge. Resolve any new
+   base conflict through the candidate branch and revalidate the resulting head.
+4. Perform the approved manual merge with a merge commit to preserve candidate
+   history, using the exact reviewed head SHA in the command below.
+5. Verify the merged PR and main commit. Leave production migration, coordinated
+   frontend/backend rollout and production smoke testing under their separate
+   deployment approval in DEPLOY.md.
+
+```sh
+gh pr view 9 --repo nrHqak/AlgoRythm --json headRefOid,headRefName,baseRefName,isDraft,mergeable
+gh pr checks 9 --repo nrHqak/AlgoRythm
+# The operator opens final review after the deployment hold is confirmed
+gh pr ready 9 --repo nrHqak/AlgoRythm
+# Execute only after final merge approval, using the reviewed head SHA
+gh pr merge 9 --repo nrHqak/AlgoRythm --merge --match-head-commit APPROVED_HEAD_SHA
+gh pr view 9 --repo nrHqak/AlgoRythm --json state,mergeCommit
+```
+
+Automatic deployment behavior is documented by
+[Vercel](https://vercel.com/docs/project-configuration/git-configuration#git.deploymentenabled)
+and [Render](https://render.com/docs/deploys#configuring-auto-deploys).
+Production configuration was not inspected or modified. PR #9 remains draft
+pending the operator's final approval. No merge or deployment was executed.

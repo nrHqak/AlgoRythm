@@ -2,9 +2,11 @@
 
 **Current status, 2026-11-12.** Staging initialization succeeded and synthetic
 integration acceptance exercised real hosted Auth, persistence, rewards and RLS.
-The confirmed first login Pet initialization race is fixed. Public signup still
-returns HTTP 429/email-send quota, so email confirmation remains unverified and
-release approval is blocked. See the [acceptance results](staging-acceptance.md).
+The confirmed first login Pet initialization race is fixed. Public signup,
+operator email confirmation, normal login and profile initialization now pass
+with the configured Resend test sender and its authorized inbox. PR #9 is ready
+for final review and merge approval. See the
+[acceptance results and manual merge gates](staging-acceptance.md).
 
 The original November 9 probe reported `AlgoRythm-staging`
 (`aexhskdofnpqqraapigk`, ap-northeast-1) as `INACTIVE`. A bounded read-only
@@ -58,7 +60,9 @@ the browser worker and fallback worked in this run.
 ## Release gate
 
 The [exact staging project](https://supabase.com/dashboard/project/aexhskdofnpqqraapigk)
-is active and initialized. Complete public signup and operator email confirmation
-after the mail quota permits it, then repeat the final browser login checkpoint
-in the [acceptance report](staging-acceptance.md). Release approval, merge,
-coordinated production rollout and smoke testing remain separately gated.
+is active and initialized, and the final controlled-inbox signup flow passed.
+Follow the review and manual merge procedure in the
+[acceptance report](staging-acceptance.md). Confirm the deployment hold before
+merging when deployment is deferred. Public-recipient SMTP, production database
+compatibility, coordinated rollout and smoke testing require their separate
+production approval.
