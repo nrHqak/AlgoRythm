@@ -34,13 +34,13 @@ export function useAudio() {
     return contextRef.current;
   }
 
-  async function playSound(eventName) {
+  async function playSound(eventName, isCurrent = () => true) {
     if (muted || !SOUND_MAP[eventName]) {
       return;
     }
 
     const audioContext = await unlockAudio();
-    if (!audioContext) {
+    if (!audioContext || !isCurrent()) {
       return;
     }
 

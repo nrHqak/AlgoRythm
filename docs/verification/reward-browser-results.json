@@ -1,0 +1,345 @@
+{
+  "environment": {
+    "browser": "155.0.8059.85",
+    "platform": "darwin",
+    "node": "v24.19.0",
+    "cloud": "synthetic, no live credentials"
+  },
+  "checks": [
+    "15 real-worker canonical fixtures",
+    "real-worker extended checks",
+    "helper has no unhandled errors",
+    "one prewarmed product worker",
+    "one normal trace, no counts",
+    "authoritative activity XP displayed",
+    "Next renders second step",
+    "audio oscillator scheduled after real Run gesture",
+    "mute interface",
+    "Bubble Sort production v1 trace",
+    "Bubble Sort highlighted bars",
+    "Bubble Sort player final array",
+    "Bubble Sort repeat resets playback",
+    "Selection Sort production v1 trace",
+    "Selection Sort highlighted bars",
+    "Selection Sort player final array",
+    "Selection Sort repeat resets playback",
+    "Insertion Sort production v1 trace",
+    "Insertion Sort highlighted bars",
+    "Insertion Sort player final array",
+    "Insertion Sort repeat resets playback",
+    "Binary Search production v1 trace",
+    "Binary Search highlighted bars",
+    "Binary Search player final array",
+    "Binary Search repeat resets playback",
+    "Linear Search production v1 trace",
+    "Linear Search highlighted bars",
+    "Linear Search player final array",
+    "Linear Search repeat resets playback",
+    "UI complexity cache",
+    "complexity preserves player",
+    "UI complexity cancellation preserves trace",
+    "UI complexity timeout preserves trace",
+    "failed secondary requests preserve visualization",
+    "stale classifier cannot overwrite newer metadata",
+    "Python and Mentor errors isolated",
+    "example reset clears trace",
+    "navigation terminates worker",
+    "navigation back executes",
+    "UI normal Run timeout recovers for next Run",
+    "SyntaxError shown without a visualization or Mentor",
+    "task starter populates editor",
+    "task starter executes",
+    "emitted module worker loaded",
+    "no unexpected API routes",
+    "no backend execution requests",
+    "no uncaught production UI errors",
+    "CDN failure disables Run",
+    "Retry boots fresh real runtime",
+    "Run succeeds after CDN Retry"
+  ],
+  "fixtures": [
+    {
+      "name": "Bubble Sort",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 38,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Selection Sort",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 47,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Insertion Sort",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 40,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Binary Search",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 15,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Linear Search",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 13,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "SyntaxError",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 0,
+      "finalArray": [],
+      "error": {
+        "type": "SyntaxError",
+        "message": "invalid syntax (<user_code>, line 2)",
+        "line": 1
+      },
+      "truncated": false
+    },
+    {
+      "name": "IndexError",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 2,
+      "finalArray": [
+        1
+      ],
+      "error": {
+        "type": "IndexError",
+        "message": "list index out of range",
+        "line": 2
+      },
+      "truncated": false
+    },
+    {
+      "name": "Timeout",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 0,
+      "finalArray": [],
+      "error": {
+        "type": "timeout",
+        "message": "Execution exceeded 2 seconds.",
+        "line": 1
+      },
+      "truncated": false
+    },
+    {
+      "name": "Truncation",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 4,
+      "finalArray": [
+        2
+      ],
+      "error": null,
+      "truncated": true
+    },
+    {
+      "name": "Tuple / locals / highlights",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 4,
+      "finalArray": [
+        3,
+        1
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Caught exception",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 6,
+      "finalArray": [
+        1
+      ],
+      "error": {
+        "type": "IndexError",
+        "message": "list index out of range",
+        "line": 3
+      },
+      "truncated": false
+    },
+    {
+      "name": "Final-line mutation",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 1,
+      "finalArray": [
+        2,
+        1
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Empty array",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 1,
+      "finalArray": [],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Missing array",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 0,
+      "finalArray": [],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Safe builtins",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 2,
+      "finalArray": [
+        1
+      ],
+      "error": {
+        "type": "ImportError",
+        "message": "__import__ not found",
+        "line": 2
+      },
+      "truncated": false
+    }
+  ],
+  "playback": [
+    {
+      "name": "Bubble Sort",
+      "steps": 38,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Selection Sort",
+      "steps": 47,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Insertion Sort",
+      "steps": 40,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Binary Search",
+      "steps": 15,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Linear Search",
+      "steps": 13,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "uiErrors": [],
+  "real_worker_checks": [
+    "historical snapshots immutable across executions",
+    "ZeroDivisionError",
+    "invalid import rejected",
+    "cache identity 0",
+    "cache identity 1",
+    "cache identity 2",
+    "cache identity 3",
+    "cache identity 4",
+    "cache identity 5",
+    "cache identity 6",
+    "cache identity 7",
+    "cache identity 8",
+    "cache identity 9",
+    "cache has five count dispatches",
+    "source cache miss",
+    "missing array is insufficient data",
+    "array variable cache miss",
+    "complexity timeout",
+    "UI event loop responsive during timeout",
+    "valid trace after timeout recovery",
+    "complexity cancellation",
+    "valid trace after cancellation recovery",
+    "secondary failures preserve held trace"
+  ],
+  "cloud_scope": "Synthetic auth/profile/session/Mentor HTTP responses; actual local classifier and fallback. Database guarantees verified separately by disposable PostgreSQL tests."
+}

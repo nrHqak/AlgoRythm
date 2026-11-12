@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./useAuth.jsx";
@@ -34,6 +34,15 @@ export function ProfileProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const refreshId = useRef(0);
+  const mounted = useRef(true);
+  const currentUser = useRef(user?.id);
+  useLayoutEffect(() => {
+    currentUser.current = user?.id;
+    mounted.current = true;
+    const generation = refreshId;
+    return () => { mounted.current = false; generation.current++; };
+  }, [user?.id]);
 
   async function ensureProfile(userRecord) {
     if (!userRecord?.id) {
@@ -57,9 +66,6 @@ export function ProfileProvider({ children }) {
     const payload = {
       id: userRecord.id,
       username: makeFallbackUsername(userRecord),
-      xp: 0,
-      level: 1,
-      streak: 0,
     };
 
     const { data: created, error: createError } = await supabase
@@ -75,36 +81,35 @@ export function ProfileProvider({ children }) {
     return created;
   }
 
-  async function refreshProfile() {
-    if (!user?.id) {
-      setProfile(null);
-      setLoading(false);
+  async function refreshProfile({ isCurrent = () => true } = {}) {
+    const id = ++refreshId.current;
+    const owner = user?.id;
+    const active = () => mounted.current && currentUser.current === owner && refreshId.current === id;
+    const mayCommit = () => active() && isCurrent();
+    if (!owner) {
+      if (mayCommit()) { setProfile(null); setLoading(false); }
       return null;
     }
-
+    if (!mayCommit()) return null;
     setLoading(true);
     setError("");
-
     try {
       const nextProfile = await ensureProfile(user);
-      const levelMeta = getLevelMeta(nextProfile?.xp || 0);
-      if (nextProfile && nextProfile.level !== levelMeta.level) {
-        const { data: syncedProfile } = await supabase
-          .from("profiles")
-          .update({ level: levelMeta.level })
-          .eq("id", user.id)
-          .select("*")
-          .single();
-        setProfile(syncedProfile || { ...nextProfile, level: levelMeta.level });
-        return syncedProfile || { ...nextProfile, level: levelMeta.level };
-      }
-      setProfile(nextProfile);
-      return nextProfile;
+      if (!mayCommit()) return null;
+      const { data: rewards, error: rewardError } = await supabase
+        .from("reward_accounts").select("*").eq("user_id", owner).maybeSingle();
+      if (rewardError) throw rewardError;
+      if (!mayCommit()) return null;
+      // Legacy profile balances are unverified; never import them as rewards.
+      const authoritative = { ...nextProfile, xp: rewards?.xp || 0, level: rewards?.level || 1,
+        streak: rewards?.streak || 0, last_active_date: rewards?.last_active_date || null };
+      setProfile(authoritative);
+      return authoritative;
     } catch (profileError) {
-      setError(profileError.message || "Unable to load profile.");
+      if (mayCommit()) setError(profileError.message || "Unable to load profile.");
       return null;
     } finally {
-      setLoading(false);
+      if (active()) setLoading(false);
     }
   }
 
@@ -113,9 +118,10 @@ export function ProfileProvider({ children }) {
       return null;
     }
 
-    const { data, error: updateError } = await supabase
+    if (Object.keys(patch).some((key) => key !== "username")) throw new Error("Only username is editable.");
+    const { error: updateError } = await supabase
       .from("profiles")
-      .update(patch)
+      .update({ username: patch.username })
       .eq("id", user.id)
       .select("*")
       .single();
@@ -124,12 +130,11 @@ export function ProfileProvider({ children }) {
       throw updateError;
     }
 
-    setProfile(data);
-    return data;
+    return refreshProfile();
   }
 
   useEffect(() => {
-    refreshProfile();
+    refreshProfile(); // refreshProfile handles failure and stale responses internally.
   }, [user?.id]);
 
   return (

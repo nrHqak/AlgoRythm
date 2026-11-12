@@ -11,7 +11,8 @@ This is the tool-neutral entry point for humans and coding agents. It intentiona
 
 | Need | Source of truth |
 | --- | --- |
-| Components, runtime topology, and data flow | [Architecture](docs/context/ARCHITECTURE.md) |
+| Published migration checkpoint and development handoff | [Migration handoff](docs/context/MIGRATION_HANDOFF.md) |
+| Browser execution ownership, runtime topology, and data flow | [Architecture](docs/context/ARCHITECTURE.md) |
 | HTTP, environment, auth, and database ownership contracts | [Contracts](docs/context/CONTRACTS.md) |
 | Setup, validation, context refresh, migrations, and deployment | [Workflows](docs/context/WORKFLOWS.md) |
 | Stable architectural choices and their consequences | [Decisions](docs/context/DECISIONS.md) |

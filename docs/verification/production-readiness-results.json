@@ -1,0 +1,1422 @@
+{
+  "environment": {
+    "browser": "155.0.8059.85",
+    "platform": "darwin",
+    "node": "v24.19.0",
+    "cloud": "synthetic, no live credentials"
+  },
+  "checks": [
+    "15 real-worker canonical fixtures",
+    "real-worker extended checks",
+    "helper has no unhandled errors",
+    "one prewarmed product worker",
+    "one normal trace, no counts",
+    "Next renders second step",
+    "audio oscillator scheduled after real Run gesture",
+    "mute interface",
+    "Bubble Sort production v1 trace",
+    "Bubble Sort highlighted bars",
+    "Bubble Sort player final array",
+    "Bubble Sort repeat resets playback",
+    "Selection Sort production v1 trace",
+    "Selection Sort highlighted bars",
+    "Selection Sort player final array",
+    "Selection Sort repeat resets playback",
+    "Insertion Sort production v1 trace",
+    "Insertion Sort highlighted bars",
+    "Insertion Sort player final array",
+    "Insertion Sort repeat resets playback",
+    "Binary Search production v1 trace",
+    "Binary Search highlighted bars",
+    "Binary Search player final array",
+    "Binary Search repeat resets playback",
+    "Linear Search production v1 trace",
+    "Linear Search highlighted bars",
+    "Linear Search player final array",
+    "Linear Search repeat resets playback",
+    "UI complexity cache",
+    "complexity preserves player",
+    "UI complexity cancellation preserves trace",
+    "UI complexity timeout preserves trace",
+    "failed secondary requests preserve visualization",
+    "stale classifier cannot overwrite newer metadata",
+    "Python and Mentor errors isolated",
+    "example reset clears trace",
+    "navigation terminates worker",
+    "navigation back executes",
+    "UI normal Run timeout recovers for next Run",
+    "SyntaxError shown without a visualization or Mentor",
+    "task starter populates editor",
+    "task starter executes",
+    "emitted module worker loaded",
+    "no unexpected API routes",
+    "no backend execution requests",
+    "no uncaught production UI errors",
+    "CDN failure disables Run",
+    "Retry boots fresh real runtime",
+    "Run succeeds after CDN Retry"
+  ],
+  "performance": {
+    "Bubble Sort": {
+      "firstMs": 1.7999999998137355,
+      "warmMs": {
+        "samples": [
+          0.5,
+          0.5,
+          0.6000000005587935,
+          0.5,
+          0.599999999627471,
+          0.7000000001862645,
+          0.5,
+          0.599999999627471,
+          0.6000000005587935,
+          0.5
+        ],
+        "n": 10,
+        "mean": 0.5600000000558794,
+        "median": 0.5499999998137355
+      }
+    },
+    "Binary Search": {
+      "firstMs": 3.1000000005587935,
+      "warmMs": {
+        "samples": [
+          1.599999999627471,
+          0.599999999627471,
+          0.40000000037252903,
+          0.40000000037252903,
+          0.5,
+          0.8999999994412065,
+          0.40000000037252903,
+          0.7999999998137355,
+          0.599999999627471,
+          0.7000000001862645
+        ],
+        "n": 10,
+        "mean": 0.6899999999441206,
+        "median": 0.599999999627471
+      }
+    },
+    "complexity": {
+      "uncachedMs": 10.100000000558794,
+      "cachedMs": {
+        "samples": [
+          0.09999999962747097,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "n": 10,
+        "mean": 0.009999999962747096,
+        "median": 0
+      }
+    },
+    "localClassificationMs": {
+      "samples": [
+        1111.2999999998137,
+        15,
+        14.5,
+        14.5,
+        14.800000000745058,
+        14.399999999441206,
+        14.299999999813735,
+        14.200000000186265,
+        14.299999999813735,
+        14.300000000745058
+      ],
+      "n": 10,
+      "mean": 124.16000000005587,
+      "median": 14.449999999720603
+    },
+    "entryToReadyMs": 3157.5,
+    "clickToDOM": {
+      "bubble_sort": {
+        "samples": [
+          2.2999999998137355,
+          1.6000000005587935,
+          1.599999999627471,
+          1.400000000372529,
+          2.1000000005587935,
+          1.5,
+          1.2999999998137355,
+          1.2999999998137355,
+          1.3999999994412065,
+          1.5
+        ],
+        "n": 10,
+        "mean": 1.6,
+        "median": 1.5
+      },
+      "binary_search": {
+        "samples": [
+          1.2000000001862645,
+          2.3999999994412065,
+          1.5,
+          1.400000000372529,
+          3.400000000372529,
+          1.400000000372529,
+          1.7999999998137355,
+          1.400000000372529,
+          1.8999999994412065,
+          1.599999999627471
+        ],
+        "n": 10,
+        "mean": 1.8,
+        "median": 1.5499999998137355
+      }
+    },
+    "syntheticFetch": [
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 86.5
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.1000000005588
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 84.5
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.8999999994412
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.20000000018626
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 84.90000000037253
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.70000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 126.90000000037253
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 83.8999999994412
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.20000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 125.69999999925494
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 83.40000000037253
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.09999999962747
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 125.29999999981374
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 83.79999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.20000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.1000000005588
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.09999999962747
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 84.70000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.1000000005588
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.79999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.6000000005588
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.29999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.20000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.29999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 121.5
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.1000000005588
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.19999999925494
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.79999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.20000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.09999999962747
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 122.5
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.70000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 125
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.69999999925494
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.70000000018626
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.59999999962747
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.79999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123.29999999981374
+      },
+      {
+        "path": "/classify",
+        "status": 503,
+        "ms": 88
+      },
+      {
+        "path": "/session/save",
+        "status": 503,
+        "ms": 131.29999999981374
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 22.700000000186265
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 125.29999999981374
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 127.09999999962747
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 23
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 125.79999999981374
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 34.09999999962747
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 124.69999999925494
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 24
+      },
+      {
+        "path": "/session/save",
+        "status": 200,
+        "ms": 123
+      },
+      {
+        "path": "/classify",
+        "status": 200,
+        "ms": 23.799999999813735
+      }
+    ]
+  },
+  "fixtures": [
+    {
+      "name": "Bubble Sort",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 38,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Selection Sort",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 47,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Insertion Sort",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 40,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Binary Search",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 15,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Linear Search",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 13,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "SyntaxError",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 0,
+      "finalArray": [],
+      "error": {
+        "type": "SyntaxError",
+        "message": "invalid syntax (<user_code>, line 2)",
+        "line": 1
+      },
+      "truncated": false
+    },
+    {
+      "name": "IndexError",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 2,
+      "finalArray": [
+        1
+      ],
+      "error": {
+        "type": "IndexError",
+        "message": "list index out of range",
+        "line": 2
+      },
+      "truncated": false
+    },
+    {
+      "name": "Timeout",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 0,
+      "finalArray": [],
+      "error": {
+        "type": "timeout",
+        "message": "Execution exceeded 2 seconds.",
+        "line": 1
+      },
+      "truncated": false
+    },
+    {
+      "name": "Truncation",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 4,
+      "finalArray": [
+        2
+      ],
+      "error": null,
+      "truncated": true
+    },
+    {
+      "name": "Tuple / locals / highlights",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 4,
+      "finalArray": [
+        3,
+        1
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Caught exception",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 6,
+      "finalArray": [
+        1
+      ],
+      "error": {
+        "type": "IndexError",
+        "message": "list index out of range",
+        "line": 3
+      },
+      "truncated": false
+    },
+    {
+      "name": "Final-line mutation",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 1,
+      "finalArray": [
+        2,
+        1
+      ],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Empty array",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 1,
+      "finalArray": [],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Missing array",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 0,
+      "finalArray": [],
+      "error": null,
+      "truncated": false
+    },
+    {
+      "name": "Safe builtins",
+      "status": "PASS",
+      "differences": [],
+      "totalSteps": 2,
+      "finalArray": [
+        1
+      ],
+      "error": {
+        "type": "ImportError",
+        "message": "__import__ not found",
+        "line": 2
+      },
+      "truncated": false
+    }
+  ],
+  "runtime": {
+    "execution": {
+      "Bubble Sort": {
+        "firstMs": 1.7999999998137355,
+        "warmMs": [
+          0.5,
+          0.5,
+          0.6000000005587935,
+          0.5,
+          0.599999999627471,
+          0.7000000001862645,
+          0.5,
+          0.599999999627471,
+          0.6000000005587935,
+          0.5
+        ]
+      },
+      "Binary Search": {
+        "firstMs": 3.1000000005587935,
+        "warmMs": [
+          1.599999999627471,
+          0.599999999627471,
+          0.40000000037252903,
+          0.40000000037252903,
+          0.5,
+          0.8999999994412065,
+          0.40000000037252903,
+          0.7999999998137355,
+          0.599999999627471,
+          0.7000000001862645
+        ]
+      }
+    },
+    "checks": [
+      "historical snapshots immutable across executions",
+      "ZeroDivisionError",
+      "invalid import rejected",
+      "cache identity 0",
+      "cache identity 1",
+      "cache identity 2",
+      "cache identity 3",
+      "cache identity 4",
+      "cache identity 5",
+      "cache identity 6",
+      "cache identity 7",
+      "cache identity 8",
+      "cache identity 9",
+      "cache has five count dispatches",
+      "source cache miss",
+      "missing array is insufficient data",
+      "array variable cache miss",
+      "complexity timeout",
+      "UI event loop responsive during timeout",
+      "valid trace after timeout recovery",
+      "complexity cancellation",
+      "valid trace after cancellation recovery",
+      "secondary failures preserve held trace"
+    ],
+    "initializationMs": 970.1000000005588,
+    "complexity": {
+      "uncachedMs": 10.100000000558794,
+      "result": {
+        "sizes": [
+          5,
+          10,
+          20,
+          40,
+          80
+        ],
+        "steps": [
+          42,
+          157,
+          612,
+          2422,
+          9642
+        ],
+        "complexity": "O(n\u00b2)",
+        "label": "Quadratic \u2014 typical for nested loops.",
+        "confidence": 1
+      },
+      "cachedMs": [
+        0.09999999962747097,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "timeoutMs": 2001.5999999996275,
+    "heartbeatTicks": 100
+  },
+  "localBackend": {
+    "corsRejected": "page.evaluate: TypeError: Failed to fetch\n    at eval (eval at evaluate (:311:30), <anonymous>:2:28)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+    "allowedOrigin": {
+      "times": [
+        1111.2999999998137,
+        15,
+        14.5,
+        14.5,
+        14.800000000745058,
+        14.399999999441206,
+        14.299999999813735,
+        14.200000000186265,
+        14.299999999813735,
+        14.300000000745058
+      ],
+      "metadata": {
+        "algorithm_type": "bubble_sort",
+        "algorithm_confidence": 1
+      },
+      "mentorStatus": 200,
+      "mentor": {
+        "message": "That's a great question. Try tracing through the code manually \u2014 what happens on each iteration?",
+        "hint_type": "fallback"
+      }
+    }
+  },
+  "playback": [
+    {
+      "name": "Bubble Sort",
+      "steps": 38,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Selection Sort",
+      "steps": 47,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Insertion Sort",
+      "steps": 40,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Binary Search",
+      "steps": 15,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "Linear Search",
+      "steps": 13,
+      "finalArray": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "network": [
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/mentor",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/curriculum",
+      "method": "GET"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/mentor",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/mentor",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    },
+    {
+      "path": "/session/save",
+      "method": "POST"
+    },
+    {
+      "path": "/classify",
+      "method": "POST"
+    }
+  ],
+  "secondaryTimings": {
+    "classification": {
+      "samples": [
+        82,
+        82,
+        81,
+        81,
+        81,
+        82,
+        82,
+        82,
+        81,
+        82,
+        79,
+        81,
+        81,
+        82,
+        79,
+        82,
+        80,
+        81,
+        81,
+        80,
+        82,
+        81,
+        82,
+        81,
+        82,
+        81,
+        80,
+        82,
+        81,
+        82,
+        81,
+        81,
+        83,
+        20,
+        304,
+        20,
+        21,
+        20,
+        22,
+        30,
+        50,
+        20
+      ],
+      "n": 40,
+      "mean": 77.95,
+      "median": 81
+    },
+    "persistence": {
+      "samples": [
+        122,
+        121,
+        122,
+        122,
+        121,
+        122,
+        122,
+        122,
+        121,
+        121,
+        122,
+        120,
+        122,
+        121,
+        122,
+        122,
+        121,
+        122,
+        120,
+        121,
+        121,
+        122,
+        120,
+        120,
+        121,
+        122,
+        122,
+        122,
+        122,
+        122,
+        121,
+        122,
+        123,
+        122,
+        125,
+        119,
+        122,
+        122,
+        124,
+        120
+      ],
+      "n": 39,
+      "mean": 121.61538461538461,
+      "median": 122
+    }
+  },
+  "uiErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "assets": [
+    {
+      "url": "http://127.0.0.1:4173/assets/index-CmEYwwE1.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/index-CmEYwwE1.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/index-CmEYwwE1.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:4173/assets/python.worker-DN1Qpz1U.js",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+      "status": 200
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+      "status": 200
+    }
+  ]
+}

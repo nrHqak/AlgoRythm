@@ -1,8 +1,23 @@
 # Known issues and context boundaries
 
-## Missing canonical database baseline
+## Recovered database baseline requires initialization review
 
-The repository does not contain `CREATE TABLE` definitions for all core tables described by the application. Existing SQL includes incremental changes, RLS policies, and pet/quiz table creation. Do not fabricate columns or claim a clean database can be built solely from these files. Exporting and reviewing a canonical baseline is a separate database project.
+An authorized metadata recovery now provides a source-verified application schema
+candidate under `supabase/recovery/`, with full core table DDL and provenance.
+It represents the task-pattern and old RLS increments already present in the
+source, and preserves legacy permissions for review. It is not a release-approved
+initializer or permission to access/write a live project. Do not replay represented
+migrations, recreate managed Supabase schemas, or activate the legacy snapshot
+alone. Bootstrap/history reconciliation and coordinated reward migration still
+require review and separate authorization. See
+[canonical schema recovery](../verification/canonical-schema-recovery.md).
+
+A locally verified fail-closed procedure is now available in the
+[staging bootstrap runbook](../verification/staging-bootstrap.md). Its offline
+composer and generated SQL intentionally refuse hosted execution. Actual managed
+event-handler behavior, fresh platform grants and containment effects require
+review before a separately approved hosted initializer can be prepared/executed.
+Local Auth/event fixtures are not evidence of Supabase-hosted equivalence.
 
 ## Deprecated Gemini SDK
 
@@ -20,9 +35,14 @@ Rate limiting is process-local. It is suitable for the current single-process de
 
 Complexity fitting rewrites the first list literal and measures trace steps on a fixed small size set. It is educational guidance, not a formal complexity proof.
 
-## Sandbox security boundary
+## Browser execution boundary
 
-The sandbox uses process isolation, safe builtins, timeout termination, tracing, and Linux memory limits. It is not a replacement for OS/container isolation when executing fully hostile multi-tenant code.
+The backend does not execute user Python code. The Pyodide worker keeps ordinary
+execution off the UI thread and preserves safe builtins, step caps, and hard
+worker termination/recovery. There is no browser memory quota; builtin filtering
+is not proof against all Python escapes or worker JavaScript/network access.
+Initial Pyodide loading requires jsDelivr access; offline/self-hosted assets are
+not configured. Suspended-tab scheduling can delay timeout enforcement.
 
 ## Frontend concentration
 
@@ -35,3 +55,23 @@ The current online `npm audit` reports four advisories across the Vite 5/esbuild
 ## External/live facts
 
 Deployment status, live Supabase schema, secrets, provider dashboards, and production data are not inferable from the repository. Use an authorized live connector or ask the system owner when those facts are required.
+
+## Reward security rollout and solution verification
+
+The reward-integrity branch replaces client-authorized rewards with transactional
+`activity-v1` settlement and removes browser reward-column writes. The forward
+migration has real disposable PostgreSQL coverage, but the missing live baseline
+still requires schema/grant/trigger/view/RPC review and disposable staging
+acceptance. Until that coordinated migration/backend/frontend rollout is approved
+and verified, production remains blocked. Do not deploy the old save endpoint
+alongside the new policy.
+
+Browser execution cannot prove a task was solved. Solution bonuses, verified
+completion/achievements and completion-gated unlocks remain unavailable pending a
+trusted verifier. Practice annotations remain explicitly unverified. Legacy XP,
+progress and achievement claims are preserved as history and are not imported
+into authoritative reward accounts. See
+[reward integrity](../verification/reward-integrity.md) for policy and evidence.
+The [schema preflight](../verification/supabase-schema-preflight.md) documents
+the remaining canonical-schema and staging gates, including policy replacement
+and indirect reward writers that fixture-only tests cannot rule out.

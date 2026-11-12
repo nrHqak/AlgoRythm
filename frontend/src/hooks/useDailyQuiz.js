@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { supabase } from "../lib/supabase";
-import { getLevelMeta } from "./useProfile.jsx";
 
 const QUIZ_BANK = [
   {
@@ -204,34 +203,6 @@ export function useDailyQuiz(userId, locale, onReward) {
     setLoading(false);
   }
 
-  async function awardQuizXp(xpEarned) {
-    if (!userId || !supabase || xpEarned <= 0) {
-      return;
-    }
-
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("xp")
-      .eq("id", userId)
-      .single();
-
-    if (profileError) {
-      throw profileError;
-    }
-
-    const nextXp = (profile?.xp || 0) + xpEarned;
-    const levelMeta = getLevelMeta(nextXp);
-
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ xp: nextXp, level: levelMeta.level })
-      .eq("id", userId);
-
-    if (updateError) {
-      throw updateError;
-    }
-  }
-
   async function submitAnswer(optionIndex = null, timedOut = false) {
     if (!currentQuestion || submitting || !userId || !supabase) {
       return;
@@ -244,7 +215,7 @@ export function useDailyQuiz(userId, locale, onReward) {
     setSubmitting(true);
     lastSubmittedKeyRef.current = currentQuestion.key;
     const correct = optionIndex === currentQuestion.answer;
-    const xpEarned = correct ? 10 : timedOut ? 1 : 3;
+    const xpEarned = 0; // Client-checked quiz answers are practice, never reward evidence.
     const responseMs = Math.max(0, Date.now() - questionStartedAt);
 
     try {
@@ -254,7 +225,6 @@ export function useDailyQuiz(userId, locale, onReward) {
         question_key: currentQuestion.key,
         prompt: currentQuestion.prompt,
         correct,
-        xp_earned: xpEarned,
         response_ms: responseMs,
       };
 
@@ -272,7 +242,6 @@ export function useDailyQuiz(userId, locale, onReward) {
         throw insertError;
       }
 
-      await awardQuizXp(xpEarned);
 
       const reward = {
         correct,

@@ -1,0 +1,2754 @@
+{
+  "column_grants": [
+    {
+      "column": "id",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.profiles"
+    },
+    {
+      "column": "username",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.profiles"
+    },
+    {
+      "column": "username",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "column": "xp",
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "column": "level",
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "column": "streak",
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "column": "last_active_date",
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "column": "user_id",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "column": "quiz_day",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "column": "question_key",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "column": "prompt",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "column": "correct",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "column": "response_ms",
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    }
+  ],
+  "columns": [
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.achievements",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "slug",
+      "not_null": true,
+      "table": "public.achievements",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "title",
+      "not_null": true,
+      "table": "public.achievements",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "description",
+      "not_null": true,
+      "table": "public.achievements",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "icon",
+      "not_null": true,
+      "table": "public.achievements",
+      "type": "text"
+    },
+    {
+      "default": "50",
+      "name": "xp_reward",
+      "not_null": false,
+      "table": "public.achievements",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "condition_type",
+      "not_null": true,
+      "table": "public.achievements",
+      "type": "text"
+    },
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.mentor_messages",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": false,
+      "table": "public.mentor_messages",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "session_id",
+      "not_null": false,
+      "table": "public.mentor_messages",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "role",
+      "not_null": true,
+      "table": "public.mentor_messages",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "message",
+      "not_null": true,
+      "table": "public.mentor_messages",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "trigger_type",
+      "not_null": false,
+      "table": "public.mentor_messages",
+      "type": "text"
+    },
+    {
+      "default": "now()",
+      "name": "created_at",
+      "not_null": false,
+      "table": "public.mentor_messages",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "uuid"
+    },
+    {
+      "default": "'Byte'::text",
+      "name": "pet_name",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "text"
+    },
+    {
+      "default": "42",
+      "name": "hunger",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "integer"
+    },
+    {
+      "default": "68",
+      "name": "mood",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "integer"
+    },
+    {
+      "default": "74",
+      "name": "energy",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "integer"
+    },
+    {
+      "default": "0",
+      "name": "evolution_points",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "last_fed_at",
+      "not_null": false,
+      "table": "public.pet_profiles",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": "now()",
+      "name": "created_at",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": "now()",
+      "name": "updated_at",
+      "not_null": true,
+      "table": "public.pet_profiles",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": true,
+      "table": "public.practice_progress",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "task_id",
+      "not_null": true,
+      "table": "public.practice_progress",
+      "type": "uuid"
+    },
+    {
+      "default": "false",
+      "name": "reported_completed",
+      "not_null": true,
+      "table": "public.practice_progress",
+      "type": "boolean"
+    },
+    {
+      "default": "0",
+      "name": "attempts",
+      "not_null": true,
+      "table": "public.practice_progress",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "best_steps",
+      "not_null": false,
+      "table": "public.practice_progress",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "id",
+      "not_null": true,
+      "table": "public.profiles",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "username",
+      "not_null": true,
+      "table": "public.profiles",
+      "type": "text"
+    },
+    {
+      "default": "0",
+      "name": "xp",
+      "not_null": false,
+      "table": "public.profiles",
+      "type": "integer"
+    },
+    {
+      "default": "1",
+      "name": "level",
+      "not_null": false,
+      "table": "public.profiles",
+      "type": "integer"
+    },
+    {
+      "default": "0",
+      "name": "streak",
+      "not_null": false,
+      "table": "public.profiles",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "last_active_date",
+      "not_null": false,
+      "table": "public.profiles",
+      "type": "date"
+    },
+    {
+      "default": "now()",
+      "name": "created_at",
+      "not_null": false,
+      "table": "public.profiles",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": null,
+      "name": "legacy_reward_snapshot",
+      "not_null": false,
+      "table": "public.profiles",
+      "type": "jsonb"
+    },
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "quiz_day",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "date"
+    },
+    {
+      "default": null,
+      "name": "question_key",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "prompt",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "text"
+    },
+    {
+      "default": "false",
+      "name": "correct",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "boolean"
+    },
+    {
+      "default": "0",
+      "name": "xp_earned",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "response_ms",
+      "not_null": false,
+      "table": "public.quiz_attempts",
+      "type": "integer"
+    },
+    {
+      "default": "now()",
+      "name": "created_at",
+      "not_null": true,
+      "table": "public.quiz_attempts",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": true,
+      "table": "public.reward_accounts",
+      "type": "uuid"
+    },
+    {
+      "default": "0",
+      "name": "xp",
+      "not_null": true,
+      "table": "public.reward_accounts",
+      "type": "bigint"
+    },
+    {
+      "default": "1",
+      "name": "level",
+      "not_null": true,
+      "table": "public.reward_accounts",
+      "type": "integer"
+    },
+    {
+      "default": "0",
+      "name": "streak",
+      "not_null": true,
+      "table": "public.reward_accounts",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "last_active_date",
+      "not_null": false,
+      "table": "public.reward_accounts",
+      "type": "date"
+    },
+    {
+      "default": null,
+      "name": "save_day",
+      "not_null": false,
+      "table": "public.reward_accounts",
+      "type": "date"
+    },
+    {
+      "default": "0",
+      "name": "saves_today",
+      "not_null": true,
+      "table": "public.reward_accounts",
+      "type": "integer"
+    },
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.sessions",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "code",
+      "not_null": true,
+      "table": "public.sessions",
+      "type": "text"
+    },
+    {
+      "default": "'arr'::text",
+      "name": "array_var",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "trace",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "jsonb"
+    },
+    {
+      "default": null,
+      "name": "error",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "jsonb"
+    },
+    {
+      "default": null,
+      "name": "total_steps",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "algorithm_type",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "text"
+    },
+    {
+      "default": "false",
+      "name": "solved",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "boolean"
+    },
+    {
+      "default": "1",
+      "name": "attempts",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "integer"
+    },
+    {
+      "default": "0",
+      "name": "xp_earned",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "integer"
+    },
+    {
+      "default": "now()",
+      "name": "created_at",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": "'legacy_unverified'::text",
+      "name": "reward_policy",
+      "not_null": true,
+      "table": "public.sessions",
+      "type": "text"
+    },
+    {
+      "default": "false",
+      "name": "completion_verified",
+      "not_null": true,
+      "table": "public.sessions",
+      "type": "boolean"
+    },
+    {
+      "default": null,
+      "name": "reported_task_id",
+      "not_null": false,
+      "table": "public.sessions",
+      "type": "uuid"
+    },
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.task_progress",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "task_id",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "uuid"
+    },
+    {
+      "default": "'locked'::text",
+      "name": "status",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "text"
+    },
+    {
+      "default": "0",
+      "name": "attempts",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "best_steps",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "integer"
+    },
+    {
+      "default": "0",
+      "name": "xp_earned",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "completed_at",
+      "not_null": false,
+      "table": "public.task_progress",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.tasks",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "title",
+      "not_null": true,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "description",
+      "not_null": true,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "difficulty",
+      "not_null": true,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "order_index",
+      "not_null": true,
+      "table": "public.tasks",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "starter_code",
+      "not_null": false,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "solution_hint",
+      "not_null": false,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": null,
+      "name": "expected_algorithm",
+      "not_null": false,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": "100",
+      "name": "max_xp",
+      "not_null": false,
+      "table": "public.tasks",
+      "type": "integer"
+    },
+    {
+      "default": "'uncategorized'::text",
+      "name": "pattern",
+      "not_null": true,
+      "table": "public.tasks",
+      "type": "text"
+    },
+    {
+      "default": "gen_random_uuid()",
+      "name": "id",
+      "not_null": true,
+      "table": "public.user_achievements",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": false,
+      "table": "public.user_achievements",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "achievement_id",
+      "not_null": false,
+      "table": "public.user_achievements",
+      "type": "uuid"
+    },
+    {
+      "default": "now()",
+      "name": "earned_at",
+      "not_null": false,
+      "table": "public.user_achievements",
+      "type": "timestamp with time zone"
+    },
+    {
+      "default": "false",
+      "name": "verified",
+      "not_null": true,
+      "table": "public.user_achievements",
+      "type": "boolean"
+    },
+    {
+      "default": null,
+      "name": "user_id",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "operation_id",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "session_id",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "uuid"
+    },
+    {
+      "default": null,
+      "name": "request_payload",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "jsonb"
+    },
+    {
+      "default": null,
+      "name": "receipt",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "jsonb"
+    },
+    {
+      "default": null,
+      "name": "awarded_xp",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "integer"
+    },
+    {
+      "default": null,
+      "name": "reward_day",
+      "not_null": true,
+      "table": "reward_private.session_settlements",
+      "type": "date"
+    }
+  ],
+  "constraints": [
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "achievements_pkey",
+      "table": "public.achievements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "UNIQUE (slug)",
+      "name": "achievements_slug_key",
+      "table": "public.achievements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "mentor_messages_pkey",
+      "table": "public.mentor_messages",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id)",
+      "name": "mentor_messages_session_id_fkey",
+      "table": "public.mentor_messages",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+      "name": "mentor_messages_user_id_fkey",
+      "table": "public.mentor_messages",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (user_id)",
+      "name": "pet_profiles_pkey",
+      "table": "public.pet_profiles",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+      "name": "pet_profiles_user_id_fkey",
+      "table": "public.pet_profiles",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (attempts >= 0 AND attempts <= 2147483647)",
+      "name": "practice_progress_attempts_check",
+      "table": "public.practice_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (best_steps >= 0 AND best_steps <= 300)",
+      "name": "practice_progress_best_steps_check",
+      "table": "public.practice_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (user_id, task_id)",
+      "name": "practice_progress_pkey",
+      "table": "public.practice_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE",
+      "name": "practice_progress_task_id_fkey",
+      "table": "public.practice_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "name": "practice_progress_user_id_fkey",
+      "table": "public.practice_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (id) REFERENCES auth.users(id)",
+      "name": "profiles_id_fkey",
+      "table": "public.profiles",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "profiles_pkey",
+      "table": "public.profiles",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "UNIQUE (username)",
+      "name": "profiles_username_key",
+      "table": "public.profiles",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "quiz_attempts_pkey",
+      "table": "public.quiz_attempts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+      "name": "quiz_attempts_user_id_fkey",
+      "table": "public.quiz_attempts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "UNIQUE (user_id, quiz_day, question_key)",
+      "name": "quiz_attempts_user_id_quiz_day_question_key_key",
+      "table": "public.quiz_attempts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (level >= 1 AND level <= 5)",
+      "name": "reward_accounts_level_check",
+      "table": "public.reward_accounts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (user_id)",
+      "name": "reward_accounts_pkey",
+      "table": "public.reward_accounts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (saves_today >= 0 AND saves_today <= 100)",
+      "name": "reward_accounts_saves_today_check",
+      "table": "public.reward_accounts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (streak >= 0 AND streak <= 2147483647)",
+      "name": "reward_accounts_streak_check",
+      "table": "public.reward_accounts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "name": "reward_accounts_user_id_fkey",
+      "table": "public.reward_accounts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (xp >= 0 AND xp <= 2147483647)",
+      "name": "reward_accounts_xp_check",
+      "table": "public.reward_accounts",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "sessions_pkey",
+      "table": "public.sessions",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+      "name": "sessions_user_id_fkey",
+      "table": "public.sessions",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "task_progress_pkey",
+      "table": "public.task_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (task_id) REFERENCES tasks(id)",
+      "name": "task_progress_task_id_fkey",
+      "table": "public.task_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+      "name": "task_progress_user_id_fkey",
+      "table": "public.task_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "UNIQUE (user_id, task_id)",
+      "name": "task_progress_user_id_task_id_key",
+      "table": "public.task_progress",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "tasks_pkey",
+      "table": "public.tasks",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (achievement_id) REFERENCES achievements(id)",
+      "name": "user_achievements_achievement_id_fkey",
+      "table": "public.user_achievements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (id)",
+      "name": "user_achievements_pkey",
+      "table": "public.user_achievements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "UNIQUE (user_id, achievement_id)",
+      "name": "user_achievements_user_id_achievement_id_key",
+      "table": "public.user_achievements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+      "name": "user_achievements_user_id_fkey",
+      "table": "public.user_achievements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "CHECK (awarded_xp = ANY (ARRAY[0, 5]))",
+      "name": "session_settlements_awarded_xp_check",
+      "table": "reward_private.session_settlements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "PRIMARY KEY (user_id, operation_id)",
+      "name": "session_settlements_pkey",
+      "table": "reward_private.session_settlements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id)",
+      "name": "session_settlements_session_id_fkey",
+      "table": "reward_private.session_settlements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "UNIQUE (session_id)",
+      "name": "session_settlements_session_id_key",
+      "table": "reward_private.session_settlements",
+      "validated": true
+    },
+    {
+      "deferrable": false,
+      "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE",
+      "name": "session_settlements_user_id_fkey",
+      "table": "reward_private.session_settlements",
+      "validated": true
+    }
+  ],
+  "functions": [
+    {
+      "acl": [
+        {
+          "grantable": false,
+          "grantee": "postgres",
+          "privilege": "EXECUTE"
+        },
+        {
+          "grantable": false,
+          "grantee": "service_role",
+          "privilege": "EXECUTE"
+        }
+      ],
+      "arguments": "p_user_id uuid, p_operation_id uuid, p_payload jsonb",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": false,
+      "definition_md5": "5b7bc5469199ebaca7c377af3f856246",
+      "name": "settle_activity_session",
+      "owner": "postgres",
+      "result": "jsonb"
+    }
+  ],
+  "grants": [
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.mentor_messages"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.pet_profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.practice_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.profiles"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.quiz_attempts"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.reward_accounts"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.sessions"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.task_progress"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.tasks"
+    },
+    {
+      "grantable": false,
+      "grantee": "authenticated",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "public.user_achievements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "DELETE",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "MAINTAIN",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "REFERENCES",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRIGGER",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "TRUNCATE",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "postgres",
+      "grantor": "postgres",
+      "privilege": "UPDATE",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "INSERT",
+      "table": "reward_private.session_settlements"
+    },
+    {
+      "grantable": false,
+      "grantee": "service_role",
+      "grantor": "postgres",
+      "privilege": "SELECT",
+      "table": "reward_private.session_settlements"
+    }
+  ],
+  "indexes": [
+    "CREATE UNIQUE INDEX achievements_pkey ON public.achievements USING btree (id)",
+    "CREATE UNIQUE INDEX achievements_slug_key ON public.achievements USING btree (slug)",
+    "CREATE UNIQUE INDEX mentor_messages_pkey ON public.mentor_messages USING btree (id)",
+    "CREATE UNIQUE INDEX pet_profiles_pkey ON public.pet_profiles USING btree (user_id)",
+    "CREATE UNIQUE INDEX practice_progress_pkey ON public.practice_progress USING btree (user_id, task_id)",
+    "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)",
+    "CREATE UNIQUE INDEX profiles_username_key ON public.profiles USING btree (username)",
+    "CREATE INDEX idx_quiz_attempts_user_day ON public.quiz_attempts USING btree (user_id, quiz_day DESC)",
+    "CREATE UNIQUE INDEX quiz_attempts_pkey ON public.quiz_attempts USING btree (id)",
+    "CREATE UNIQUE INDEX quiz_attempts_user_id_quiz_day_question_key_key ON public.quiz_attempts USING btree (user_id, quiz_day, question_key)",
+    "CREATE UNIQUE INDEX reward_accounts_pkey ON public.reward_accounts USING btree (user_id)",
+    "CREATE UNIQUE INDEX sessions_pkey ON public.sessions USING btree (id)",
+    "CREATE UNIQUE INDEX task_progress_pkey ON public.task_progress USING btree (id)",
+    "CREATE UNIQUE INDEX task_progress_user_id_task_id_key ON public.task_progress USING btree (user_id, task_id)",
+    "CREATE UNIQUE INDEX tasks_pkey ON public.tasks USING btree (id)",
+    "CREATE UNIQUE INDEX reward_achievement_owner_unique ON public.user_achievements USING btree (user_id, achievement_id)",
+    "CREATE UNIQUE INDEX user_achievements_pkey ON public.user_achievements USING btree (id)",
+    "CREATE UNIQUE INDEX user_achievements_user_id_achievement_id_key ON public.user_achievements USING btree (user_id, achievement_id)",
+    "CREATE UNIQUE INDEX one_activity_award_per_utc_day ON reward_private.session_settlements USING btree (user_id, reward_day) WHERE (awarded_xp > 0)",
+    "CREATE UNIQUE INDEX session_settlements_pkey ON reward_private.session_settlements USING btree (user_id, operation_id)",
+    "CREATE UNIQUE INDEX session_settlements_session_id_key ON reward_private.session_settlements USING btree (session_id)"
+  ],
+  "other_relations": null,
+  "policies": [
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "achievements_authenticated_select",
+      "qual": "true",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "achievements",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "mentor_messages_owner_insert",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "mentor_messages",
+      "with_check": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "mentor_messages_owner_select",
+      "qual": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "mentor_messages",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "mentor_messages_owner_update",
+      "qual": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "mentor_messages",
+      "with_check": "((( SELECT auth.uid() AS uid) = user_id) AND ((session_id IS NULL) OR (EXISTS ( SELECT 1\n   FROM sessions\n  WHERE ((sessions.id = mentor_messages.session_id) AND (sessions.user_id = ( SELECT auth.uid() AS uid)))))))"
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "pet_profiles_owner_insert",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "pet_profiles",
+      "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "pet_profiles_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "pet_profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "pet_profiles_owner_update",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "pet_profiles",
+      "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "practice_progress",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "profiles_safe_insert",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": "(( SELECT auth.uid() AS uid) = id)"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "profiles_safe_update",
+      "qual": "(( SELECT auth.uid() AS uid) = id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": "(( SELECT auth.uid() AS uid) = id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "quiz_practice_insert",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "quiz_attempts",
+      "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "quiz_attempts",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "reward_accounts",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "sessions",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "task_progress",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "tasks_authenticated_select",
+      "qual": "true",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "tasks",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "reward_owner_select",
+      "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+      "roles": [
+        "authenticated"
+      ],
+      "schemaname": "public",
+      "tablename": "user_achievements",
+      "with_check": null
+    }
+  ],
+  "rules": null,
+  "tables": [
+    {
+      "force_rls": false,
+      "name": "public.achievements",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.mentor_messages",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.pet_profiles",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.practice_progress",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.profiles",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.quiz_attempts",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.reward_accounts",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.sessions",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.task_progress",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.tasks",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "public.user_achievements",
+      "owner": "postgres",
+      "rls": true
+    },
+    {
+      "force_rls": false,
+      "name": "reward_private.session_settlements",
+      "owner": "postgres",
+      "rls": true
+    }
+  ],
+  "triggers": null,
+  "types": null
+}

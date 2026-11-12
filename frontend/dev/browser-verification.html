@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Browser trace check</title></head>
+<body>
+<h1>Development browser trace check</h1>
+<p>Compare Pyodide worker output against saved Trace Protocol v1 fixtures. This page is absent from the production build.</p>
+<button id="run">Verify browser</button>
+<pre id="output">Ready to verify</pre>
+<script type="module">
+import cases from '../../tests/fixtures/browser_traces.json';
+import { verifyBrowser } from '../src/execution/dev/browserVerification.js';
+if (!import.meta.env.DEV) throw new Error('Development only');
+window.verifyBrowser = async () => {
+  document.querySelector('#run').disabled = true;
+  document.querySelector('#output').textContent = 'Loading Pyodide and verifying traces...';
+  try {
+    const rows = await verifyBrowser({ cases });
+    document.querySelector('#output').textContent = JSON.stringify(rows, null, 2);
+    return rows;
+  } finally { document.querySelector('#run').disabled = false; }
+};
+document.querySelector('#run').onclick = () => window.verifyBrowser().catch(error => {
+  document.querySelector('#output').textContent = error.name + ': ' + error.message;
+});
+</script>
+</body></html>

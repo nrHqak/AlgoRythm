@@ -20,7 +20,7 @@ AlgoRythm — это веб-платформа для изучения алго�
 
 ### 1. Трейсер алгоритмов
 
-- безопасное выполнение Python-кода в sandbox
+- выполнение Python-кода в браузере через Pyodide Web Worker с лимитом шагов и таймаутом
 - перехват выполнения через `sys.settrace`
 - построение JSON trace по шагам
 - поддержка событий:
@@ -69,6 +69,7 @@ AlgoRythm — это веб-платформа для изучения алго�
 ### Frontend
 
 - React + Vite
+- Pyodide Web Worker
 - React Router
 - Supabase JS Client
 - plain CSS
@@ -77,7 +78,8 @@ Frontend отвечает за:
 
 - интерфейс
 - маршрутизацию
-- визуализацию trace
+- выполнение Python, Trace Protocol v1 и визуализацию trace
+- ручной анализ сложности в браузере и кэш результатов
 - профиль и аналитику
 - mentor UI
 - pet и quiz widgets
@@ -85,20 +87,17 @@ Frontend отвечает за:
 ### Backend
 
 - FastAPI
-- Python sandbox
-- `sys.settrace`
 - Gemini API
 - AST-based classifier
 
 Backend отвечает за:
 
-- анализ кода
-- безопасное выполнение
-- построение trace
+- AST-анализ исходного кода без его выполнения
 - классификацию алгоритма
-- оценку сложности
 - mentor responses
 - сохранение сессий и achievement logic
+
+Backend не выполняет пользовательский Python-код. Исходный код передаётся в `/classify` для классификации, ментору для контекста и `/session/save` для хранения истории. При ошибке инициализации Pyodide доступна кнопка Retry; выполнение на сервере отсутствует.
 
 ### Database / Auth
 
@@ -120,6 +119,7 @@ Backend отвечает за:
 ### Frontend
 
 - React 18
+- Pyodide в Web Worker
 - Vite
 - React Router v6
 - Supabase JS
@@ -186,8 +186,7 @@ Backend отвечает за:
    - визуализацию
    - звук
    - тип алгоритма
-   - оценку сложности
-7. При ошибке получает подсказку от AI-ментора.
+   7. При ошибке получает подсказку от AI-ментора.
 8. Результат сохраняется в профиль и влияет на XP, achievements и analytics.
 
 ## Структура данных

@@ -1,25 +1,35 @@
 # Deploy
 
+Release requires staging acceptance and separate approval to merge and deploy.
+Follow the [schema preflight and rollout plan](docs/verification/supabase-schema-preflight.md)
+before executing any deployment steps below. Coordinate the reward migration,
+backend and frontend because older clients send fields the new API rejects.
+
 ## Findings Before Deploy
 
 - Backend imports are flat (`from classifier import ...`), so the service must run with `backend/` as the working directory.
 - Frontend uses React Router, so Vercel needs an SPA rewrite to `index.html`.
-- `Algorithm Pet` and `Daily Quiz` require the SQL in `supabase/pet_quiz_schema.sql` to be executed before release.
 - Gemini still uses the deprecated `google-generativeai` SDK. It works now, but should be migrated later.
 
 ## Supabase
 
-Run this file in the Supabase SQL editor before deploying:
+For empty staging, use the [staging bootstrap runbook](docs/verification/staging-bootstrap.md).
+The recovered baseline already includes Algorithm Pet and Daily Quiz. Do not
+apply `supabase/pet_quiz_schema.sql` or the recovered baseline on its own. The
+local bootstrap files are intentionally disabled for hosted execution; a reviewed
+hosted bundle and separate approval are required before staging writes.
 
-`supabase/pet_quiz_schema.sql`
+Existing production needs its own approved rollout against the actual schema and
+migration history. Do not replay the recovered baseline against production.
 
 ## Demo Data
 
-To seed a polished demo account plus synthetic users:
+For an explicitly authorized disposable environment only, to seed a demo
+account plus synthetic users:
 
 ```bash
 cd backend
-source ../venv/bin/activate
+source ../.venv/bin/activate
 python seed_demo_data.py
 ```
 
@@ -33,7 +43,6 @@ The script uses:
 If you want one-click demo login on the frontend, also set:
 
 - `VITE_DEMO_EMAIL`
-- `VITE_DEMO_PASSWORD`
 
 ## Backend on Render
 
@@ -49,6 +58,7 @@ This repo includes `render.yaml`, so you can deploy with a Render Blueprint or c
    - `GEMINI_API_KEY`
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_KEY`
+- `ALLOWED_ORIGINS` for the exact frontend origin(s)
 
 ### Manual Web Service
 
@@ -74,6 +84,10 @@ Deploy the `frontend/` app.
 
 The file `frontend/vercel.json` already adds the SPA rewrite required for React Router.
 
+Python execution and complexity run only in the browser worker. Keep `VITE_API_URL` for classification, mentor, and authenticated session saving. Pyodide assets load from the version-pinned jsDelivr URL; deployment CSP/network policy must permit that loader and its assets. Smoke-test Python readiness, Retry after initialization failure, tracing, explicit complexity/cache reuse, classification, mentor, and session saving. The backend has no execution routes.
+
+Demo seeding reads saved example traces from `backend/demo_traces.json`; it never executes the stored source.
+
 ## Local Pre-Deploy Checks
 
 ### Frontend
@@ -88,8 +102,8 @@ npm run build
 
 ```bash
 cd backend
-source ../venv/bin/activate
+source ../.venv/bin/activate
 pip install -r requirements.txt
-python -m py_compile main.py tracer.py mentor.py sandbox.py classifier.py
+python -m py_compile main.py mentor.py classifier.py
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```

@@ -15,21 +15,22 @@
 - `README.md`: 1 mapped file(s)
 - `TECHNICAL_ARCHITECTURE.md`: 1 mapped file(s)
 - `backend/`: 18 mapped file(s)
-- `docs/`: 5 mapped file(s)
-- `frontend/`: 46 mapped file(s)
+- `docs/`: 22 mapped file(s)
+- `frontend/`: 72 mapped file(s)
 - `pyproject.toml`: 1 mapped file(s)
 - `render.yaml`: 1 mapped file(s)
-- `scripts/`: 1 mapped file(s)
-- `supabase/`: 4 mapped file(s)
-- `tests/`: 1 mapped file(s)
+- `scripts/`: 4 mapped file(s)
+- `supabase/`: 10 mapped file(s)
+- `tests/`: 11 mapped file(s)
 
 ## Entrypoints
 
 - Frontend mount: `frontend/src/main.jsx`
 - Frontend routes/providers: `frontend/src/App.jsx`
 - Backend application: `backend/main.py`
-- User-code sandbox: `backend/sandbox.py`
-- Execution tracer: `backend/tracer.py`
+- Browser execution adapter: `frontend/src/execution/browserEngine.js`
+- Python worker: `frontend/src/runtime/python.worker.js`
+- Browser execution tracer: `frontend/src/runtime/tracer.py`
 - Algorithm classifier: `backend/classifier.py`
 - Mentor provider boundary: `backend/mentor.py`
 - Frontend deployment: `frontend/vercel.json`
@@ -40,19 +41,17 @@
 | Method | Path | Handler | Request model |
 | --- | --- | --- | --- |
 | `GET` | `/` | `root` | `—` |
-| `POST` | `/analyze` | `analyze` | `AnalyzeRequest` |
 | `POST` | `/auth/demo-login` | `demo_login` | `—` |
-| `POST` | `/complexity` | `complexity` | `ComplexityRequest` |
+| `POST` | `/classify` | `classify` | `ClassifyRequest` |
 | `GET` | `/curriculum` | `curriculum` | `—` |
 | `POST` | `/mentor` | `mentor` | `MentorRequest` |
 | `POST` | `/session/save` | `save_session` | `SessionSaveRequest` |
 
 ### Pydantic request fields
 
-- `AnalyzeRequest`: `code`, `array_var`
-- `ComplexityRequest`: `code`, `array_var`
+- `ClassifyRequest`: `code`
 - `MentorRequest`: `code`, `error`, `error_line`, `trace_context`, `user_question`, `mode`, `user_history`
-- `SessionSaveRequest`: `code`, `array_var`, `trace`, `error`, `total_steps`, `algorithm_type`, `solved`, `xp_earned`, `task_id`, `task_completed`, `task_attempts`, `mentor_messages_count`
+- `SessionSaveRequest`: `idempotency_key`, `code`, `array_var`, `trace`, `error`, `total_steps`, `algorithm_type`, `execution_succeeded`, `task_id`
 
 ## Frontend surface
 
@@ -65,6 +64,7 @@
 - `/learn/:taskId`
 - `/mentor`
 - `/playground`
+- `/playground/:taskId?`
 - `/private`
 - `/profile`
 
@@ -85,15 +85,22 @@
 - `frontend/src/components/TaskCard.jsx`: `TaskCard`
 - `frontend/src/components/VisualCanvas.jsx`: `VisualCanvas`
 - `frontend/src/components/XPBar.jsx`: `XPBar`
+- `frontend/src/execution/browserEngine.js`: `BrowserEngine`
+- `frontend/src/execution/classifyCode.js`: `classifyCode`
+- `frontend/src/execution/complexity.js`: `COMPLEXITY_MAX_STEPS`, `COMPLEXITY_SIZES`, `ComplexityAnalysis`, `complexitySource`, `fitComplexity`
+- `frontend/src/execution/dev/browserVerification.js`: `canonicalTrace`, `traceDifferences`, `verifyBrowser`
+- `frontend/src/execution/traceProtocol.js`: `emptyTrace`, `executeTrace`, `executionOptions`, `requireTrace`
 - `frontend/src/hooks/useAchievements.js`: `useAchievements`
 - `frontend/src/hooks/useAudio.js`: `useAudio`
 - `frontend/src/hooks/useAuth.jsx`: `AuthProvider`, `useAuth`
+- `frontend/src/hooks/useComplexity.js`: `useComplexity`
 - `frontend/src/hooks/useDNA.js`: `useDNA`
 - `frontend/src/hooks/useDailyQuiz.js`: `useDailyQuiz`
 - `frontend/src/hooks/useLocale.jsx`: `LocaleProvider`, `useLocale`
 - `frontend/src/hooks/usePet.js`: `usePet`
 - `frontend/src/hooks/usePlayer.js`: `usePlayer`
 - `frontend/src/hooks/useProfile.jsx`: `ProfileProvider`, `getLevelMeta`, `useProfile`
+- `frontend/src/hooks/usePythonRuntimePrewarm.js`: `usePythonRuntimePrewarm`
 - `frontend/src/hooks/useTracer.js`: `useTracer`
 - `frontend/src/lib/supabase.js`: `supabase`, `supabaseConfigError`
 - `frontend/src/pages/AuthPage.jsx`: `AuthPage`
@@ -102,12 +109,15 @@
 - `frontend/src/pages/MentorPage.jsx`: `MentorPage`
 - `frontend/src/pages/PlaygroundPage.jsx`: `PlaygroundPage`
 - `frontend/src/pages/ProfilePage.jsx`: `ProfilePage`
+- `frontend/src/runtime/pythonWorkerManager.js`: `PythonWorkerManager`
 
 ## Supabase SQL
 
 - `supabase/migrations/20260808183440_add_task_pattern.sql`: `tasks`
 - `supabase/migrations/20260808213028_secure_public_tables_with_rls.sql`: `achievements`, `mentor_messages`, `pet_profiles`, `profiles`, `quiz_attempts`, `sessions`, `task_progress`, `tasks`, `user_achievements`
+- `supabase/migrations/20261022113757_reward_integrity.sql`: `practice_progress`, `profiles`, `quiz_attempts`, `reward_accounts`, `sessions`, `settle_activity_session`, `tasks`, `user_achievements`
 - `supabase/pet_quiz_schema.sql`: `pet_profiles`, `profiles`, `quiz_attempts`
+- `supabase/recovery/application-schema.candidate.sql`: `achievements`, `profiles`, `quiz_attempts`, `sessions`, `tasks`
 
 ## Environment variable names
 
@@ -115,6 +125,7 @@
 
 - Backend: `ALLOWED_ORIGINS`, `DEMO_EMAIL`, `DEMO_PASSWORD`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `SEED_USER_PASSWORD`, `SUPABASE_SERVICE_KEY`, `SUPABASE_URL`
 - Frontend: `VITE_API_URL`, `VITE_DEMO_EMAIL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SUPABASE_URL`
+- Other: `BOOTSTRAP_CLI_REQUIRED`, `BOOTSTRAP_PG17_REQUIRED`, `BOOTSTRAP_SUPABASE_CLI`, `REWARD_DATABASE_REQUIRED`, `REWARD_POSTGRES_BIN`
 
 ## Commands
 

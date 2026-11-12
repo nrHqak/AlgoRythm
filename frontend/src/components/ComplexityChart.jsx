@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "../hooks/useLocale.jsx";
 
 const COLORS = {
   "O(log n)": "var(--color-signal)",
@@ -28,7 +29,8 @@ function buildPath(points) {
     .join(" ");
 }
 
-export function ComplexityChart({ complexityData, isLoading }) {
+export function ComplexityChart({ complexityData, isLoading, error, onAnalyze, disabled }) {
+  const { t } = useLocale();
   const [pathVisible, setPathVisible] = useState(false);
 
   useEffect(() => {
@@ -74,10 +76,6 @@ export function ComplexityChart({ complexityData, isLoading }) {
     };
   }, [complexityData]);
 
-  if (!isLoading && !complexityData) {
-    return null;
-  }
-
   const color = COLORS[complexityData?.complexity] || "var(--color-signal)";
   const explanation = EXPLANATIONS[complexityData?.complexity] || "Run more traces to understand how your work scales.";
 
@@ -85,19 +83,24 @@ export function ComplexityChart({ complexityData, isLoading }) {
     <section className="panel complexity-panel">
       <div className="panel-header">
         <div>
-          <h2>Complexity Analysis</h2>
-          <p>How your algorithm scales as the input grows.</p>
+          <h2>{t("playground.complexityTitle")}</h2>
+          <p>{t("playground.complexitySubtitle")}</p>
         </div>
+        <button className="secondary-button" type="button" onClick={onAnalyze} disabled={disabled || isLoading}>
+          {t("playground.analyzeComplexity")}
+        </button>
       </div>
 
       {isLoading ? (
         <div className="complexity-skeleton">
           <div className="skeleton-title" />
           <div className="skeleton-chart" />
-          <div className="helper-text">Analyzing complexity...</div>
+          <div className="helper-text">{t("playground.complexityLoading")}</div>
         </div>
-      ) : complexityData?.error ? (
-        <div className="empty-state complexity-empty">Not enough data to estimate complexity yet.</div>
+      ) : error || complexityData?.error ? (
+        <div className="status-banner is-error" role="alert">{t(error || "playground.complexityInsufficient")}</div>
+      ) : !complexityData ? (
+        <div className="empty-state complexity-empty">{t("playground.complexityNotAnalyzed")}</div>
       ) : (
         <>
           <div className="complexity-summary">

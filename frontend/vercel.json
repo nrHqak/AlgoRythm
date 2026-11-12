@@ -1,4 +1,10 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "database/staging-bootstrap": false,
+      "codex/algorythm-v1.0-rc": false
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",

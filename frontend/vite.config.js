@@ -4,6 +4,8 @@ import react from "@vitejs/plugin-react";
 export default defineConfig(({ mode }) => ({
   envDir: mode === "test" ? "./src/test" : ".",
   plugins: [react()],
+  optimizeDeps: { exclude: ["pyodide"] },
+  worker: { format: "es" },
   test: {
     environment: "jsdom",
     globals: true,

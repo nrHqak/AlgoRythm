@@ -25,12 +25,32 @@ FastAPI runs from `backend/` on port 8000. Vite uses its standard local port. Th
 
 ```bash
 make lint       # Ruff and ESLint
-make test       # backend, frontend, and context tests
+make test       # backend, browser runtime, frontend, and context tests
 make build      # Python compilation and Vite production build
 make check      # complete local CI-equivalent validation
 ```
 
 Tests mock Supabase and Gemini. No check may require live credentials.
+
+## Browser verification
+
+Start `make dev-frontend`, then open
+`http://localhost:5173/dev/browser-verification.html` and click Verify browser.
+The development-only helper compares 15 frozen Trace Protocol v1 fixtures with
+real Pyodide worker results, including timeout and recovery. No backend or cloud
+credentials are required. `tests/fixtures/browser_traces.json` preserves the
+migration baseline; the helper is excluded from the production build.
+
+Normal Run executes solely in the browser. Initialization/recovery failure shows
+Retry and disables Run until ready. Classification failure leaves the trace playable.
+Slow/failed session, progress, profile and mentor requests must leave Run, playback and editor usable;
+verify this with delayed responses and consecutive Runs. Classification and
+persistence start after trace commit. Measure Run → committed visualization DOM
+separately from classification, saving and profile completion; worker arrival
+alone is not the perceived-latency metric. Complexity is explicit:
+click Analyze Complexity to sample in-browser, repeat to check cache reuse, and
+confirm no `/complexity` request or automatic count dispatch after Run. See [Browser Python runtime](PYTHON_RUNTIME.md)
+for lifecycle, comparison fields, and the timeout rejection adapter.
 
 ## Context maintenance
 
@@ -60,4 +80,78 @@ The generator reads the Git index plus non-ignored working-tree files. It does n
 
 ## Deployment
 
-Provider-specific steps remain in `DEPLOY.md`. Before deployment, run `make check`, apply required migrations in order, verify deployment secrets, and smoke-test health, authentication, analyze, mentor fallback, and session saving.
+Provider-specific steps remain in `DEPLOY.md`. Before deployment, run `make check`, apply required migrations in order, verify deployment secrets, and smoke-test health, authentication, browser tracing/classify, runtime Retry, mentor fallback, and session saving.
+
+## Repeatable production-readiness browser audit
+
+`scripts/browser_audit.mjs` drives the existing development helper and the actual
+optimized Playground using optional Playwright and installed Chrome. Python runs
+in real Pyodide workers; cloud responses use disposable synthetic fixtures. Start
+the secret-free development, preview and backend servers described in
+[the audit report](../verification/production-readiness-audit.md), then run:
+
+```bash
+node scripts/browser_audit.mjs
+```
+
+Playwright must be resolvable, or `PLAYWRIGHT_MODULE` must name its absolute
+`index.mjs`. This optional network/browser check is separate from credential-free
+`make check`; it requires jsDelivr access. `AUDIT_DEV_URL`, `AUDIT_PREVIEW_URL`,
+`AUDIT_BROWSER_CHANNEL`, and `AUDIT_OUTPUT` override its defaults. The report
+records exact prerequisites, supported measurement boundaries and external checks
+that remain unverified.
+
+## Reward database verification and rollout
+
+`make test`/`make check` include `tests/database`: when local PostgreSQL binaries
+are available, tests create a private temporary cluster with a UNIX socket and
+no TCP listener, apply a documented fixture plus migrations, and destroy that
+cluster after testing. They never accept a database URL or developer connection
+configuration. Without binaries the tests explicitly report NOT VERIFIED/skipped;
+set `REWARD_DATABASE_REQUIRED=1` to fail instead. CI requires real PostgreSQL 16
+binaries. `REWARD_POSTGRES_BIN` can select the test binary directory.
+
+Before applying the reward migration, review the actual canonical core schema,
+legacy duplicates, triggers, views, RPC grants and role inheritance. The migration
+is forward-only, transactional and intentionally fails on incompatible schema or
+duplicate achievement owners; do not silently discard history to make it pass.
+Archive legacy data, confirm the activity policy/zero initial authoritative
+balance, then coordinate migration, backend and frontend in a separately approved
+rollout. Old clients sending reward fields receive 422. A backend deployed before
+its RPC exists must fail settlement; it must never use the old separate writes.
+No live application is part of the local verification command.
+
+Use the [schema preflight](../verification/supabase-schema-preflight.md) for the
+object/policy inventory, local compatibility counterexamples, staging acceptance
+matrix and recovery gates. Connected project inventory alone does not identify
+authorized disposable staging. Remote metadata review and remote writes require
+their respective approved scope; local fixture tests certify neither.
+
+The source-verified recovery candidate in `supabase/recovery/` has separate local
+integration tests against its actual captured metadata. Run
+`python scripts/schema_recovery.py --check` to verify deterministic offline output;
+`--write` regenerates it only after evidence review and contacts no database.
+Use local PostgreSQL 17 via REWARD_POSTGRES_BIN for the full native ACL comparison,
+including MAINTAIN. The [recovery report](../verification/canonical-schema-recovery.md)
+defines represented migration versions and the outstanding initialization gates.
+Never treat the candidate as a new automatic CLI migration or restore managed
+platform DDL/users/history from production.
+
+## Fail-closed bootstrap preparation
+
+`python scripts/staging_bootstrap.py --check` verifies the pinned recovery,
+migration and locally derived final-schema reference without contacting a
+database. `--emit-local NEW_DIRECTORY` creates three SQL review files; both the
+composer and generated SQL deliberately lack a hosted execution mode. Do not
+remove local guards to initialize a project. The
+[staging bootstrap runbook](../verification/staging-bootstrap.md) defines the
+quarantined baseline → supported CLI history repair → reward → final-history
+repair → conditional release sequence and the required hosted review/approval.
+
+The new bootstrap tests require native PostgreSQL17 and pinned Supabase CLI3.0.0
+for history operations. Set `BOOTSTRAP_PG17_REQUIRED=1`,
+`BOOTSTRAP_CLI_REQUIRED=1`, `BOOTSTRAP_SUPABASE_CLI=/path/to/supabase` and
+`REWARD_POSTGRES_BIN=/path/to/pg17/bin` to require all relevant local checks.
+The CLI connects only to owned socket-only test databases, with isolated config;
+tests never accept an external DSN. Other environments explicitly skip unavailable
+bootstrap integration coverage. The incompatible-major check is run on PG16.
