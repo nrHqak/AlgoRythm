@@ -69,6 +69,11 @@ const dictionaries = {
       signUpButton: "Create Account",
       demoButton: "Use Demo Account",
       working: "Working...",
+      continueWithGoogle: "Continue with Google",
+      oauthCancelled: "Google sign-in was cancelled. Try again or use email and password.",
+      oauthFailed: "Google sign-in could not be completed. Try again or use email and password. If this continues, contact support to check the provider configuration.",
+      sessionFailed: "Your session could not be restored. Please sign in again.",
+      confirmEmail: "Check your inbox to confirm your email, then sign in.",
     },
     learn: {
       eyebrow: "Learning Path",
@@ -337,6 +342,11 @@ const dictionaries = {
       signUpButton: "Создать аккаунт",
       demoButton: "Войти в Demo",
       working: "Подождите...",
+      continueWithGoogle: "Продолжить с Google",
+      oauthCancelled: "Вход через Google отменён. Попробуйте снова или войдите по почте и паролю.",
+      oauthFailed: "Не удалось войти через Google. Попробуйте снова или войдите по почте и паролю. Если ошибка повторяется, обратитесь в поддержку для проверки настроек провайдера.",
+      sessionFailed: "Не удалось восстановить сессию. Войдите снова.",
+      confirmEmail: "Подтвердите адрес по ссылке в письме, затем войдите.",
     },
     learn: {
       eyebrow: "Учебный путь",

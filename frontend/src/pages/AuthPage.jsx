@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth.jsx";
 import { useLocale } from "../hooks/useLocale.jsx";
 
 export function AuthPage() {
-  const { user, loading, signIn, signUp, configError, supabase } = useAuth();
+  const { user, loading, signIn, signUp, signInWithGoogle, configError, authError, supabase } = useAuth();
   const { t } = useLocale();
   const navigate = useNavigate();
-  const location = useLocation();
   const [mode, setMode] = useState("signin");
   const [form, setForm] = useState({
     username: "",
@@ -16,29 +15,43 @@ export function AuthPage() {
     password: "",
   });
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const demoEmail = import.meta.env.VITE_DEMO_EMAIL || "";
 
-  const redirectPath = location.state?.from || "/learn";
-
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && !authError) {
       navigate("/learn", { replace: true });
     }
-  }, [loading, user, navigate]);
+  }, [loading, user, authError, navigate]);
+
+  async function handleGoogleSignIn() {
+    setSubmitting(true);
+    setError("");
+    setNotice("");
+    try {
+      await signInWithGoogle();
+    } catch {
+      setError(t("auth.oauthFailed"));
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setSubmitting(true);
     setError("");
+    setNotice("");
 
     try {
       if (mode === "signin") {
         await signIn(form.email, form.password);
       } else {
-        await signUp(form);
+        const data = await signUp(form);
+        if (!data.session) setNotice(t("auth.confirmEmail"));
       }
-      navigate(redirectPath, { replace: true });
+      // Navigation waits for the shared Supabase session, including OAuth callbacks.
     } catch (authError) {
       setError(authError.message || "Authentication failed.");
     } finally {
@@ -123,6 +136,11 @@ export function AuthPage() {
             </button>
           </div>
 
+          <button className="ghost-button" type="button" onClick={handleGoogleSignIn}
+            disabled={loading || submitting || Boolean(configError)}>
+            {t("auth.continueWithGoogle")}
+          </button>
+
           <form className="stack" onSubmit={handleSubmit}>
             {mode === "signup" ? (
               <div className="field">
@@ -159,11 +177,12 @@ export function AuthPage() {
               />
             </div>
 
-            {configError ? <div className="inline-error">{configError}</div> : null}
-            {error ? <div className="inline-error">{error}</div> : null}
+            {configError ? <div className="inline-error" role="alert">{configError}</div> : null}
+            {error || authError ? <div className="inline-error" role="alert">{error || t(authError)}</div> : null}
+            {notice ? <div className="meta-text" role="status">{notice}</div> : null}
 
             <div className="button-row">
-              <button className="primary-button" type="submit" disabled={submitting}>
+              <button className="primary-button" type="submit" disabled={loading || submitting || Boolean(configError)}>
                 {submitting ? t("auth.working") : mode === "signin" ? t("auth.signInButton") : t("auth.signUpButton")}
               </button>
               {mode === "signin" && demoEmail ? (

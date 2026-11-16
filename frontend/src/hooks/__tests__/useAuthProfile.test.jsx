@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from "../useAuth.jsx";
 
 const mocks = vi.hoisted(() => ({ upsert: vi.fn(), signUp: vi.fn() }));
 vi.mock("../../lib/supabase", () => ({ supabaseConfigError: "", supabase: {
-  auth: { getSession: async () => ({ data: { session: null } }),
+  auth: { initialize: async () => ({ error: null }), getSession: async () => ({ data: { session: null } }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
     signUp: (...args) => mocks.signUp(...args) },
   from: () => ({ upsert: (...args) => mocks.upsert(...args) }),
