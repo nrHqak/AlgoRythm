@@ -41,6 +41,28 @@ The generated repository map lists exact Pydantic field names. Source models rem
 - Supabase browser operations use the anon key and rely on RLS. No service-role credential may appear in `frontend/`.
 - API errors are represented separately from successful trace results so stale data is cleared after request failure.
 
+### Browser authentication
+
+`useAuth` owns email/password, Google OAuth, session restoration, auth events and
+logout through the same Supabase browser client. Google uses `signInWithOAuth`
+with provider `google` and the exact current-origin `/auth` redirect. The existing
+implicit flow, `detectSessionInUrl`, persisted sessions and token refresh remain
+enabled; the SDK processes callback tokens. No custom token exchange or provider
+secret belongs in the frontend.
+
+`/auth` waits for the shared session before navigating to `/learn`. Unconfirmed
+email signup stays on `/auth`. Callback cancellation/provider errors use local
+messages and remove provider error details from the address bar; an old stored
+session must not disguise a failed callback. SDK initialization errors and failed
+session reads leave sign-in available. Later auth events supersede delayed initial
+reads, including logout. Protected routes continue to require a Supabase user.
+
+Google's authenticated user ID reaches the existing `ProfileProvider`, which
+creates only `profiles(id, username)` when absent, preserving existing profiles.
+Reward reads follow profile persistence and use `reward_accounts` only. Learn's
+Pet and Quiz hooks still wait for a persisted profile matching the current user.
+OAuth does not grant XP or alter reward settlement, RLS, or database contracts.
+
 ## Browser worker boundary
 
 [Browser Python runtime](PYTHON_RUNTIME.md) defines the request-ID-based worker

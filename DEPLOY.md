@@ -22,6 +22,46 @@ hosted bundle and separate approval are required before staging writes.
 Existing production needs its own approved rollout against the actual schema and
 migration history. Do not replay the recovered baseline against production.
 
+### Google OAuth
+
+Configure the provider manually in the intended Supabase project. Staging is
+`aexhskdofnpqqraapigk`; never reuse this setup as permission to change production.
+
+1. Create a Google OAuth **Web application** client with the required `openid`,
+   email and profile scopes. When the consent app is in Testing, authorize only
+   controlled test accounts in its audience.
+2. The Google **Authorized redirect URI** for this staging project is exactly
+   `https://aexhskdofnpqqraapigk.supabase.co/auth/v1/callback`. This differs from
+   the application's `/auth` route. Add each approved frontend origin to Google's
+   Authorized JavaScript origins (origin only, no path).
+3. Enter the Google Client ID and Client Secret directly into Supabase's Google
+   provider settings and enable it. Never put the secret in a `VITE_*` variable,
+   source file, chat or committed configuration. No additional frontend variable
+   or Google SDK is required.
+4. Supabase Auth's Redirect URLs must include each exact approved callback:
+   `https://www.algorythm.online/auth`,
+   `https://algorythm-seven.vercel.app/auth`, and the local `/auth` URL used for
+   staging tests, if those origins are intentionally configured for this project.
+   Set Site URL deliberately; do not rely on a fallback or broad wildcard. Each
+   deployed frontend must point at its intended Supabase project. Do not repoint
+   production domains or change production variables as part of this work.
+5. After separate approval for a staging deployment, verify real Google consent,
+   cancellation, `/auth` callback to `/learn`, a new profile with the authenticated
+   user ID, Pet/Quiz initialization, refresh and logout on both approved origins.
+   Keep email/password checks. Existing Supabase identity linking rules apply;
+   do not create duplicate profiles or manually migrate users.
+
+The `codex/google-oauth` branch disables automatic Vercel deployments in
+`frontend/vercel.json`. Pushing its review PR does not authorize deployment.
+The effective hosting configuration must retain the deployment hold, and merges
+or changes to the deployment environment require separate approval. Google OAuth
+needs no schema migration, backend change or reward-system rollout.
+
+See the [OAuth verification report](docs/verification/google-oauth.md) for the
+tested scope and remaining hosted checks, and the official
+[Supabase Google guide](https://supabase.com/docs/guides/auth/social-sign-in/auth-google)
+and [redirect configuration](https://supabase.com/docs/guides/auth/redirect-urls).
+
 ## Demo Data
 
 For an explicitly authorized disposable environment only, to seed a demo
